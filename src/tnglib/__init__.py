@@ -31,6 +31,7 @@
 # partner consortium (www.5gtango.eu).
 
 from tnglib.packages import *
+from tnglib.slas import *
 from tnglib.general import *
 from tnglib.services import *
 from tnglib.functions import *
