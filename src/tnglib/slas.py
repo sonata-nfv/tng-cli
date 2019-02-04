@@ -39,10 +39,6 @@ import yaml
 import tnglib.env as env
 
 LOG = logging.getLogger(__name__)
-
-def create_template():
-
-	return True
 	
 def get_sla_templates():
     """
@@ -76,6 +72,3 @@ def delete_sla_template(sla_template_uuid):
     else:
         return False, json.loads(resp.text)['error']
 	
-def get_agreements():
-
-	return True
