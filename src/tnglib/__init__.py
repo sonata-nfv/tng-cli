@@ -31,6 +31,7 @@
 # partner consortium (www.5gtango.eu).
 
 from tnglib.packages import *
+from tnglib.slas import *
 from tnglib.general import *
 from tnglib.env import set_sp_path, get_sp_path
 
