@@ -39,6 +39,7 @@ service_api = ''
 function_api = ''
 sl_templates_api = ''
 sl_agreements_api = ''
+sl_violations_api = ''
 
 def get_sp_path():
 
@@ -59,6 +60,7 @@ def build_paths():
 	global function_api
 	global sl_templates_api
 	global sl_agreements_api
+	global sl_violations_api
 
 	gtk_api = ":32002/api/v3"
 	pkg_api = sp_path + gtk_api + "/packages"
@@ -68,3 +70,4 @@ def build_paths():
 	function_api = sp_path + gtk_api + "/functions"
 	sl_templates_api = sp_path + gtk_api + "/slas/templates"
 	sl_agreements_api = sp_path + gtk_api + "/slas/agreements"
+	sl_violations_api = sp_path + gtk_api + "/slas/violations"
