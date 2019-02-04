@@ -30,9 +30,52 @@
 # acknowledge the contributions of their colleagues of the 5GTANGO
 # partner consortium (www.5gtango.eu).
 
-from tnglib.packages import *
-from tnglib.slas import *
-from tnglib.general import *
-from tnglib.env import set_sp_path, get_sp_path
+import requests
+import logging
+import json
+import time
+import os
+import yaml
+import tnglib.env as env
 
-set_sp_path('localhost')
+LOG = logging.getLogger(__name__)
+
+def create_template():
+
+	return True
+	
+def get_sla_templates():
+    """
+    This function returns info on all available SLA templates
+    """
+
+    # get current list of templates
+    resp = requests.get(env.sl_templates_api, timeout=5.0)
+
+    if resp.status_code != 200:
+        LOG.debug("Request for sla templates returned with " + (str(resp.status_code)))
+        return False, []
+
+    templates = json.loads(resp.text)
+
+    return True, templates
+	
+def delete_sla_template(sla_template_uuid):
+    """
+    This function deletes a SLA template
+    """
+
+    url = env.sl_templates_api + '/' + sla_template_uuid
+
+    resp = requests.delete(url, timeout=5.0)
+    LOG.debug(sla_template_uuid)
+    LOG.debug(str(resp.text))
+
+    if resp.status_code == 200:
+        return True, sla_template_uuid
+    else:
+        return False, json.loads(resp.text)['error']
+	
+def get_agreements():
+
+	return True
