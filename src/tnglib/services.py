@@ -30,10 +30,53 @@
 # acknowledge the contributions of their colleagues of the 5GTANGO
 # partner consortium (www.5gtango.eu).
 
-from tnglib.packages import *
-from tnglib.general import *
-from tnglib.services import *
-from tnglib.functions import *
-from tnglib.env import set_sp_path, get_sp_path
+import requests
+import logging
+import json
+import time
+import os
+import yaml
+import tnglib.env as env
 
-set_sp_path('localhost')
+LOG = logging.getLogger(__name__)
+
+def get_services():
+    """
+    This function returns info on all available services
+    """
+
+    # get current list of services
+    resp = requests.get(env.service_api, timeout=5.0)
+
+    if resp.status_code != 200:
+        LOG.debug("Request for services returned with " +
+                  (str(resp.status_code)))
+        return False, []
+
+    services = json.loads(resp.text)
+
+    services_res = []
+    for service in services:
+        dic = {'service_uuid': service['uuid'],
+               'name': service['nsd']['name'],
+               'version': service['nsd']['version'],
+               'created_at' : service['created_at']}
+        LOG.debug(str(dic))
+        services_res.append(dic)
+
+    return True, services_res
+
+def get_service(service_uuid):
+    """
+    This function returns info on a specific service
+    """
+
+    # get service info
+    resp = requests.get(env.service_api + '/' + service_uuid, timeout=5.0)
+
+    if resp.status_code != 200:
+        LOG.debug("Request for service returned with " +
+                  (str(resp.status_code)))
+        return False, json.loads(resp.text)
+
+    return True, json.loads(resp.text)
