@@ -106,6 +106,25 @@ def get_agreements():
     agreements = json.loads(resp.text)
 
     return True, agreements
+	
+def get_agreement_per_nsi(nsi_id):
+    """
+    This function returns a specified by the NSI agreement
+    """
+
+    url = env.sl_agreements_api + '/' + nsi_id
+	
+    # get current list of agreements
+    resp = requests.get(url, timeout=5.0)
+
+    if resp.status_code != 200:
+        LOG.debug("Request for sla agreement returned with " + (str(resp.status_code)))
+        error = resp.text
+        return False, error
+
+    agreement = json.loads(resp.text)
+
+    return True, agreement
 
 def get_detailed_agreement(sla_uuid,nsi_uuid):
     """
@@ -138,3 +157,22 @@ def get_violations():
     violations = json.loads(resp.text)
 
     return True, violations		
+	
+def get_violations_per_nsi_sla(nsi_uuid,sla_uuid):
+    """
+    This function returns the vaiolations for a specific SLA
+    """
+	
+    url = env.sl_violations_api + '/' + nsi_uuid + '/' + sla_uuid
+	
+    # get current list of violations
+    resp = requests.get(url, timeout=5.0)
+
+    if resp.status_code != 200:
+        LOG.debug("Request for sla violations returned with " + (str(resp.status_code)))
+        error = resp.text
+        return False, error
+
+    violations = json.loads(resp.text)
+
+    return True, violations			
