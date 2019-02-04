@@ -33,6 +33,7 @@
 import sys
 import argparse
 import tnglib
+import yaml
 import os
 import logging
 
@@ -83,7 +84,7 @@ def dispatch(args):
     # packages subcommand
     if args.subparser_name=='packages':
         # packages needs exactly one argument     
-        arg_sum = args.list + args.clean + bool(args.upload) + bool(args.remove)
+        arg_sum = args.list + args.clean + bool(args.upload) + bool(args.remove) + bool(args.get)
         if arg_sum == 0:
             print("Missing arguments for subcommand packages. Type tng-cli packages -h")
             exit(1)
@@ -122,6 +123,57 @@ def dispatch(args):
                 print(pkg[1])
             exit(not res)
 
+        if args.get:
+            res, mes = tnglib.get_package(args.get)
+            form_print(mes)
+            exit(not res)
+
+    # services subcommand
+    elif args.subparser_name=='services':
+        # services needs exactly one argument     
+        arg_sum = args.list + bool(args.get)
+        if arg_sum == 0:
+            print("Missing arguments for subcommand services. Type tng-cli services -h")
+            exit(1)
+
+        if arg_sum > 1:
+            print("Too many arguments for subcommand services. Type tng-cli services -h")
+            exit(1)
+
+        if args.list:
+            res, mes = tnglib.get_services()
+            order = ['service_uuid', 'name', 'version', 'created_at']
+            form_print(mes, order)
+            exit(not res)
+
+        if args.get:
+            res, mes = tnglib.get_service(args.get)
+            form_print(mes)
+            exit(not res)
+
+    # functions subcommand
+    elif args.subparser_name=='functions':
+        # functions needs exactly one argument     
+        arg_sum = args.list + bool(args.get)
+        if arg_sum == 0:
+            print("Missing arguments for subcommand functions. Type tng-cli services -h")
+            exit(1)
+
+        if arg_sum > 1:
+            print("Too many arguments for subcommand functions. Type tng-cli services -h")
+            exit(1)
+
+        if args.list:
+            res, mes = tnglib.get_functions()
+            order = ['function_uuid', 'name', 'version', 'created_at']
+            form_print(mes, order)
+            exit(not res)
+
+        if args.get:
+            res, mes = tnglib.get_function(args.get)
+            form_print(mes)
+            exit(not res)
+
     elif args.subparser_name:
         print("Subcommand " + args.subparser_name + " not support yet")
         exit(0)
@@ -156,6 +208,7 @@ def parse_args(args):
     parser_req = subparsers.add_parser('requests', help='actions related to requests, requests --help')
     parser_fun = subparsers.add_parser('functions', help='actions related to functions, functions --help')
 
+    # packages sub arguments
     parser_pkg.add_argument('-l',
                             '--list', 
                             action='store_true',
@@ -184,6 +237,44 @@ def parse_args(args):
                             metavar='PACKAGE',
                             help='upload the specified package')
 
+    parser_pkg.add_argument('-g',
+                            '--get', 
+                            metavar='PACKAGE_UUID',
+                            required=False,
+                            default=False,
+                            help='get detailed info on a package')
+
+
+    # services sub arguments
+    parser_ser.add_argument('-l',
+                            '--list', 
+                            action='store_true',
+                            required=False,
+                            default=False,
+                            help='list the available services')
+
+    parser_ser.add_argument('-g',
+                            '--get', 
+                            metavar='SERVICE_UUID',
+                            required=False,
+                            default=False,
+                            help='get detailed info on a service')
+
+    # functions sub arguments
+    parser_fun.add_argument('-l',
+                            '--list', 
+                            action='store_true',
+                            required=False,
+                            default=False,
+                            help='list the available functions')
+
+    parser_fun.add_argument('-g',
+                            '--get', 
+                            metavar='FUNCTION_UUID',
+                            required=False,
+                            default=False,
+                            help='get detailed info on a function')
+
     return parser.parse_args(args)
 
 
@@ -191,39 +282,46 @@ def form_print(data, order=None):
     """
     Formatted printing
     """
-    if order is None:
-        if bool(data):
-            order = data[0].keys()
-        else:
-            return
+    if isinstance(data, list):
+        if order is None:
+            if bool(data):
+                order = data[0].keys()
+            else:
+                return
 
-    # print header
-    header = ''
-    for key in order:
-        if 'uuid' in key:
-            new_seg = key.replace('_', ' ').upper().ljust(40)
-        # elif key == 'version':
-        #     new_seg = key.upper().ljust(10)
-        else:
-            new_seg = key.replace('_', ' ').upper().ljust(20)
-        header = header + new_seg
-    print(header)
-
-    # print content
-    for data_seg in data:
-        line = ''
+        # print header
+        header = ''
         for key in order:
             if 'uuid' in key:
-                new_seg = data_seg[key].ljust(40)
-            elif key in ['created_at', 'updated_at']:
-                new_seg = data_seg[key][:16].replace('T', ' ')
+                new_seg = key.replace('_', ' ').upper().ljust(40)
+            # elif key == 'version':
+            #     new_seg = key.upper().ljust(10)
             else:
-                new_seg = data_seg[key][:18].ljust(20)
-            line = line + new_seg
-        print(line)
+                new_seg = key.replace('_', ' ').upper().ljust(20)
+            header = header + new_seg
+        print(header)
+
+        # print content
+        for data_seg in data:
+            line = ''
+            for key in order:
+                if 'uuid' in key:
+                    new_seg = data_seg[key].ljust(40)
+                elif key in ['created_at', 'updated_at']:
+                    new_seg = data_seg[key][:16].replace('T', ' ')
+                else:
+                    new_seg = data_seg[key][:18].ljust(20)
+                line = line + new_seg
+            print(line)
+
+    elif isinstance(data, dict):
+        print('')
+        print(yaml.dump(data, default_flow_style=False))
+
+    else:
+        print(data)
 
     return
-
 
 def init_logger(verbose):
     """
