@@ -33,6 +33,7 @@
 import sys
 import argparse
 import tnglib
+import yaml
 import os
 import logging
 
@@ -81,15 +82,15 @@ def dispatch(args):
         exit(1)
 
     # packages subcommand
-    if args.subparser_name=='packages':
+    if args.subparser_name=='package':
         # packages needs exactly one argument     
-        arg_sum = args.list + args.clean + bool(args.upload) + bool(args.remove)
+        arg_sum = args.list + args.clean + bool(args.upload) + bool(args.remove) + bool(args.get)
         if arg_sum == 0:
-            print("Missing arguments for subcommand packages. Type tng-cli packages -h")
+            print("Missing arguments for subcommand package. Type tng-cli package -h")
             exit(1)
 
         if arg_sum > 1:
-            print("Too many arguments for subcommand packages. Type tng-cli packages -h")
+            print("Too many arguments for subcommand package. Type tng-cli package -h")
             exit(1)
 
         if args.list:
@@ -122,6 +123,175 @@ def dispatch(args):
                 print(pkg[1])
             exit(not res)
 
+        if args.get:
+            res, mes = tnglib.get_package(args.get)
+            form_print(mes)
+            exit(not res)
+
+    # services subcommand
+    elif args.subparser_name=='service':
+        # services needs exactly one argument     
+        arg_sum = args.list + bool(args.get)
+        if arg_sum == 0:
+            print("Missing arguments for subcommand service. Type tng-cli service -h")
+            exit(1)
+
+        if arg_sum > 1:
+            print("Too many arguments for subcommand service. Type tng-cli service -h")
+            exit(1)
+
+        if args.list:
+            res, mes = tnglib.get_services()
+            order = ['service_uuid', 'name', 'version', 'created_at']
+            form_print(mes, order)
+            exit(not res)
+
+        if args.get:
+            res, mes = tnglib.get_service(args.get)
+            form_print(mes)
+            exit(not res)
+
+    # functions subcommand
+    elif args.subparser_name=='function':
+        # functions needs exactly one argument     
+        arg_sum = args.list + bool(args.get)
+        if arg_sum == 0:
+            print("Missing arguments for subcommand function. Type tng-cli service -h")
+            exit(1)
+
+        if arg_sum > 1:
+            print("Too many arguments for subcommand function. Type tng-cli service -h")
+            exit(1)
+
+        if args.list:
+            res, mes = tnglib.get_functions()
+            order = ['function_uuid', 'name', 'version', 'created_at']
+            form_print(mes, order)
+            exit(not res)
+
+        if args.get:
+            res, mes = tnglib.get_function(args.get)
+            form_print(mes)
+            exit(not res)
+
+    # sla subcommand
+    elif args.subparser_name=='sla':
+        # template, agreement or violation needs to be specified
+        arg_sum = args.template + args.agreement + args.violation + args.guarantee
+        if arg_sum == 0:
+            print("One of --template, --agreement, --violation, --guarantee must be specified with sla subcommand.")
+            exit(1)
+
+        elif arg_sum > 1:
+            print("Only one of --template, --agreement, --violation, --guarantee can be specified with sla subcommand.")
+            exit(1)
+
+        if args.guarantee:
+            res, mes = tnglib.get_sla_guarantees()
+            order = ['name', 'id', 'operator', 'value']
+            form_print(mes, order)
+            exit(not res)
+
+        elif args.template:
+            # agreement and violation specific arguments are not allowed
+
+            # If no argument is provided, list all templates
+            arg_sum = bool(args.create) + bool(args.remove) + bool(args.get) + bool(args.nsd) + bool(args.guarantee_id) + bool(args.date)
+            if arg_sum == 0:
+                res, mes = tnglib.get_sla_templates()
+                order = ['sla_uuid', 'name', 'created_at']
+                form_print(mes, order)
+                exit(not res)
+
+            arg_sum = bool(args.create) + bool(args.remove) + bool(args.get)
+            # If one of --create, --remove or --get is provided, perform the action
+            if arg_sum == 1:
+                if bool(args.get):
+                    res, mes = tnglib.get_sla_template(args.get)
+                    form_print(mes)
+                    exit (not res)
+
+                if bool(args.create):
+                    if not (bool(args.nsd) and bool(args.guarantee_id)):
+                        print("Both --service and --guarantee are required with --template --create <NAME>")
+                        exit(1)
+                    else:
+                        date = '01/01/2025'
+                        if bool(args.date):
+                            date = args.date
+                        res, mes = tnglib.create_sla_template(args.create, args.nsd, date, args.guarantee_id)
+                        print(mes)
+                        exit(not res)
+
+                if bool(args.remove):
+                    res, mes = tnglib.delete_sla_template(args.remove)
+                    if res:
+                        print(args.remove)
+                    else:
+                        print(mes)
+                    exit(not res)
+
+            # Error in any other case
+            else:
+                pass
+
+        elif args.agreement:
+            # template specific arguments are not allowed
+            arg_sum = bool(args.create) + bool(args.remove) + bool(args.get) + bool(args.nsd) + bool(args.guarantee_id) + bool(args.date)
+            if arg_sum > 0:
+                print("Only --nsi and --sla allowed with --agreement")
+                exit(1)
+
+            if bool(args.nsi) and bool(args.sla):
+                res, mes = tnglib.get_detailed_agreement(args.sla, args.nsi)
+                form_print(mes)
+                exit(not res)
+
+            elif bool(args.nsi):
+                res, mes = tnglib.get_agreements(args.nsi)
+                order = ['sla_uuid', 'nsi_uuid', 'sla_status']
+                form_print(mes, order)
+                exit(not res)
+
+            elif bool(args.sla):
+                print('--sla requires --nsi when used with --agreement')
+                exit(1)
+
+            else:
+                res, mes = tnglib.get_agreements()
+                order = ['sla_name', 'sla_uuid', 'nsi_uuid', 'ns_name', 'sla_status']
+                form_print(mes, order)
+                exit(not res)
+
+        elif args.violation:
+            # template specific arguments are not allowed
+            arg_sum = bool(args.create) + bool(args.remove) + bool(args.get) + bool(args.nsd) + bool(args.guarantee_id) + bool(args.date)
+            if arg_sum > 0:
+                print("Only --nsi and --sla allowed with --violation")
+                exit(1)
+
+            if bool(args.nsi) and bool(args.sla):
+                res, mes = tnglib.get_violations_per_nsi_sla(args.sla, args.nsi)
+                form_print(mes)
+                exit(not res)
+
+            elif bool(args.nsi):
+                res, mes = tnglib.get_violations(args.nsi)
+                order = ['sla_uuid', 'nsi_uuid', 'violation_time', 'alert_state']
+                form_print(mes, order)
+                exit(not res)
+
+            elif bool(args.sla):
+                print('--sla requires --nsi when used with --violation')
+                exit(1)
+
+            else:
+                res, mes = tnglib.get_violations()
+                order = ['sla_uuid', 'nsi_uuid', 'violation_time', 'alert_state']
+                form_print(mes, order)
+                exit(not res)
+
+
     elif args.subparser_name:
         print("Subcommand " + args.subparser_name + " not support yet")
         exit(0)
@@ -151,11 +321,13 @@ def parse_args(args):
     subparsers = parser.add_subparsers(description='',
                                        dest='subparser_name')
 
-    parser_pkg = subparsers.add_parser('packages', help='actions related to packages, packages --help')
-    parser_ser = subparsers.add_parser('services', help='actions related to services, services --help')
-    parser_req = subparsers.add_parser('requests', help='actions related to requests, requests --help')
-    parser_fun = subparsers.add_parser('functions', help='actions related to functions, functions --help')
+    parser_pkg = subparsers.add_parser('package', help='actions related to packages, package --help')
+    parser_ser = subparsers.add_parser('service', help='actions related to services, service --help')
+    parser_req = subparsers.add_parser('request', help='actions related to requests, request --help')
+    parser_fun = subparsers.add_parser('function', help='actions related to functions, function --help')
+    parser_sla = subparsers.add_parser('sla', help='actions related to slas, function --help')
 
+    # packages sub arguments
     parser_pkg.add_argument('-l',
                             '--list', 
                             action='store_true',
@@ -184,6 +356,126 @@ def parse_args(args):
                             metavar='PACKAGE',
                             help='upload the specified package')
 
+    parser_pkg.add_argument('-g',
+                            '--get', 
+                            metavar='PACKAGE_UUID',
+                            required=False,
+                            default=False,
+                            help='get detailed info on a package')
+
+
+    # services sub arguments
+    parser_ser.add_argument('-l',
+                            '--list', 
+                            action='store_true',
+                            required=False,
+                            default=False,
+                            help='list the available services')
+
+    parser_ser.add_argument('-g',
+                            '--get', 
+                            metavar='SERVICE_UUID',
+                            required=False,
+                            default=False,
+                            help='get detailed info on a service')
+
+    # functions sub arguments
+    parser_fun.add_argument('-l',
+                            '--list', 
+                            action='store_true',
+                            required=False,
+                            default=False,
+                            help='list the available functions')
+
+    parser_fun.add_argument('-g',
+                            '--get', 
+                            metavar='FUNCTION_UUID',
+                            required=False,
+                            default=False,
+                            help='get detailed info on a function')
+
+
+    # sla sub arguments
+    parser_sla.add_argument('--template', 
+                            action='store_true',
+                            required=False,
+                            default=False,
+                            help='Specify an action related to SLA templates. If no extra argument, returns all SLA templates.')
+
+    parser_sla.add_argument('--agreement', 
+                            action='store_true',
+                            required=False,
+                            default=False,
+                            help='Specify an action related to SLA agreements. If no extra argument, returns all SLA agreements.')
+
+    parser_sla.add_argument('--violation', 
+                            action='store_true',
+                            required=False,
+                            default=False,
+                            help='Specify an action related to SLA violations. If no extra argument, returns all SLA violations.')
+
+    parser_sla.add_argument('--guarantee', 
+                            action='store_true',
+                            required=False,
+                            default=False,
+                            help='List the available SLA guarantees. Does not require additional arguments.')
+
+    parser_sla.add_argument('-d',
+                            '--date', 
+                            metavar='DD/MM/YYYY',
+                            required=False,
+                            default=False,
+                            help='Only with --template --create. Specify the experation date')
+
+    parser_sla.add_argument('-s',
+                            '--nsd', 
+                            metavar='SERVICE UUID',
+                            required=False,
+                            default=False,
+                            help='Only with --template --create. Specify the service uuid')
+
+    parser_sla.add_argument('-i',
+                            '--guarantee-id', 
+                            metavar='GUARANTEE ID',
+                            required=False,
+                            default=False,
+                            help='Only with --template --create. Specify the guarantee id')
+
+    parser_sla.add_argument('-c',
+                            '--create', 
+                            metavar='SLA NAME',
+                            required=False,
+                            default=False,
+                            help='Only with --template. Create a new SLA template. Requires -s and -i')
+
+    parser_sla.add_argument('-r',
+                            '--remove', 
+                            metavar='SLA TEMPLATE UUID',
+                            required=False,
+                            default=False,
+                            help='Only with --template. Remove an SLA template.')
+
+    parser_sla.add_argument('-g',
+                            '--get', 
+                            metavar='UUID',
+                            required=False,
+                            default=False,
+                            help='With --template, --agreement and --violation. Get descriptor associated to uuid.')
+
+    parser_sla.add_argument('-n',
+                            '--nsi', 
+                            metavar='SERVICE INSTANCE UUID',
+                            required=False,
+                            default=False,
+                            help='Only with --agreement or --violation. Specify the service instance uuid')
+
+    parser_sla.add_argument('-t',
+                            '--sla', 
+                            metavar='SERVICE INSTANCE UUID',
+                            required=False,
+                            default=False,
+                            help='Only with --agreement -n or --violation -n. Specify the sla uuid')
+
     return parser.parse_args(args)
 
 
@@ -191,39 +483,46 @@ def form_print(data, order=None):
     """
     Formatted printing
     """
-    if order is None:
-        if bool(data):
-            order = data[0].keys()
-        else:
-            return
+    if isinstance(data, list):
+        if order is None:
+            if bool(data):
+                order = data[0].keys()
+            else:
+                return
 
-    # print header
-    header = ''
-    for key in order:
-        if 'uuid' in key:
-            new_seg = key.replace('_', ' ').upper().ljust(40)
-        # elif key == 'version':
-        #     new_seg = key.upper().ljust(10)
-        else:
-            new_seg = key.replace('_', ' ').upper().ljust(20)
-        header = header + new_seg
-    print(header)
-
-    # print content
-    for data_seg in data:
-        line = ''
+        # print header
+        header = ''
         for key in order:
             if 'uuid' in key:
-                new_seg = data_seg[key].ljust(40)
-            elif key in ['created_at', 'updated_at']:
-                new_seg = data_seg[key][:16].replace('T', ' ')
+                new_seg = key.replace('_', ' ').upper().ljust(40)
+            # elif key == 'version':
+            #     new_seg = key.upper().ljust(10)
             else:
-                new_seg = data_seg[key][:18].ljust(20)
-            line = line + new_seg
-        print(line)
+                new_seg = key.replace('_', ' ').upper().ljust(20)
+            header = header + new_seg
+        print(header)
+
+        # print content
+        for data_seg in data:
+            line = ''
+            for key in order:
+                if 'uuid' in key:
+                    new_seg = data_seg[key].ljust(40)
+                elif key in ['created_at', 'updated_at', 'violation_time']:
+                    new_seg = data_seg[key][:16].replace('T', ' ').ljust(20)
+                else:
+                    new_seg = data_seg[key][:18].ljust(20)
+                line = line + new_seg
+            print(line)
+
+    elif isinstance(data, dict):
+        print('')
+        print(yaml.dump(data, default_flow_style=False))
+
+    else:
+        print(data)
 
     return
-
 
 def init_logger(verbose):
     """

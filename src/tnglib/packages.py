@@ -143,3 +143,18 @@ def upload_package(pkg_path):
     msg = "Couldn't upload package. Is file really a package?"
     LOG.debug(msg)
     return False, msg
+
+def get_package(package_uuid):
+    """
+    This function returns info on a specific package
+    """
+
+    # get package info
+    resp = requests.get(env.pkg_api + '/' + package_uuid, timeout=5.0)
+
+    if resp.status_code != 200:
+        LOG.debug("Request for package returned with " +
+                  (str(resp.status_code)))
+        return False, json.loads(resp.text)
+
+    return True, json.loads(resp.text)

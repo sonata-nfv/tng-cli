@@ -33,6 +33,8 @@
 from tnglib.packages import *
 from tnglib.slas import *
 from tnglib.general import *
+from tnglib.services import *
+from tnglib.functions import *
 from tnglib.env import set_sp_path, get_sp_path
 
 set_sp_path('localhost')

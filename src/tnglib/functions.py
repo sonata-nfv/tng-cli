@@ -30,47 +30,53 @@
 # acknowledge the contributions of their colleagues of the 5GTANGO
 # partner consortium (www.5gtango.eu).
 
-# Building all paths for global use
-sp_path = ''
-pkg_api = ''
-pkg_status_api = ''
-request_api = ''
-service_api = ''
-function_api = ''
-sl_templates_api = ''
-sl_agreements_api = ''
-sl_violations_api = ''
-sl_guarantees_api = ''
+import requests
+import logging
+import json
+import time
+import os
+import yaml
+import tnglib.env as env
 
-def get_sp_path():
+LOG = logging.getLogger(__name__)
 
-	return sp_path
+def get_functions():
+    """
+    This function returns info on all available services
+    """
 
-def set_sp_path(new_base_path):
+    # get current list of services
+    resp = requests.get(env.function_api, timeout=5.0)
 
-	global sp_path
-	sp_path = new_base_path
-	build_paths()
+    if resp.status_code != 200:
+        LOG.debug("Request for services returned with " +
+                  (str(resp.status_code)))
+        return False, []
 
-def build_paths():
+    functions = json.loads(resp.text)
 
-	global pkg_api
-	global pkg_status_api
-	global request_api
-	global service_api
-	global function_api
-	global sl_templates_api
-	global sl_agreements_api
-	global sl_violations_api
-	global sl_guarantees_api
+    functions_res = []
+    for function in functions:
+        dic = {'function_uuid': function['uuid'],
+               'name': function['vnfd']['name'],
+               'version': function['vnfd']['version'],
+               'created_at' : function['created_at']}
+        LOG.debug(str(dic))
+        functions_res.append(dic)
 
-	gtk_api = ":32002/api/v3"
-	pkg_api = sp_path + gtk_api + "/packages"
-	pkg_status_api = pkg_api + "/status"
-	request_api = sp_path + gtk_api + "/requests"
-	service_api = sp_path + gtk_api + "/services"
-	function_api = sp_path + gtk_api + "/functions"
-	sl_templates_api = sp_path + gtk_api + "/slas/templates"
-	sl_agreements_api = sp_path + gtk_api + "/slas/agreements"
-	sl_violations_api = sp_path + gtk_api + "/slas/violations"
-	sl_guarantees_api = sp_path + gtk_api + "/slas/configurations/guaranteesList"
+    return True, functions_res
+
+def get_function(function_uuid):
+    """
+    This function returns info on a specific function
+    """
+
+    # get function info
+    resp = requests.get(env.function_api + '/' + function_uuid, timeout=5.0)
+
+    if resp.status_code != 200:
+        LOG.debug("Request for function returned with " +
+                  (str(resp.status_code)))
+        return False, json.loads(resp.text)
+
+    return True, json.loads(resp.text)

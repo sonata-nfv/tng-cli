@@ -44,18 +44,19 @@ def create_sla_template(templateName,nsd_uuid,expireDate,guaranteeId):
     """
     This function generates an initial SLA template
     """
-	
     # generate sla template
-    resp = requests.post(env.sl_templates_api, data = {'templateName':templateName,'nsd_uuid':nsd_uuid,'expireDate':expireDate,'guaranteeId':guaranteeId}, timeout=5.0)
+    resp = requests.post(env.sl_templates_api,
+                         data = {'templateName':templateName,'nsd_uuid':nsd_uuid,'expireDate':expireDate,'guaranteeId':guaranteeId},
+                         timeout=5.0)
 	
     if resp.status_code != 201:
         LOG.debug("Request for creating sla templates returned with " + (str(resp.status_code)))
         error = resp.text
         return False, error
 
-    gen_template = json.loads(resp.text)
+    uuid = json.loads(resp.text)['uuid']
 
-    return True, gen_template
+    return True, uuid
 	
 def get_sla_templates():
     """
@@ -72,7 +73,34 @@ def get_sla_templates():
 
     templates = json.loads(resp.text)
 
-    return True, templates
+    temp_res = []
+
+    for template in templates:
+        dic = {'name': template['slad']['name'],
+               'created_at': template['created_at'],
+               'sla_uuid': template['uuid'],
+               }
+        LOG.debug(str(dic))
+        temp_res.append(dic)
+
+    return True, temp_res
+
+def get_sla_template(sla_uuid):
+    """
+    This function returns info on all available SLA templates
+    """
+
+    # get current list of templates
+    resp = requests.get(env.sl_templates_api + '/' + sla_uuid, timeout=5.0)
+
+    if resp.status_code != 200:
+        LOG.debug("Request for sla template returned with " + (str(resp.status_code)))
+        error = resp.text
+        return False, error
+
+    template = json.loads(resp.text)
+
+    return True, template
 	
 def delete_sla_template(sla_template_uuid):
     """
@@ -90,42 +118,57 @@ def delete_sla_template(sla_template_uuid):
     else:
         return False
 
-def get_agreements():
+def get_sla_guarantees():
+    """
+    This function returns info on all available SLA guarantees
+    """
+
+    # get current list of templates
+    resp = requests.get(env.sl_guarantees_api, timeout=5.0)
+
+    if resp.status_code != 200:
+        LOG.debug("Request for sla guarantees returned with " + (str(resp.status_code)))
+        error = resp.text
+        return False, error
+
+    guarantees = json.loads(resp.text)['guaranteeTerms']
+
+    guar_res = []
+
+    for guarantee in guarantees:
+        dic = {'name': guarantee['name'],
+               'id': guarantee['guaranteeID'],
+               'operator': guarantee['operator'],
+               'value' : guarantee['value']}
+        LOG.debug(str(dic))
+        guar_res.append(dic)
+
+    return True, guar_res
+
+def get_agreements(nsi_uuid=None):
     """
     This function returns info on all available SLA agreements
     """
 
+    url = env.sl_agreements_api
+    if nsi_uuid:
+        url = env.sl_agreements_api + '/service/' + nsi_uuid
+
     # get current list of agreements
-    resp = requests.get(env.sl_agreements_api, timeout=5.0)
+    resp = requests.get(url, timeout=5.0)
 
     if resp.status_code != 200:
         LOG.debug("Request for sla agreements returned with " + (str(resp.status_code)))
         error = resp.text
         return False, error
 
-    agreements = json.loads(resp.text)
+    if nsi_uuid:
+        agreements = json.loads(resp.text)['cust_sla']
+    else:
+        agreements = json.loads(resp.text)['agreements']
 
     return True, agreements
 	
-def get_agreement_per_nsi(nsi_id):
-    """
-    This function returns a specified by the NSI agreement
-    """
-
-    url = env.sl_agreements_api + '/' + nsi_id
-	
-    # get current list of agreements
-    resp = requests.get(url, timeout=5.0)
-
-    if resp.status_code != 200:
-        LOG.debug("Request for sla agreement returned with " + (str(resp.status_code)))
-        error = resp.text
-        return False, error
-
-    agreement = json.loads(resp.text)
-
-    return True, agreement
-
 def get_detailed_agreement(sla_uuid,nsi_uuid):
     """
     This function returns info on a specific Agreement
@@ -137,17 +180,21 @@ def get_detailed_agreement(sla_uuid,nsi_uuid):
     LOG.debug(str(resp.text))
 
     if resp.status_code == 200:
-        return True, resp.text
+        return True, json.loads(resp.text)
     else:
         return False, json.loads(resp.text)['error']
 	
-def get_violations():
+def get_violations(nsi_uuid=None):
     """
     This function returns info on all SLA violations
     """
 
+    url = env.sl_violations_api
+    if nsi_uuid:
+        url = env.sl_violations_api + '/service/' + nsi_uuid
+
     # get current list of violations
-    resp = requests.get(env.sl_violations_api, timeout=5.0)
+    resp = requests.get(url, timeout=5.0)
 
     if resp.status_code != 200:
         LOG.debug("Request for sla violations returned with " + (str(resp.status_code)))
@@ -155,16 +202,15 @@ def get_violations():
         return False, error
 
     violations = json.loads(resp.text)
-
     return True, violations		
 	
-def get_violations_per_nsi_sla(nsi_uuid,sla_uuid):
+def get_violations_per_nsi_sla(sla_uuid,nsi_uuid):
     """
     This function returns the vaiolations for a specific SLA
     """
 	
-    url = env.sl_violations_api + '/' + nsi_uuid + '/' + sla_uuid
-	
+    url = env.sl_violations_api + '/' + sla_uuid + '/' + nsi_uuid
+
     # get current list of violations
     resp = requests.get(url, timeout=5.0)
 
