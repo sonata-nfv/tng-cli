@@ -116,7 +116,7 @@ def delete_sla_template(sla_template_uuid):
     if resp.status_code == 200:
         return True, sla_template_uuid
     else:
-        return False
+        return False, json.loads(resp.text)
 
 def get_sla_guarantees():
     """

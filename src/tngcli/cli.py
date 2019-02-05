@@ -291,6 +291,49 @@ def dispatch(args):
                 form_print(mes, order)
                 exit(not res)
 
+    elif args.subparser_name == 'slice':
+        # Only one of create, remove, instantiate, terminate, templates, instances can be active
+        arg_sum = bool(args.create) + bool(args.remove) + bool(args.instantiate) + bool(args.terminate) + bool(args.templates) + bool(args.instances)
+
+        if arg_sum == 0:
+            print("One of --create, --remove, --terminate, --instantiate, --templates or --instances needed with slice subcommand.")
+            exit(1)
+
+        if arg_sum > 1:
+            print("Only one of --create, --remove, --terminate, --instantiate, --templates or --instances allowed with slice subcommand.")
+            exit(1)
+
+        if bool(args.templates) and not bool(args.get):
+            res, mes = tnglib.get_slice_templates()
+            order = ['slice_uuid', 'name', 'version', 'created_at']
+            form_print(mes, order)
+            exit(not res)
+            
+        if bool(args.templates) and bool(args.get):
+            res, mes = tnglib.get_slice_template(args.get)
+            form_print(mes)
+            exit(not res)
+
+        if bool(args.instances) and not bool(args.get):
+            res, mes = tnglib.get_slice_instances()
+            order = ['instance_uuid', 'name', 'template_uuid', 'created_at']
+            form_print(mes, order)
+            exit(not res)
+            
+        if bool(args.instances) and bool(args.get):
+            res, mes = tnglib.get_slice_instance(args.get)
+            form_print(mes)
+            exit(not res)
+
+        if bool(args.remove):
+            res, mes = tnglib.delete_slice_template(args.remove)
+            form_print(mes)
+            exit(not res)
+
+        if bool(args.create):
+            res, mes = tnglib.create_slice_template(args.create)
+            form_print(mes)
+            exit(not res)
 
     elif args.subparser_name:
         print("Subcommand " + args.subparser_name + " not support yet")
@@ -318,14 +361,15 @@ def parse_args(args):
                         default=False,
                         help='Verbose output')
 
-    subparsers = parser.add_subparsers(description='',
+    subparsers = parser.add_subparsers(description='<submodule> -h for more info',
                                        dest='subparser_name')
 
-    parser_pkg = subparsers.add_parser('package', help='actions related to packages, package --help')
-    parser_ser = subparsers.add_parser('service', help='actions related to services, service --help')
-    parser_req = subparsers.add_parser('request', help='actions related to requests, request --help')
-    parser_fun = subparsers.add_parser('function', help='actions related to functions, function --help')
-    parser_sla = subparsers.add_parser('sla', help='actions related to slas, function --help')
+    parser_pkg = subparsers.add_parser('package', help='actions related to packages')
+    parser_ser = subparsers.add_parser('service', help='actions related to services')
+    parser_req = subparsers.add_parser('request', help='actions related to requests')
+    parser_fun = subparsers.add_parser('function', help='actions related to functions')
+    parser_sla = subparsers.add_parser('sla', help='actions related to slas')
+    parser_slc = subparsers.add_parser('slice', help='actions related to slices')
 
     # packages sub arguments
     parser_pkg.add_argument('-l',
@@ -475,6 +519,54 @@ def parse_args(args):
                             required=False,
                             default=False,
                             help='Only with --agreement -n or --violation -n. Specify the sla uuid')
+
+    # slice related arguments
+    parser_slc.add_argument('--templates', 
+                            action='store_true',
+                            required=False,
+                            default=False,
+                            help='List the available slice templates')
+
+    parser_slc.add_argument('--instances', 
+                            action='store_true',
+                            required=False,
+                            default=False,
+                            help='List the available slice instances')
+
+    parser_slc.add_argument('-g',
+                            '--get', 
+                            metavar='UUID',
+                            required=False,
+                            default=False,
+                            help='Use with --templates or --instances. Returns single template or instance')
+
+    parser_slc.add_argument('-r',
+                            '--remove', 
+                            metavar='TEMPLATE UUID',
+                            required=False,
+                            default=False,
+                            help='Remove slice template')
+
+    parser_slc.add_argument('-t',
+                            '--terminate', 
+                            metavar='INSTANCE UUID',
+                            required=False,
+                            default=False,
+                            help='Terminate slice instance')
+
+    parser_slc.add_argument('-c',
+                            '--create', 
+                            metavar='SLICE TEMPLATE',
+                            required=False,
+                            default=False,
+                            help='Create a new slice template from file')
+
+    parser_slc.add_argument('-i',
+                            '--instantiate', 
+                            metavar='TEMPLATE UUID',
+                            required=False,
+                            default=False,
+                            help='Instantiate a new slice instance')
 
     return parser.parse_args(args)
 
