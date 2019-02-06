@@ -40,16 +40,16 @@ import tnglib.env as env
 
 LOG = logging.getLogger(__name__)
 
-def get_functions():
+def get_function_descriptors():
     """
-    This function returns info on all available services
+    This function returns info on all available function descriptors
     """
 
-    # get current list of services
-    resp = requests.get(env.function_api, timeout=5.0)
+    # get current list of function descriptors
+    resp = requests.get(env.function_descriptor_api, timeout=5.0)
 
     if resp.status_code != 200:
-        LOG.debug("Request for services returned with " +
+        LOG.debug("Request for function descriptors returned with " +
                   (str(resp.status_code)))
         return False, []
 
@@ -57,7 +57,7 @@ def get_functions():
 
     functions_res = []
     for function in functions:
-        dic = {'function_uuid': function['uuid'],
+        dic = {'descriptor_uuid': function['uuid'],
                'name': function['vnfd']['name'],
                'version': function['vnfd']['version'],
                'created_at' : function['created_at']}
@@ -66,16 +66,57 @@ def get_functions():
 
     return True, functions_res
 
-def get_function(function_uuid):
+def get_function_descriptor(function_descriptor_uuid):
     """
-    This function returns info on a specific function
+    This function returns info on a specific function descriptor
     """
 
-    # get function info
-    resp = requests.get(env.function_api + '/' + function_uuid, timeout=5.0)
+    # get function descriptor
+    resp = requests.get(env.function_descriptor_api + '/' + function_descriptor_uuid, timeout=5.0)
 
     if resp.status_code != 200:
-        LOG.debug("Request for function returned with " +
+        LOG.debug("Request for function descriptor returned with " +
+                  (str(resp.status_code)))
+        return False, json.loads(resp.text)
+
+    return True, json.loads(resp.text)
+
+def get_function_instances():
+    """
+    This function returns info on all available function instances
+    """
+
+    # get current list of function instances
+    resp = requests.get(env.function_instance_api, timeout=5.0)
+
+    if resp.status_code != 200:
+        LOG.debug("Request for function instances returned with " +
+                  (str(resp.status_code)))
+        return False, []
+
+    functions = json.loads(resp.text)
+
+    functions_res = []
+    for function in functions:
+        dic = {'instance_uuid': function['uuid'],
+               'status': function['status'],
+               'version': function['version'],
+               'created_at': function['created_at']}
+        LOG.debug(str(dic))
+        functions_res.append(dic)
+
+    return True, functions_res
+
+def get_function_instance(function_instance_uuid):
+    """
+    This function returns info on a specific function instance
+    """
+
+    # get function intsance info
+    resp = requests.get(env.function_instance_api + '/' + function_instance_uuid, timeout=5.0)
+
+    if resp.status_code != 200:
+        LOG.debug("Request for function instance returned with " +
                   (str(resp.status_code)))
         return False, json.loads(resp.text)
 

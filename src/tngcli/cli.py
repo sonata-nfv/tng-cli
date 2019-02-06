@@ -128,50 +128,104 @@ def dispatch(args):
             form_print(mes)
             exit(not res)
 
-    # services subcommand
-    elif args.subparser_name=='service':
-        # services needs exactly one argument     
-        arg_sum = args.list + bool(args.get)
-        if arg_sum == 0:
-            print("Missing arguments for subcommand service. Type tng-cli service -h")
-            exit(1)
+    # requests subcommand
+    elif args.subparser_name=='request':
 
-        if arg_sum > 1:
-            print("Too many arguments for subcommand service. Type tng-cli service -h")
-            exit(1)
-
-        if args.list:
-            res, mes = tnglib.get_services()
-            order = ['service_uuid', 'name', 'version', 'created_at']
+        if bool(args.get):
+            res, mes = tnglib.get_request(args.get)
+            form_print(mes)
+            exit(not res)
+        else:
+            res, mes = tnglib.get_requests()
+            order = ['request_uuid', 'request_type', 'status', 'created_at', 'instance_uuid']
             form_print(mes, order)
             exit(not res)
 
-        if args.get:
-            res, mes = tnglib.get_service(args.get)
+    # services subcommand
+    elif args.subparser_name=='service':
+        # services needs exactly one argument     
+        arg_sum = args.descriptor + args.instance + bool(args.instantiate) + bool(args.terminate)
+        if arg_sum == 0:
+            print("Missing arguments for subcommand service. Select either --descriptor, --instance, --instantiate or --terminate")
+            exit(1)
+
+        if arg_sum > 1:
+            print("Too many arguments for subcommand service. Select either --descriptor, --instance, --instantiate or --terminate")
+            exit(1)
+
+        arg_sum = bool(args.instantiate) + bool(args.terminate) + bool(args.get)
+        if arg_sum == 2:
+            print("--get can't be used with --instantiate or --terminate")
+            exit(1)
+
+        if args.descriptor and bool(args.get):
+            res, mes = tnglib.get_service_descriptor(args.get)
+            form_print(mes)
+            exit(not res)
+
+        if args.descriptor:
+            res, mes = tnglib.get_service_descriptors()
+            order = ['descriptor_uuid', 'name', 'version', 'created_at']
+            form_print(mes, order)
+            exit(not res)
+
+        if args.instance and bool(args.get):
+            res, mes = tnglib.get_service_instance(args.get)
+            form_print(mes)
+            exit(not res)
+
+        if args.instance:
+            res, mes = tnglib.get_service_instances()
+            order = ['instance_uuid', 'name', 'status', 'created_at']
+            form_print(mes, order)
+            exit(not res)
+
+        if bool(args.instantiate):
+            if bool(args.sla):
+                res, mes = tnglib.service_instantiate(args.instantiate, args.sla)
+            else:
+                res, mes = tnglib.service_instantiate(args.instantiate)
+
+            form_print(mes)
+            exit(not res)
+
+        if bool(args.terminate):
+            res, mes = tnglib.service_terminate(args.terminate)
             form_print(mes)
             exit(not res)
 
     # functions subcommand
     elif args.subparser_name=='function':
         # functions needs exactly one argument     
-        arg_sum = args.list + bool(args.get)
+        arg_sum = args.descriptor + args.instance
         if arg_sum == 0:
-            print("Missing arguments for subcommand function. Type tng-cli service -h")
+            print("Missing arguments for subcommand function. Select either --descriptor or --instance")
             exit(1)
 
         if arg_sum > 1:
-            print("Too many arguments for subcommand function. Type tng-cli service -h")
+            print("Too many arguments for subcommand function. Select either --descriptor or --instance")
             exit(1)
 
-        if args.list:
-            res, mes = tnglib.get_functions()
-            order = ['function_uuid', 'name', 'version', 'created_at']
+        if args.descriptor and bool(args.get):
+            res, mes = tnglib.get_function_descriptor(args.get)
+            form_print(mes)
+            exit(not res)
+
+        if args.descriptor:
+            res, mes = tnglib.get_function_descriptors()
+            order = ['descriptor_uuid', 'name', 'version', 'created_at']
             form_print(mes, order)
             exit(not res)
 
-        if args.get:
-            res, mes = tnglib.get_function(args.get)
+        if args.instance and bool(args.get):
+            res, mes = tnglib.get_function_instance(args.get)
             form_print(mes)
+            exit(not res)
+
+        if args.instance:
+            res, mes = tnglib.get_function_instances()
+            order = ['instance_uuid', 'status', 'version', 'created_at']
+            form_print(mes, order)
             exit(not res)
 
     # sla subcommand
@@ -199,7 +253,7 @@ def dispatch(args):
             arg_sum = bool(args.create) + bool(args.remove) + bool(args.get) + bool(args.nsd) + bool(args.guarantee_id) + bool(args.date)
             if arg_sum == 0:
                 res, mes = tnglib.get_sla_templates()
-                order = ['sla_uuid', 'name', 'created_at']
+                order = ['sla_uuid', 'name', 'service', 'created_at']
                 form_print(mes, order)
                 exit(not res)
 
@@ -335,6 +389,48 @@ def dispatch(args):
             form_print(mes)
             exit(not res)
 
+    elif args.subparser_name == 'policy':
+        # --service and --sla can only appear with --attach
+        if (bool(args.service) or bool(args.sla)) and not bool(args.attach):
+            print("--service and --sla can only be combined with --attach")
+            exit(1)
+
+        # Only one of --get, --create, --remove or --attach can be selected
+        arg_sum = bool(args.get) + bool(args.create) + bool(args.remove) + bool(args.attach)
+
+        if arg_sum > 1:
+            print("Only one of --get, --create, --remove or --attach can be selected")
+            exit(1)
+
+        if arg_sum == 0:
+            res, mes = tnglib.get_policies()
+            order = ['policy_uuid', 'name', 'service', 'created_at']
+            form_print(mes, order)
+            exit(not res)
+
+        if bool(args.get):
+            res, mes = tnglib.get_policy(args.get)
+            form_print(mes)
+            exit(not res)
+
+        if bool(args.remove):
+            res, mes = tnglib.delete_policy(args.remove)
+            form_print(mes)
+            exit(not res)
+
+        if bool(args.create):
+            res, mes = tnglib.create_policy(args.create)
+            form_print(mes)
+            exit(not res)
+
+        if bool(args.attach):
+            if not (bool(args.service) and bool(args.sla)):
+                print("--attach requires both --service and --sla.")
+            else:
+                res, mes = tnglib.attach_policy(args.attach, args.service, args.sla)
+                form_print(mes)
+                exit(not res)
+
     elif args.subparser_name:
         print("Subcommand " + args.subparser_name + " not support yet")
         exit(0)
@@ -370,6 +466,7 @@ def parse_args(args):
     parser_fun = subparsers.add_parser('function', help='actions related to functions')
     parser_sla = subparsers.add_parser('sla', help='actions related to slas')
     parser_slc = subparsers.add_parser('slice', help='actions related to slices')
+    parser_pol = subparsers.add_parser('policy', help='actions related to policies')
 
     # packages sub arguments
     parser_pkg.add_argument('-l',
@@ -407,37 +504,74 @@ def parse_args(args):
                             default=False,
                             help='get detailed info on a package')
 
+    # requests sub arguments
+    parser_req.add_argument('-g',
+                            '--get', 
+                            metavar='UUID',
+                            required=False,
+                            default=False,
+                            help='Returns detailed info on specified request')
 
     # services sub arguments
-    parser_ser.add_argument('-l',
-                            '--list', 
+    parser_ser.add_argument('--descriptor', 
                             action='store_true',
                             required=False,
                             default=False,
-                            help='list the available services')
+                            help='List all available service descriptors')
+
+    parser_ser.add_argument('--instance', 
+                            action='store_true',
+                            required=False,
+                            default=False,
+                            help='List all available service instances')
 
     parser_ser.add_argument('-g',
                             '--get', 
-                            metavar='SERVICE_UUID',
+                            metavar='UUID',
                             required=False,
                             default=False,
-                            help='get detailed info on a service')
+                            help='with --descriptor or --instace. Returns specified info on descriptor or instance')
+
+    parser_ser.add_argument('-i',
+                            '--instantiate', 
+                            metavar='SERVICE UUID',
+                            required=False,
+                            default=False,
+                            help='Intantiate a service')
+
+    parser_ser.add_argument('-t',
+                            '--terminate', 
+                            metavar='INSTANCE UUID',
+                            required=False,
+                            default=False,
+                            help='Terminate a service')
+
+    parser_ser.add_argument('-s',
+                            '--sla', 
+                            metavar='SLA UUID',
+                            required=False,
+                            default=False,
+                            help='Only with --instantiate. Attach an SLA to instantiated service')
 
     # functions sub arguments
-    parser_fun.add_argument('-l',
-                            '--list', 
+    parser_fun.add_argument('--descriptor', 
                             action='store_true',
                             required=False,
                             default=False,
-                            help='list the available functions')
+                            help='List all available function descriptors')
+
+    parser_fun.add_argument('--instance', 
+                            action='store_true',
+                            required=False,
+                            default=False,
+                            help='List all available function instances')
 
     parser_fun.add_argument('-g',
                             '--get', 
-                            metavar='FUNCTION_UUID',
+                            metavar='UUID',
                             required=False,
                             default=False,
-                            help='get detailed info on a function')
-
+                            help='with --descriptor or --instace. Returns specified info on descriptor or instance')
 
     # sla sub arguments
     parser_sla.add_argument('--template', 
@@ -567,6 +701,49 @@ def parse_args(args):
                             required=False,
                             default=False,
                             help='Instantiate a new slice instance')
+
+    # Policy subcommands
+    parser_pol.add_argument('-g',
+                            '--get', 
+                            metavar='POLICY UUID',
+                            required=False,
+                            default=False,
+                            help='Get detailed policy information')
+
+    parser_pol.add_argument('-c',
+                            '--create', 
+                            metavar='POLICY FILE',
+                            required=False,
+                            default=False,
+                            help='Create a new policy from json or yaml file')
+
+    parser_pol.add_argument('-r',
+                            '--remove', 
+                            metavar='POLICY UUID',
+                            required=False,
+                            default=False,
+                            help='Remove a policy descriptor')
+
+    parser_pol.add_argument('-a',
+                            '--attach', 
+                            metavar='POLICY UUID',
+                            required=False,
+                            default=False,
+                            help='Requires --service and --sla. Attach policy to a service and sla')
+
+    parser_pol.add_argument('-n',
+                            '--service', 
+                            metavar='SERVICE UUID',
+                            required=False,
+                            default=False,
+                            help='Only with --attach. Attach policy to a service')
+
+    parser_pol.add_argument('-s',
+                            '--sla', 
+                            metavar='SLA UUID',
+                            required=False,
+                            default=False,
+                            help='Only with --attach. Attach policy to an sla')
 
     return parser.parse_args(args)
 

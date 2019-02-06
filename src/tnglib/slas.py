@@ -78,6 +78,7 @@ def get_sla_templates():
     for template in templates:
         dic = {'name': template['slad']['name'],
                'created_at': template['created_at'],
+               'service': template['slad']['sla_template']['ns']['ns_name'],
                'sla_uuid': template['uuid'],
                }
         LOG.debug(str(dic))

@@ -110,7 +110,7 @@ def upload_package(pkg_path):
 
     resp = requests.post(env.pkg_api,
                          files={"package":pkg},
-                         timeout=1.0)
+                         timeout=5.0)
 
     pyld = json.loads(resp.text)
     LOG.debug(pyld)
