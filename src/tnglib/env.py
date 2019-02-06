@@ -35,14 +35,18 @@ sp_path = ''
 pkg_api = ''
 pkg_status_api = ''
 request_api = ''
-service_api = ''
-function_api = ''
+service_descriptor_api = ''
+service_instance_api = ''
+function_descriptor_api = ''
+function_instance_api = ''
 sl_templates_api = ''
 sl_agreements_api = ''
 sl_violations_api = ''
 sl_guarantees_api = ''
 slice_template_api = ''
 slice_instance_api = ''
+policy_api = ''
+policy_bind_api = ''
 
 def get_sp_path():
 
@@ -59,24 +63,32 @@ def build_paths():
 	global pkg_api
 	global pkg_status_api
 	global request_api
-	global service_api
-	global function_api
+	global service_descriptor_api
+	global service_instance_api
+	global function_descriptor_api
+	global function_instance_api
 	global sl_templates_api
 	global sl_agreements_api
 	global sl_violations_api
 	global sl_guarantees_api
 	global slice_template_api
 	global slice_instance_api
+	global policy_api
+	global policy_bind_api
 
 	gtk_api = ":32002/api/v3"
 	pkg_api = sp_path + gtk_api + "/packages"
 	pkg_status_api = pkg_api + "/status"
 	request_api = sp_path + gtk_api + "/requests"
-	service_api = sp_path + gtk_api + "/services"
-	function_api = sp_path + gtk_api + "/functions"
+	service_descriptor_api = sp_path + gtk_api + "/services"
+	service_instance_api = sp_path + gtk_api + "/records/services"
+	function_descriptor_api = sp_path + gtk_api + "/functions"
+	function_instance_api = sp_path + gtk_api + "/records/functions"
 	sl_templates_api = sp_path + gtk_api + "/slas/templates"
 	sl_agreements_api = sp_path + gtk_api + "/slas/agreements"
 	sl_violations_api = sp_path + gtk_api + "/slas/violations"
 	sl_guarantees_api = sp_path + gtk_api + "/slas/configurations/guaranteesList"
 	slice_template_api = sp_path + gtk_api + "/slices"
 	slice_instance_api = sp_path + gtk_api + "/slice-instances"
+	policy_api = sp_path + gtk_api + "/policies"
+	policy_bind_api = sp_path + gtk_api + "/policies/bind"

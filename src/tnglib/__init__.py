@@ -35,6 +35,8 @@ from tnglib.slas import *
 from tnglib.general import *
 from tnglib.services import *
 from tnglib.functions import *
+from tnglib.policies import *
+from tnglib.requests import *
 from tnglib.slices import *
 from tnglib.env import set_sp_path, get_sp_path
 
