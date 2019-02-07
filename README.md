@@ -31,7 +31,7 @@ To use the library, add `import tnglib` to your python script. Documentation on 
 To use the CLI-tool, see its help for detailed information about all the arguments:
 
 ```
-tng-cli h
+tng-cli -h
 ```
 
 The tool supports a set of subcommands. For there usage, so the local subcommand help:
