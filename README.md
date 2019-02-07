@@ -30,19 +30,27 @@ To use the `tnglib` library, add `import tnglib` to your python script. Document
 
 To use the `tngcli` CLI-tool, see its help for detailed information about all the arguments:
 
-`tng-cli h`
+```
+tng-cli h
+```
 
 The tool supports a set of subcommands. For there usage, so the local subcommand help:
 
-`tng-cli <subcommand> -h`
+```
+tng-cli <subcommand> -h
+```
 
 The tool needs to know which 5GTANGO Service Platform or V&V you want to interface with. For this, you should use the `-u` argument:
 
-`tng-cli -u <URL_TO_SP> packages --list`
+```
+tng-cli -u <URL_TO_SP> packages --list
+```
 
 As it is cumbersome to have to specify this argument for every command, you can make it available through the `SP_PATH` env parameter:
 
-`export SP_PATH=<URL_TO_SP>`
+```
+export SP_PATH=<URL_TO_SP>
+```
 
 It will than persist troughout your terminal session.
 
@@ -52,19 +60,27 @@ Some examples on how to use the `tngcli` tool.
 
 To obtain a list of all available packages:
 
-`tng-cli package --list`
+```
+tng-cli package --list
+```
 
 To obtain a list of all running network services:
 
-`tng-cli service --instances`
+```
+tng-cli service --instances
+```
 
 To instantiate a new network service:
 
-`tng-cli service --instantiate <SERVICE_UUID>`
+```
+tng-cli service --instantiate <SERVICE_UUID>
+```
 
 To upload a new policy descriptor:
 
-`tng-cli policy --create <PATH_TO_DESCRIPTOR>`
+```
+tng-cli policy --create <PATH_TO_DESCRIPTOR>
+```
 
 ## License
 
