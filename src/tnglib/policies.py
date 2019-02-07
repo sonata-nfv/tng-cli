@@ -46,7 +46,7 @@ def get_policies():
     """
 
     # get current list of policies
-    resp = requests.get(env.policy_api, timeout=5.0)
+    resp = requests.get(env.policy_api, timeout=env.timeout)
 
     if resp.status_code != 200:
         LOG.debug("Request for policies returned with " +
@@ -72,7 +72,7 @@ def get_policy(policy_uuid):
     """
 
     # get policy info
-    resp = requests.get(env.policy_api + '/' + policy_uuid, timeout=5.0)
+    resp = requests.get(env.policy_api + '/' + policy_uuid, timeout=env.timeout)
 
     if resp.status_code != 200:
         LOG.debug("Request for policy returned with " +
@@ -99,7 +99,7 @@ def create_policy(path):
 
     resp = requests.post(env.policy_api,
                          json = template,
-                         timeout=5.0)
+                         timeout=env.timeout)
 
     if resp.status_code != 200:
         LOG.debug("Request for creating slice template returned with " + (str(resp.status_code)))
@@ -117,7 +117,7 @@ def delete_policy(policy_uuid):
 
     url = env.policy_api + '/' + policy_uuid
 
-    resp = requests.delete(url, timeout=5.0)
+    resp = requests.delete(url, timeout=env.timeout)
     LOG.debug(policy_uuid)
     LOG.debug(str(resp.text))
 
@@ -134,7 +134,7 @@ def attach_policy(policy_uuid, service_uuid, sla_uuid):
     data = {'nsid': service_uuid, 'slaid': sla_uuid}
     resp = requests.patch(env.policy_bind_api + '/' + policy_uuid,
                          json = data,
-                         timeout=5.0)
+                         timeout=env.timeout)
   
     if resp.status_code != 200:
         LOG.debug("Request for policy binding returned with " + (str(resp.status_code)))

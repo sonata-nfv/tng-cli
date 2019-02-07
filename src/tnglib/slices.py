@@ -46,7 +46,7 @@ def get_slice_templates():
     """
 
     # get current list of slices
-    resp = requests.get(env.slice_template_api, timeout=5.0)
+    resp = requests.get(env.slice_template_api, timeout=env.timeout)
 
     if resp.status_code != 200:
         LOG.debug("Request for slices returned with " +
@@ -72,7 +72,7 @@ def get_slice_template(slice_template_uuid):
     """
 
     # get slice info
-    resp = requests.get(env.slice_template_api + '/' + slice_template_uuid, timeout=5.0)
+    resp = requests.get(env.slice_template_api + '/' + slice_template_uuid, timeout=env.timeout)
 
     if resp.status_code != 200:
         LOG.debug("Request for slice returned with " +
@@ -87,7 +87,7 @@ def get_slice_instances():
     """
 
     # get current list of slices
-    resp = requests.get(env.slice_instance_api, timeout=5.0)
+    resp = requests.get(env.slice_instance_api, timeout=env.timeout)
 
     if resp.status_code != 200:
         LOG.debug("Request for slices returned with " +
@@ -113,7 +113,7 @@ def get_slice_instance(slice_instance_uuid):
     """
 
     # get slice info
-    resp = requests.get(env.slice_instance_api + '/' + slice_instance_uuid, timeout=5.0)
+    resp = requests.get(env.slice_instance_api + '/' + slice_instance_uuid, timeout=env.timeout)
 
     if resp.status_code != 200:
         LOG.debug("Request for slice returned with " +
@@ -128,7 +128,7 @@ def delete_slice_template(slice_template_uuid):
     """
 
     # delete slice
-    resp = requests.delete(env.slice_template_api + '/' + slice_template_uuid, timeout=5.0)
+    resp = requests.delete(env.slice_template_api + '/' + slice_template_uuid, timeout=env.timeout)
 
     if resp.status_code != 200:
         LOG.debug("Request for slice removal returned with " +
@@ -155,7 +155,7 @@ def create_slice_template(path):
 
     resp = requests.post(env.slice_template_api,
                          json = template,
-                         timeout=5.0)
+                         timeout=env.timeout)
   
     if resp.status_code != 201:
         LOG.debug("Request for creating slice template returned with " + (str(resp.status_code)))

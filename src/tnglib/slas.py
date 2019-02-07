@@ -47,7 +47,7 @@ def create_sla_template(templateName,nsd_uuid,expireDate,guaranteeId):
     # generate sla template
     resp = requests.post(env.sl_templates_api,
                          data = {'templateName':templateName,'nsd_uuid':nsd_uuid,'expireDate':expireDate,'guaranteeId':guaranteeId},
-                         timeout=5.0)
+                         timeout=env.timeout)
 	
     if resp.status_code != 201:
         LOG.debug("Request for creating sla templates returned with " + (str(resp.status_code)))
@@ -64,7 +64,7 @@ def get_sla_templates():
     """
 
     # get current list of templates
-    resp = requests.get(env.sl_templates_api, timeout=5.0)
+    resp = requests.get(env.sl_templates_api, timeout=env.timeout)
 
     if resp.status_code != 200:
         LOG.debug("Request for sla templates returned with " + (str(resp.status_code)))
@@ -92,7 +92,7 @@ def get_sla_template(sla_uuid):
     """
 
     # get current list of templates
-    resp = requests.get(env.sl_templates_api + '/' + sla_uuid, timeout=5.0)
+    resp = requests.get(env.sl_templates_api + '/' + sla_uuid, timeout=env.timeout)
 
     if resp.status_code != 200:
         LOG.debug("Request for sla template returned with " + (str(resp.status_code)))
@@ -110,7 +110,7 @@ def delete_sla_template(sla_template_uuid):
 
     url = env.sl_templates_api + '/' + sla_template_uuid
 
-    resp = requests.delete(url, timeout=5.0)
+    resp = requests.delete(url, timeout=env.timeout)
     LOG.debug(sla_template_uuid)
     LOG.debug(str(resp.text))
 
@@ -125,7 +125,7 @@ def get_sla_guarantees():
     """
 
     # get current list of templates
-    resp = requests.get(env.sl_guarantees_api, timeout=5.0)
+    resp = requests.get(env.sl_guarantees_api, timeout=env.timeout)
 
     if resp.status_code != 200:
         LOG.debug("Request for sla guarantees returned with " + (str(resp.status_code)))
@@ -156,7 +156,7 @@ def get_agreements(nsi_uuid=None):
         url = env.sl_agreements_api + '/service/' + nsi_uuid
 
     # get current list of agreements
-    resp = requests.get(url, timeout=5.0)
+    resp = requests.get(url, timeout=env.timeout)
 
     if resp.status_code != 200:
         LOG.debug("Request for sla agreements returned with " + (str(resp.status_code)))
@@ -176,7 +176,7 @@ def get_detailed_agreement(sla_uuid,nsi_uuid):
     """
     url = env.sl_agreements_api + '/' + sla_uuid + '/' + nsi_uuid
 
-    resp = requests.get(url, timeout=5.0)
+    resp = requests.get(url, timeout=env.timeout)
     LOG.debug("SLA UUID: " + sla_uuid + "NSI UUID: " + nsi_uuid)
     LOG.debug(str(resp.text))
 
@@ -195,7 +195,7 @@ def get_violations(nsi_uuid=None):
         url = env.sl_violations_api + '/service/' + nsi_uuid
 
     # get current list of violations
-    resp = requests.get(url, timeout=5.0)
+    resp = requests.get(url, timeout=env.timeout)
 
     if resp.status_code != 200:
         LOG.debug("Request for sla violations returned with " + (str(resp.status_code)))
@@ -213,7 +213,7 @@ def get_violations_per_nsi_sla(sla_uuid,nsi_uuid):
     url = env.sl_violations_api + '/' + sla_uuid + '/' + nsi_uuid
 
     # get current list of violations
-    resp = requests.get(url, timeout=5.0)
+    resp = requests.get(url, timeout=env.timeout)
 
     if resp.status_code != 200:
         LOG.debug("Request for sla violations returned with " + (str(resp.status_code)))

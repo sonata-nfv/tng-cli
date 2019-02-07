@@ -46,7 +46,7 @@ def get_requests():
     """
 
     # get current list of requests
-    resp = requests.get(env.request_api, timeout=5.0)
+    resp = requests.get(env.request_api, timeout=env.timeout)
 
     if resp.status_code != 200:
         LOG.debug("Request for requests returned with " +
@@ -77,7 +77,7 @@ def get_request(request_uuid):
     """
 
     # get request info
-    resp = requests.get(env.request_api + '/' + request_uuid, timeout=5.0)
+    resp = requests.get(env.request_api + '/' + request_uuid, timeout=env.timeout)
 
     if resp.status_code != 200:
         LOG.debug("Request for request returned with " +
@@ -119,7 +119,7 @@ def post_request(data):
 
     resp = requests.post(env.request_api,
                          json = data,
-                         timeout=10.0)
+                         timeout=env.timeout)
 
     if resp.status_code != 201:
         LOG.debug("Request returned with " +

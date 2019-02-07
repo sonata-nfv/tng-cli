@@ -30,6 +30,9 @@
 # acknowledge the contributions of their colleagues of the 5GTANGO
 # partner consortium (www.5gtango.eu).
 
+# Commons
+timeout = 15.0
+
 # Building all paths for global use
 sp_path = ''
 pkg_api = ''

@@ -46,7 +46,7 @@ def get_function_descriptors():
     """
 
     # get current list of function descriptors
-    resp = requests.get(env.function_descriptor_api, timeout=5.0)
+    resp = requests.get(env.function_descriptor_api, timeout=env.timeout)
 
     if resp.status_code != 200:
         LOG.debug("Request for function descriptors returned with " +
@@ -72,7 +72,7 @@ def get_function_descriptor(function_descriptor_uuid):
     """
 
     # get function descriptor
-    resp = requests.get(env.function_descriptor_api + '/' + function_descriptor_uuid, timeout=5.0)
+    resp = requests.get(env.function_descriptor_api + '/' + function_descriptor_uuid, timeout=env.timeout)
 
     if resp.status_code != 200:
         LOG.debug("Request for function descriptor returned with " +
@@ -87,7 +87,7 @@ def get_function_instances():
     """
 
     # get current list of function instances
-    resp = requests.get(env.function_instance_api, timeout=5.0)
+    resp = requests.get(env.function_instance_api, timeout=env.timeout)
 
     if resp.status_code != 200:
         LOG.debug("Request for function instances returned with " +
@@ -113,7 +113,7 @@ def get_function_instance(function_instance_uuid):
     """
 
     # get function intsance info
-    resp = requests.get(env.function_instance_api + '/' + function_instance_uuid, timeout=5.0)
+    resp = requests.get(env.function_instance_api + '/' + function_instance_uuid, timeout=env.timeout)
 
     if resp.status_code != 200:
         LOG.debug("Request for function instance returned with " +
