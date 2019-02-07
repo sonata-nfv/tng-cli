@@ -45,7 +45,7 @@ def sp_health_check():
     """
     url = env.pkg_api
     try:
-        resp = requests.get(url, timeout=5.0)
+        resp = requests.get(url, timeout=env.timeout)
         return True
     except:
         return False
