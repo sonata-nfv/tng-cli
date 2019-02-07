@@ -26,9 +26,9 @@ pip3 install git+https://github.com/sonata-nfv/tng-cli
 
 ## Usage
 
-To use the `tnglib` library, add `import tnglib` to your python script. Documentation on all supported function calls can be found in [the wiki](https://github.com/sonata-nfv/tng-cli/wiki/tnglib-documentation)
+To use the library, add `import tnglib` to your python script. Documentation on all supported function calls can be found in [the wiki](https://github.com/sonata-nfv/tng-cli/wiki/tnglib-documentation)
 
-To use the `tngcli` CLI-tool, see its help for detailed information about all the arguments:
+To use the CLI-tool, see its help for detailed information about all the arguments:
 
 ```
 tng-cli h
@@ -56,7 +56,7 @@ It will than persist troughout your terminal session.
 
 ### Examples
 
-Some examples on how to use the `tngcli` tool.
+Some examples on how to use the CLI-tool.
 
 To obtain a list of all available packages:
 
