@@ -40,9 +40,12 @@ import tnglib.env as env
 
 LOG = logging.getLogger(__name__)
 
+
 def get_service_descriptors():
-    """
-    This function returns info on all available service descriptors
+    """Returns info on all available service descriptors.
+
+    :returns: A list. [0] is a bool with the result. [1] is a list of 
+        dictionaries. Each dictionary contains an nsd.
     """
 
     # get current list of service descriptors
@@ -60,19 +63,26 @@ def get_service_descriptors():
         dic = {'descriptor_uuid': service['uuid'],
                'name': service['nsd']['name'],
                'version': service['nsd']['version'],
-               'created_at' : service['created_at']}
+               'created_at': service['created_at']}
         LOG.debug(str(dic))
         services_res.append(dic)
 
     return True, services_res
 
+
 def get_service_descriptor(service_descriptor_uuid):
-    """
-    This function returns info on a specific service descriptor
+    """Returns info on a specific service descriptor.
+
+    :param service_descriptor_uuid: uuid of the nsd.
+
+    :returns: A list. [0] is a bool with the result. [1] is a dictionary 
+        containing an nsd.
     """
 
     # get service info
-    resp = requests.get(env.service_descriptor_api + '/' + service_descriptor_uuid, timeout=env.timeout)
+    url = env.service_descriptor_api + '/' + service_descriptor_uuid
+    resp = requests.get(url,
+                        timeout=env.timeout)
 
     if resp.status_code != 200:
         LOG.debug("Request for service descriptor returned with " +
@@ -81,9 +91,12 @@ def get_service_descriptor(service_descriptor_uuid):
 
     return True, json.loads(resp.text)
 
+
 def get_service_instances():
-    """
-    This function returns info on all available service instances
+    """Returns info on all available service instances.
+
+    :returns: A list. [0] is a bool with the result. [1] is a list of 
+        dictionaries. Each dictionary contains an nsr.
     """
 
     # get current list of service instances
@@ -100,22 +113,31 @@ def get_service_instances():
     for service in services:
         if 'instance_name' not in service.keys():
             service['instance_name'] = ''
+        if service['instance_name'] is None:
+            service['instance_name'] = ''
         dic = {'instance_uuid': service['uuid'],
                'name': service['instance_name'],
                'status': service['status'],
-               'created_at' : service['created_at']}
+               'created_at': service['created_at']}
         LOG.debug(str(dic))
         services_res.append(dic)
 
     return True, services_res
 
+
 def get_service_instance(service_instance_uuid):
-    """
-    This function returns info on a specific service instance
+    """Returns info on a specific service instance.
+
+    :param service_instance_uuid: uid of nsr.
+
+    :returns: A list. [0] is a bool with the result. [1] is a dictionary 
+        containing an nsr.
     """
 
     # get service instance info
-    resp = requests.get(env.service_instance_api + '/' + service_instance_uuid, timeout=env.timeout)
+    url = env.service_instance_api + '/' + service_instance_uuid
+    resp = requests.get(url,
+                        timeout=env.timeout)
 
     if resp.status_code != 200:
         LOG.debug("Request for service instance returned with " +
