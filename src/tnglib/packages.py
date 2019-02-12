@@ -40,9 +40,12 @@ import tnglib.env as env
 
 LOG = logging.getLogger(__name__)
 
+
 def get_packages():
-    """
-    This function returns info on all available packages
+    """Returns info on all available packages.
+
+    :returns: A list. [0] is a bool with the result. [1] is a list of 
+        dictionaries. Each dictionary contains a package descriptor.
     """
 
     # get current list of packages
@@ -60,7 +63,7 @@ def get_packages():
         dic = {'package_uuid': pkg['uuid'],
                'name': pkg['pd']['name'],
                'version': pkg['pd']['version'],
-               'created_at' : pkg['created_at']}
+               'created_at': pkg['created_at']}
         LOG.debug(str(dic))
         pkg_res.append(dic)
 
@@ -68,8 +71,10 @@ def get_packages():
 
 
 def remove_all_packages():
-    """
-    This function removes all packages from the catalogue
+    """Removes all packages from the catalogue.
+
+    :returns: A list. [0] is a bool with the result. [1] is a list of
+        uuids of packages that were removed.
     """
 
     res = []
@@ -85,8 +90,12 @@ def remove_all_packages():
 
 
 def remove_package(package_uuid):
-    """
-    This function removes one package from the catalogue
+    """Removes one package from the catalogue.
+
+    :param package_uuid: uuid of the package
+
+    :returns: A list. [0] is a bool with the result. [1] is a string 
+        with either the uuid or an error message.
     """
 
     url = env.pkg_api + '/' + package_uuid
@@ -102,14 +111,18 @@ def remove_package(package_uuid):
 
 
 def upload_package(pkg_path):
-    """
-    This function uploads a package
+    """Uploads a package from file.
+
+    :param pkg_path: relative path to the package that needs uploading
+
+    :returns: A list. [0] is a bool with the result. [1] is a string containing
+        the uuid of the uploaded package, or an error message.
     """
 
     pkg = (os.path.basename(pkg_path), open(pkg_path, 'rb'))
 
     resp = requests.post(env.pkg_api,
-                         files={"package":pkg},
+                         files={"package": pkg},
                          timeout=env.timeout)
 
     pyld = json.loads(resp.text)
@@ -144,9 +157,14 @@ def upload_package(pkg_path):
     LOG.debug(msg)
     return False, msg
 
+
 def get_package(package_uuid):
-    """
-    This function returns info on a specific package
+    """Returns info on a specific package.
+
+    :param package_uuid: the uuid of the package
+
+    :returns: A list. [0] is a bool with the result. [1] is a dictionary 
+        containing a package descriptor.
     """
 
     # get package info

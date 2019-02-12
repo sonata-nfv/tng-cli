@@ -40,9 +40,12 @@ import tnglib.env as env
 
 LOG = logging.getLogger(__name__)
 
+
 def get_policies():
-    """
-    This function returns info on all available policies
+    """Returns info on all available policiy descriptors.
+
+    :returns: A list. [0] is a bool with the result. [1] is a list of 
+        dictionaries. Each dictionary contains a policy descriptor.
     """
 
     # get current list of policies
@@ -60,19 +63,25 @@ def get_policies():
         dic = {'policy_uuid': pol['uuid'],
                'name': pol['pld']['name'],
                'service': pol['pld']['network_service']['name'],
-               'created_at' : pol['created_at']}
+               'created_at': pol['created_at']}
         LOG.debug(str(dic))
         policies_res.append(dic)
 
     return True, policies_res
 
+
 def get_policy(policy_uuid):
-    """
-    This function returns info on a specific policy
+    """Returns info on a specific policy descriptor.
+
+    :param policy_uuid: uuid of a policy descriptor.
+
+    :returns: A list. [0] is a bool with the result. [1] is a dictionary 
+        containg a policy descriptor.
     """
 
     # get policy info
-    resp = requests.get(env.policy_api + '/' + policy_uuid, timeout=env.timeout)
+    url = env.policy_api + '/' + policy_uuid
+    resp = requests.get(url, timeout=env.timeout)
 
     if resp.status_code != 200:
         LOG.debug("Request for policy returned with " +
@@ -81,28 +90,33 @@ def get_policy(policy_uuid):
 
     return True, json.loads(resp.text)
 
+
 def create_policy(path):
-    """
-    This function generates a policy
+    """Uploads a policy descriptor.
+
+    :param path: relative path where policy descriptor is stored.
+
+    :returns: A list. [0] is a bool with the result. [1] is a string containing
+        the uuid of the uploaded policy descriptor.
     """
 
     ext = os.path.splitext(path)[1]
 
     if ext == '.json':
-      template_raw = open(path, 'r')
-      template = json.load(template_raw)
+        template_raw = open(path, 'r')
+        template = json.load(template_raw)
     elif ext in ['.yaml', '.yml']:
-      template_raw = open(path, 'rb')
-      template = yaml.load(template_raw)
+        template_raw = open(path, 'rb')
+        template = yaml.load(template_raw)
     else:
-      return False, "Provide json or yaml file"
+        return False, "Provide json or yaml file"
 
     resp = requests.post(env.policy_api,
-                         json = template,
+                         json=template,
                          timeout=env.timeout)
 
     if resp.status_code != 200:
-        LOG.debug("Request for creating slice template returned with " + (str(resp.status_code)))
+        LOG.debug("Request returned with " + (str(resp.status_code)))
         error = resp.text
         return False, error
 
@@ -110,9 +124,14 @@ def create_policy(path):
 
     return True, uuid
 
+
 def delete_policy(policy_uuid):
-    """
-    This function deletes a policy
+    """Deletes a policy descriptor.
+
+    :param policy_uuid: uuid of a policy descriptor.
+
+    :returns: A list. [0] is a bool with the result. [1] is a string containing
+        the uuid of the terminated policy descriptor.
     """
 
     url = env.policy_api + '/' + policy_uuid
@@ -126,18 +145,25 @@ def delete_policy(policy_uuid):
     else:
         return False, json.loads(resp.text)
 
+
 def attach_policy(policy_uuid, service_uuid, sla_uuid):
-    """
-    This function attaches a policy to a service and sla
+    """Attaches a policy to a service and SLA.
+
+    :param policy_uuid: uuid of a policy descriptor.
+    :param service_uuid: uuid of a network service.
+    :param sla_uuid: uuid of an SLA.
+
+    :returns: A list. [0] is a bool with the result. [1] is a string indicating
+        the result.
     """
 
     data = {'nsid': service_uuid, 'slaid': sla_uuid}
     resp = requests.patch(env.policy_bind_api + '/' + policy_uuid,
-                         json = data,
-                         timeout=env.timeout)
+                          json=data,
+                          timeout=env.timeout)
   
     if resp.status_code != 200:
-        LOG.debug("Request for policy binding returned with " + (str(resp.status_code)))
+        LOG.debug("Request returned with " + (str(resp.status_code)))
         error = resp.text
         return False, error
 

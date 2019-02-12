@@ -39,11 +39,13 @@ import tnglib.env as env
 
 LOG = logging.getLogger(__name__)
 
+
 def sp_health_check():
+    """Check if SP is reachable.
+
+    :returns: bool.
     """
-    Check if SP is reachable
-    """
-    url = env.pkg_api
+    url = env.get_sp_path()
     try:
         resp = requests.get(url, timeout=env.timeout)
         return True

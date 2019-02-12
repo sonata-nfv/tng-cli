@@ -40,9 +40,12 @@ import tnglib.env as env
 
 LOG = logging.getLogger(__name__)
 
+
 def get_slice_templates():
-    """
-    This function returns info on all available slices
+    """Returns info on all available slice templates.
+
+    :returns: A list. [0] is a bool with the result. [1] is a list of 
+        dictionaries. Each dictionary contains a slice template.
     """
 
     # get current list of slices
@@ -60,19 +63,25 @@ def get_slice_templates():
         dic = {'slice_uuid': slc['uuid'],
                'name': slc['nstd']['name'],
                'version': slc['nstd']['version'],
-               'created_at' : slc['created_at']}
+               'created_at': slc['created_at']}
         LOG.debug(str(dic))
         slices_res.append(dic)
 
     return True, slices_res
 
+
 def get_slice_template(slice_template_uuid):
-    """
-    This function returns info on a specific slice
+    """Returns info on a specific slice template.
+
+    :param slice_template_uuid: uuid of a slice template.
+
+    :returns: A list. [0] is a bool with the result. [1] is a dictionary 
+        containing a slice template.
     """
 
     # get slice info
-    resp = requests.get(env.slice_template_api + '/' + slice_template_uuid, timeout=env.timeout)
+    url = env.slice_template_api + '/' + slice_template_uuid
+    resp = requests.get(url, timeout=env.timeout)
 
     if resp.status_code != 200:
         LOG.debug("Request for slice returned with " +
@@ -81,9 +90,12 @@ def get_slice_template(slice_template_uuid):
 
     return True, json.loads(resp.text)
 
+
 def get_slice_instances():
-    """
-    This function returns info on all available slice instances
+    """Returns info on all slice instances.
+
+    :returns: A list. [0] is a bool with the result. [1] is a list of 
+        dictionaries. Each dictionary contains a slice instance record.
     """
 
     # get current list of slices
@@ -101,19 +113,25 @@ def get_slice_instances():
         dic = {'instance_uuid': slc['uuid'],
                'name': slc['name'],
                'template_uuid': slc['nstId'],
-               'created_at' : slc['created_at']}
+               'created_at': slc['created_at']}
         LOG.debug(str(dic))
         slices_res.append(dic)
 
     return True, slices_res
 
+
 def get_slice_instance(slice_instance_uuid):
-    """
-    This function returns info on a specific slice instance
+    """Returns info on a specific slice instance.
+
+    :param slice_instance_uuid: uuid of a slice instance.
+
+    :returns: A list. [0] is a bool with the result. [1] is a dictionary 
+        containing a slice instance record.
     """
 
     # get slice info
-    resp = requests.get(env.slice_instance_api + '/' + slice_instance_uuid, timeout=env.timeout)
+    url = env.slice_instance_api + '/' + slice_instance_uuid
+    resp = requests.get(url, timeout=env.timeout)
 
     if resp.status_code != 200:
         LOG.debug("Request for slice returned with " +
@@ -122,13 +140,19 @@ def get_slice_instance(slice_instance_uuid):
 
     return True, json.loads(resp.text)
 
+
 def delete_slice_template(slice_template_uuid):
-    """
-    This function deletes a specific slice
+    """Deletes a specific slice template.
+
+    :param slice_template_uuid: uuid of a slice template.
+
+    :returns: A list. [0] is a bool with the result. [1] is a string containing
+        the uuid of the removed slice template.
     """
 
     # delete slice
-    resp = requests.delete(env.slice_template_api + '/' + slice_template_uuid, timeout=env.timeout)
+    url = env.slice_template_api + '/' + slice_template_uuid
+    resp = requests.delete(url, timeout=env.timeout)
 
     if resp.status_code != 200:
         LOG.debug("Request for slice removal returned with " +
@@ -137,28 +161,34 @@ def delete_slice_template(slice_template_uuid):
 
     return True, slice_template_uuid
 
+
 def create_slice_template(path):
-    """
-    This function generates a slice template
+    """Creates a slice template.
+
+    :param path: relative path to where the slice template is stored.
+
+    :returns: A list. [0] is a bool with the result. [1] is a string containing
+        the uuid of the uploaded slice template, or an error message.
     """
 
     ext = os.path.splitext(path)[1]
 
     if ext == '.json':
-      template_raw = open(path, 'r')
-      template = json.load(template_raw)
+        template_raw = open(path, 'r')
+        template = json.load(template_raw)
     elif ext in ['.yaml', '.yml']:
-      template_raw = open(path, 'rb')
-      template = yaml.load(template_raw)
+        template_raw = open(path, 'rb')
+        template = yaml.load(template_raw)
     else:
-      return False, "Provide json or yaml file"
+        return False, "Provide json or yaml file"
 
     resp = requests.post(env.slice_template_api,
-                         json = template,
+                         json=template,
                          timeout=env.timeout)
-  
+
     if resp.status_code != 201:
-        LOG.debug("Request for creating slice template returned with " + (str(resp.status_code)))
+        msg = "Request returned with " + (str(resp.status_code))
+        LOG.debug(msg)
         error = resp.text
         return False, error
 
