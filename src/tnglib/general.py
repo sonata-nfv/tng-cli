@@ -45,7 +45,7 @@ def sp_health_check():
 
     :returns: bool.
     """
-    url = env.get_sp_path()
+    url = env.pkg_api
     try:
         resp = requests.get(url, timeout=env.timeout)
         return True
