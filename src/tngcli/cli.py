@@ -421,54 +421,62 @@ def dispatch(args):
                     args.remove,
                     args.instantiate,
                     args.terminate,
-                    args.templates,
-                    args.instances]
+                    args.template,
+                    args.instance]
         arg_sum = len([x for x in sel_args if x])
 
         if arg_sum == 0:
             msg = "One of --create, --remove, --terminate, --instantiate, " \
-                  "--templates or --instances needed with slice subcommand."
+                  "--template or --instance needed with slice subcommand."
             print(msg)
             exit(1)
 
         if arg_sum > 1:
             msg = "Only one of --create, --remove, --terminate, " \
-                  "--instantiate, --templates or --instances needed " \
+                  "--instantiate, --template or --instance needed " \
                   "with slice subcommand."
             print(msg)
             exit(1)
 
-        if bool(args.templates) and not bool(args.get):
+        if args.name and not args.instantiate:
+            print("--name can only be combined with --instantiate.")
+            exit(1)
+
+        if args.description and not args.instantiate:
+            print("--description can only be combined with --instantiate.")
+            exit(1)
+
+        order = None
+        if args.template and not args.get:
             res, mes = tnglib.get_slice_templates()
             order = ['slice_uuid', 'name', 'version', 'created_at']
-            form_print(mes, order)
-            exit(not res)
 
-        if bool(args.templates) and bool(args.get):
+        elif args.template and args.get:
             res, mes = tnglib.get_slice_template(args.get)
-            form_print(mes)
-            exit(not res)
 
-        if bool(args.instances) and not bool(args.get):
+        elif args.instance and not args.get:
             res, mes = tnglib.get_slice_instances()
             order = ['instance_uuid', 'name', 'template_uuid', 'created_at']
-            form_print(mes, order)
-            exit(not res)
 
-        if bool(args.instances) and bool(args.get):
+        elif args.instance and args.get:
             res, mes = tnglib.get_slice_instance(args.get)
-            form_print(mes)
-            exit(not res)
 
-        if bool(args.remove):
+        elif args.remove:
             res, mes = tnglib.delete_slice_template(args.remove)
-            form_print(mes)
-            exit(not res)
 
-        if bool(args.create):
+        elif args.create:
             res, mes = tnglib.create_slice_template(args.create)
-            form_print(mes)
-            exit(not res)
+
+        elif args.instantiate:
+            res, mes = tnglib.slice_instantiate(args.instantiate,
+                                                args.name,
+                                                args.description)
+
+        elif args.terminate:
+            res, mes = tnglib.slice_terminate(args.terminate)
+
+        form_print(mes, order)
+        exit(not res)
 
     elif args.subparser_name == 'policy':
         # --service and --sla can only appear with --attach
@@ -773,19 +781,19 @@ def parse_args(args):
                             help=help_mes)
 
     # slice related arguments
-    parser_slc.add_argument('--templates',
+    parser_slc.add_argument('--template',
                             action='store_true',
                             required=False,
                             default=False,
                             help='List the available slice templates')
 
-    parser_slc.add_argument('--instances',
+    parser_slc.add_argument('--instance',
                             action='store_true',
                             required=False,
                             default=False,
                             help='List the available slice instances')
 
-    help_mes = 'Use with --templates or --instances. Returns single ' \
+    help_mes = 'Use with --template or --instance. Returns single ' \
                'template or instance'
     parser_slc.add_argument('-g',
                             '--get',
@@ -821,6 +829,24 @@ def parse_args(args):
                             required=False,
                             default=False,
                             help='Instantiate a new slice instance')
+
+    help_mes = 'Only with --instantiate. Define the name for the ' \
+               'slice instance.'
+    parser_slc.add_argument('-n',
+                            '--name',
+                            metavar='SLICE INSTANCE NAME',
+                            required=False,
+                            default=False,
+                            help=help_mes)
+
+    help_mes = 'Only with --instantiate. Define the description for the ' \
+               'slice instance.'
+    parser_slc.add_argument('-d',
+                            '--description',
+                            metavar='SLICE INSTANCE NAME',
+                            required=False,
+                            default=False,
+                            help=help_mes)
 
     # Policy subcommands
     parser_pol.add_argument('-g',
