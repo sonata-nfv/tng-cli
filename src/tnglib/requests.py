@@ -132,6 +132,50 @@ def service_terminate(instance_uuid):
     return _post_request(data)
 
 
+def slice_instantiate(slice_template_uuid, name=None, description=None):
+    """Makes a request to instantiate a slice.
+
+    :param slice_template_uuid: A string. The uuid of the slice template.
+    :param name: A string (Default value = None). A name for the slice 
+        instance.
+    :param description: A string (Default value = None). A description 
+        for the slice template
+    :returns: A list. [0] is a bool with the result. [1] is a string containing
+        the uuid of the instantiated slice.
+
+    """
+    
+    data = {"nst_id": slice_template_uuid,
+            "request_type": "CREATE_SLICE"}
+
+    if name:
+        data['name'] = name
+    else:
+        data['name'] = 'foobar'
+
+    if description:
+        data['description'] = description
+    else:
+        data['description'] = 'foobar'
+
+    return _post_request(data)
+
+
+def slice_terminate(instance_uuid):
+    """Makes a request to terminate a slice.
+
+    :param instance_uuid: A string. The uuid of the slice instance.
+    :returns: A list. [0] is a bool with the result. [1] is a string containing
+        the uuid of the terminated slice instance.
+
+    """
+    
+    data = {"instance_uuid": instance_uuid,
+            "request_type": "TERMINATE_SLICE"}
+
+    return _post_request(data)
+
+
 def _post_request(data):
     """ Generic request maker. """
 
