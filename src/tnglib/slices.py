@@ -112,7 +112,7 @@ def get_slice_instances():
     for slc in slices:
         dic = {'instance_uuid': slc['uuid'],
                'name': slc['name'],
-               'template_uuid': slc['nstId'],
+               'template_uuid': slc['nst-ref'],
                'created_at': slc['created_at']}
         LOG.debug(str(dic))
         slices_res.append(dic)
