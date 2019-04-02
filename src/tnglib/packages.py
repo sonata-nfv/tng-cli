@@ -31,6 +31,7 @@
 # partner consortium (www.5gtango.eu).
 
 import requests
+import tnglib.services as services
 import logging
 import json
 import time
@@ -176,3 +177,31 @@ def get_package(package_uuid):
         return False, json.loads(resp.text)
 
     return True, json.loads(resp.text)
+
+def map_package_on_service(package_uuid):
+    """Return the uuid of a network service based on a package uuid.
+
+    :param package_uuid: the uuid of the package
+
+    :returns: A list. [0] is a bool with the result. [1] is a string 
+        containing a nsd uuid.
+    """
+
+    status, package_metadata = get_package(package_uuid)
+
+    if not status:
+        msg = "Couldn't obtain package metadata"
+        return False, msg
+
+    for cnt in package_metadata['pd']['package_content']:
+        if '5gtango.nsd' in cnt['content-type']:
+            name = cnt['id']['name']
+            version = cnt['id']['version']
+            vendor = cnt['id']['vendor']
+
+    nsds = services.get_service_descriptors()[1]
+    for nsd in nsds:
+        if (nsd['name'] == name) and (nsd['version'] == version):
+            return True, nsd['descriptor_uuid']
+
+    return False, "Couldn't find associated nsd"
