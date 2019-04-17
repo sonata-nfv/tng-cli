@@ -111,16 +111,21 @@ def remove_package(package_uuid):
         return False, json.loads(resp.text)['error']
 
 
-def upload_package(pkg_path):
+def upload_package(pkg_path, url=False):
     """Uploads a package from file.
 
-    :param pkg_path: relative path to the package that needs uploading
+    :param pkg_path: relative path to the package that needs uploading, or url
+    :param pkg_path: A bool, True if pkg_path is an url
 
     :returns: A list. [0] is a bool with the result. [1] is a string containing
         the uuid of the uploaded package, or an error message.
     """
 
-    pkg = (os.path.basename(pkg_path), open(pkg_path, 'rb'))
+    if not url:
+        pkg = (os.path.basename(pkg_path), open(pkg_path, 'rb'))
+
+    else:
+        pkg = (pkg_path.split('/')[-1], requests.get(pkg_path).content)
 
     resp = requests.post(env.pkg_api,
                          files={"package": pkg},
