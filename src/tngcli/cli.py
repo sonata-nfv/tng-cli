@@ -106,15 +106,18 @@ def dispatch(args):
 
         if args.upload:
             # Check if argument is a file
-            if not os.path.exists(args.upload):
-                print("No known package with that name.")
+            if not args.upload.endswith('.tgo'):
+                print("File or url does not point towards 5GTANTGO package.")
                 exit(1)
-            elif not args.upload.endswith('.tgo'):
-                print("File is not a 5GTANTGO package.")
+            elif args.upload[:4] == 'http':
+                res, mes = tnglib.upload_package(args.upload, url = True)
+            elif not os.path.exists(args.upload):
+                print("Input not a known file or url.")
                 exit(1)
             else:
                 res, mes = tnglib.upload_package(args.upload)
                 print(mes)
+                print(res)
                 exit(not res)
 
         if args.remove:
@@ -638,7 +641,7 @@ def parse_args(args):
                             required=False,
                             default=False,
                             metavar='PACKAGE',
-                            help='upload the specified package')
+                            help='upload the package, from file or url')
 
     parser_pkg.add_argument('-g',
                             '--get',

@@ -38,3 +38,4 @@ Usage
   slas
   slices
   tests
+  records
