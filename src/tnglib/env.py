@@ -92,6 +92,7 @@ def _build_paths():
     global policy_api
     global policy_bind_api
     global test_results_api
+    global test_plans_api
 
     gtk_api = ":32002/api/v3"
     pkg_api = sp_path + gtk_api + "/packages"

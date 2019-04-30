@@ -611,7 +611,7 @@ def parse_args(args):
                                        help='actions related to policies')
     parser_tests = subparsers.add_parser('test',
                                          help='actions related to tests')
-    parser_test_plans = subparsers.add_parser('test-plans',
+    parser_test_plans = subparsers.add_parser('test-plan',
                                          help='actions related to test-plans')
 
     # packages sub arguments
