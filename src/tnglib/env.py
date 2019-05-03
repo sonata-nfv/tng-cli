@@ -50,6 +50,7 @@ slice_template_api = ''
 slice_instance_api = ''
 policy_api = ''
 policy_bind_api = ''
+test_results_api = ''
 
 
 def get_sp_path():
@@ -90,6 +91,8 @@ def _build_paths():
     global slice_instance_api
     global policy_api
     global policy_bind_api
+    global test_results_api
+    global test_plans_api
 
     gtk_api = ":32002/api/v3"
     pkg_api = sp_path + gtk_api + "/packages"
@@ -107,3 +110,5 @@ def _build_paths():
     slice_instance_api = sp_path + gtk_api + "/slice-instances"
     policy_api = sp_path + gtk_api + "/policies"
     policy_bind_api = sp_path + gtk_api + "/policies/bind"
+    test_results_api = sp_path + gtk_api + "/tests/results"
+    test_plans_api = sp_path + gtk_api + "/tests/plans"

@@ -37,4 +37,5 @@ Usage
   policies
   slas
   slices
+  tests
   records
