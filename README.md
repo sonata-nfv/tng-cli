@@ -1,5 +1,5 @@
 [![Join the chat at https://gitter.im/sonata-nfv/Lobby](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/sonata-nfv/Lobby)
-
+[![Documentation Status](https://readthedocs.org/projects/tng-cli/badge/?version=latest)](https://tng-cli.readthedocs.io/en/latest/index.html)
 <p align="center"><img src="https://github.com/sonata-nfv/tng-api-gtw/wiki/images/sonata-5gtango-logo-500px.png" /></p>
 
 # tng-cli
@@ -26,7 +26,7 @@ pip3 install git+https://github.com/sonata-nfv/tng-cli
 
 ## Usage
 
-To use the library, add `import tnglib` to your python script. Documentation on all supported function calls can be found in [the wiki](https://github.com/sonata-nfv/tng-cli/wiki/tnglib-documentation)
+To use the library, add `import tnglib` to your python script. Documentation on all supported function calls can be found [here](https://tng-cli.readthedocs.io/en/latest/index.html)
 
 To use the CLI-tool, see its help for detailed information about all the arguments:
 

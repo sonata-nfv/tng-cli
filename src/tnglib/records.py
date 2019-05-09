@@ -30,16 +30,38 @@
 # acknowledge the contributions of their colleagues of the 5GTANGO
 # partner consortium (www.5gtango.eu).
 
-from tnglib.packages import *
-from tnglib.slas import *
-from tnglib.general import *
-from tnglib.services import *
-from tnglib.functions import *
-from tnglib.policies import *
-from tnglib.requests import *
-from tnglib.slices import *
-from tnglib.tests import *
-from tnglib.records import *
-from tnglib.env import set_sp_path, get_sp_path
+import logging
+import json
+import time
+import os
+import yaml
+import tnglib.env as env
 
-set_sp_path('localhost')
+LOG = logging.getLogger(__name__)
+
+
+def get_ips_from_vnfr(vnfr):
+    """Returns info on the ip addresses in a vnfr, per vdu.
+
+    :returns: A list. [0] is a bool with the result. [1] is a dictionary
+              with a key for each VDU. The value is a list of dictionaries.
+              Each dictionary has a type key, indicating which type of id,
+              and an ip field containing the ip.
+    """
+
+    # Check if the VNFR only contains VM based network functions.
+    if 'virtual_deployment_units' not in vnfr.keys():
+        return False, 'Not a VM based VNFR'
+
+    res = {}
+    # Loop over the vdu's
+    for vdu in vnfr['virtual_deployment_units']:
+        res[vdu['id']] = []
+
+        for cp in vdu['vnfc_instance'][0]['connection_points']:
+            res[vdu['id']].append({'id': cp['id'],
+                                  'ip': cp['interface']['address']})
+
+    return True, res
+
+

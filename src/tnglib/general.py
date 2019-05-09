@@ -39,9 +39,11 @@ import tnglib.env as env
 
 LOG = logging.getLogger(__name__)
 
+
 def sp_health_check():
-    """
-    Check if SP is reachable
+    """Check if SP is reachable.
+
+    :returns: bool.
     """
     url = env.pkg_api
     try:

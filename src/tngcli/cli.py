@@ -73,7 +73,7 @@ def dispatch(args):
         if 'SP_PATH' in os.environ:
             tnglib.set_sp_path(os.environ["SP_PATH"])
         else:
-            print("Provide path to service platform through SP_PATH or tng-cli -u")
+            print("Missing path to SP. Use env SP_PATH or tng-cli -u")
             exit(1)
 
     # Check if the SP is reachable
@@ -82,15 +82,20 @@ def dispatch(args):
         exit(1)
 
     # packages subcommand
-    if args.subparser_name=='package':
-        # packages needs exactly one argument     
-        arg_sum = args.list + args.clean + bool(args.upload) + bool(args.remove) + bool(args.get)
+    if args.subparser_name == 'package':
+        # packages needs exactly one argument
+        sel_args = [args.list, args.clean, args.upload, args.remove, args.get]
+        arg_sum = len([x for x in sel_args if x])
         if arg_sum == 0:
-            print("Missing arguments for subcommand package. Type tng-cli package -h")
+            msg = "Missing arguments for tng-cli package. " \
+                  "Type tng-cli package -h"
+            print(msg)
             exit(1)
 
         if arg_sum > 1:
-            print("Too many arguments for subcommand package. Type tng-cli package -h")
+            msg = "Too many arguments for subcommand package. " \
+                  "ype tng-cli package -h"
+            print(msg)
             exit(1)
 
         if args.list:
@@ -101,15 +106,18 @@ def dispatch(args):
 
         if args.upload:
             # Check if argument is a file
-            if not os.path.exists(args.upload):
-                print("No known package with that name.")
+            if not args.upload.endswith('.tgo'):
+                print("File or url does not point towards 5GTANTGO package.")
                 exit(1)
-            elif not args.upload.endswith('.tgo'):
-                print("File is not a 5GTANTGO package.")
+            elif args.upload[:4] == 'http':
+                res, mes = tnglib.upload_package(args.upload, url = True)
+            elif not os.path.exists(args.upload):
+                print("Input not a known file or url.")
                 exit(1)
             else:
                 res, mes = tnglib.upload_package(args.upload)
                 print(mes)
+                print(res)
                 exit(not res)
 
         if args.remove:
@@ -129,7 +137,7 @@ def dispatch(args):
             exit(not res)
 
     # requests subcommand
-    elif args.subparser_name=='request':
+    elif args.subparser_name == 'request':
 
         if bool(args.get):
             res, mes = tnglib.get_request(args.get)
@@ -137,23 +145,38 @@ def dispatch(args):
             exit(not res)
         else:
             res, mes = tnglib.get_requests()
-            order = ['request_uuid', 'request_type', 'status', 'created_at', 'instance_uuid']
+            order = ['request_uuid',
+                     'request_type',
+                     'status',
+                     'created_at',
+                     'instance_uuid']
             form_print(mes, order)
             exit(not res)
 
     # services subcommand
-    elif args.subparser_name=='service':
-        # services needs exactly one argument     
-        arg_sum = args.descriptor + args.instance + bool(args.instantiate) + bool(args.terminate)
+    elif args.subparser_name == 'service':
+        # services needs exactly one argument
+        sel_args = [args.descriptor,
+                    args.instance,
+                    args.instantiate,
+                    args.terminate]
+        arg_sum = len([x for x in sel_args if x])
         if arg_sum == 0:
-            print("Missing arguments for subcommand service. Select either --descriptor, --instance, --instantiate or --terminate")
+            msg = "Missing arguments for subcommand service. " \
+                  "Select either --descriptor, --instance, " \
+                  "--instantiate or --terminate"
+            print(msg)
             exit(1)
 
         if arg_sum > 1:
-            print("Too many arguments for subcommand service. Select either --descriptor, --instance, --instantiate or --terminate")
+            msg = "To ao many rguments for subcommand service. " \
+                  "Select either --descriptor, --instance, " \
+                  "--instantiate or --terminate"
+            print(msg)
             exit(1)
 
-        arg_sum = bool(args.instantiate) + bool(args.terminate) + bool(args.get)
+        sel_args = [args.instantiate, args.terminate, args.get]
+        arg_sum = len([x for x in sel_args if x])
         if arg_sum == 2:
             print("--get can't be used with --instantiate or --terminate")
             exit(1)
@@ -182,7 +205,8 @@ def dispatch(args):
 
         if bool(args.instantiate):
             if bool(args.sla):
-                res, mes = tnglib.service_instantiate(args.instantiate, args.sla)
+                res, mes = tnglib.service_instantiate(args.instantiate,
+                                                      args.sla)
             else:
                 res, mes = tnglib.service_instantiate(args.instantiate)
 
@@ -195,15 +219,19 @@ def dispatch(args):
             exit(not res)
 
     # functions subcommand
-    elif args.subparser_name=='function':
-        # functions needs exactly one argument     
+    elif args.subparser_name == 'function':
+        # functions needs exactly one argument
         arg_sum = args.descriptor + args.instance
         if arg_sum == 0:
-            print("Missing arguments for subcommand function. Select either --descriptor or --instance")
+            msg = "Missing arguments for subcommand function. " \
+                  "Select either --descriptor or --instance"
+            print(msg)
             exit(1)
 
         if arg_sum > 1:
-            print("Too many arguments for subcommand function. Select either --descriptor or --instance")
+            msg = "Too many arguments for subcommand function. " \
+                  "Select either --descriptor or --instance"
+            print(msg)
             exit(1)
 
         if args.descriptor and bool(args.get):
@@ -229,15 +257,23 @@ def dispatch(args):
             exit(not res)
 
     # sla subcommand
-    elif args.subparser_name=='sla':
+    elif args.subparser_name == 'sla':
         # template, agreement or violation needs to be specified
-        arg_sum = args.template + args.agreement + args.violation + args.guarantee
+        sel_args = [args.template,
+                    args.agreement,
+                    args.violation,
+                    args.guarantee]
+        arg_sum = len([x for x in sel_args if x])
         if arg_sum == 0:
-            print("One of --template, --agreement, --violation, --guarantee must be specified with sla subcommand.")
+            msg = "One of --template, --agreement, --violation, " \
+                  " --guarantee must be specified with sla subcommand."
+            print(msg)
             exit(1)
 
         elif arg_sum > 1:
-            print("Only one of --template, --agreement, --violation, --guarantee can be specified with sla subcommand.")
+            msg = "Only one of --template, --agreement, --violation, " \
+                  " --guarantee must be specified with sla subcommand."
+            print(msg)
             exit(1)
 
         if args.guarantee:
@@ -250,7 +286,13 @@ def dispatch(args):
             # agreement and violation specific arguments are not allowed
 
             # If no argument is provided, list all templates
-            arg_sum = bool(args.create) + bool(args.remove) + bool(args.get) + bool(args.nsd) + bool(args.guarantee_id) + bool(args.date)
+            sel_args = [args.create,
+                        args.remove,
+                        args.get,
+                        args.nsd,
+                        args.guarantee_id,
+                        args.date]
+            arg_sum = len([x for x in sel_args if x])
             if arg_sum == 0:
                 res, mes = tnglib.get_sla_templates()
                 order = ['sla_uuid', 'name', 'service', 'created_at']
@@ -258,22 +300,29 @@ def dispatch(args):
                 exit(not res)
 
             arg_sum = bool(args.create) + bool(args.remove) + bool(args.get)
-            # If one of --create, --remove or --get is provided, perform the action
+            # If one of --create, --remove or --get is provided,
+            # perform the action
             if arg_sum == 1:
                 if bool(args.get):
                     res, mes = tnglib.get_sla_template(args.get)
                     form_print(mes)
-                    exit (not res)
+                    exit(not res)
 
                 if bool(args.create):
                     if not (bool(args.nsd) and bool(args.guarantee_id)):
-                        print("Both --service and --guarantee are required with --template --create <NAME>")
+                        msg = "Both --service and --guarantee are required " \
+                              "with --template --create <NAME>"
+                        print(msg)
                         exit(1)
                     else:
                         date = '01/01/2025'
                         if bool(args.date):
                             date = args.date
-                        res, mes = tnglib.create_sla_template(args.create, args.nsd, date, args.guarantee_id)
+                        guarantee = args.guarantee_id
+                        res, mes = tnglib.create_sla_template(args.create,
+                                                              args.nsd,
+                                                              date,
+                                                              guarantee)
                         print(mes)
                         exit(not res)
 
@@ -291,7 +340,13 @@ def dispatch(args):
 
         elif args.agreement:
             # template specific arguments are not allowed
-            arg_sum = bool(args.create) + bool(args.remove) + bool(args.get) + bool(args.nsd) + bool(args.guarantee_id) + bool(args.date)
+            sel_args = [args.create,
+                        args.remove,
+                        args.get,
+                        args.nsd,
+                        args.guarantee_id,
+                        args.date]
+            arg_sum = len([x for x in sel_args if x])
             if arg_sum > 0:
                 print("Only --nsi and --sla allowed with --agreement")
                 exit(1)
@@ -313,25 +368,39 @@ def dispatch(args):
 
             else:
                 res, mes = tnglib.get_agreements()
-                order = ['sla_name', 'sla_uuid', 'nsi_uuid', 'ns_name', 'sla_status']
+                order = ['sla_name',
+                         'sla_uuid',
+                         'nsi_uuid',
+                         'ns_name',
+                         'sla_status']
                 form_print(mes, order)
                 exit(not res)
 
         elif args.violation:
             # template specific arguments are not allowed
-            arg_sum = bool(args.create) + bool(args.remove) + bool(args.get) + bool(args.nsd) + bool(args.guarantee_id) + bool(args.date)
+            sel_args = [args.create,
+                        args.remove,
+                        args.get,
+                        args.nsd,
+                        args.guarantee_id,
+                        args.date]
+            arg_sum = len([x for x in sel_args if x])
             if arg_sum > 0:
                 print("Only --nsi and --sla allowed with --violation")
                 exit(1)
 
             if bool(args.nsi) and bool(args.sla):
-                res, mes = tnglib.get_violations_per_nsi_sla(args.sla, args.nsi)
+                res, mes = tnglib.get_violations_per_nsi_sla(args.sla,
+                                                             args.nsi)
                 form_print(mes)
                 exit(not res)
 
             elif bool(args.nsi):
                 res, mes = tnglib.get_violations(args.nsi)
-                order = ['sla_uuid', 'nsi_uuid', 'violation_time', 'alert_state']
+                order = ['sla_uuid',
+                         'nsi_uuid',
+                         'violation_time',
+                         'alert_state']
                 form_print(mes, order)
                 exit(not res)
 
@@ -341,65 +410,91 @@ def dispatch(args):
 
             else:
                 res, mes = tnglib.get_violations()
-                order = ['sla_uuid', 'nsi_uuid', 'violation_time', 'alert_state']
+                order = ['sla_uuid',
+                         'nsi_uuid',
+                         'violation_time',
+                         'alert_state']
                 form_print(mes, order)
                 exit(not res)
 
     elif args.subparser_name == 'slice':
-        # Only one of create, remove, instantiate, terminate, templates, instances can be active
-        arg_sum = bool(args.create) + bool(args.remove) + bool(args.instantiate) + bool(args.terminate) + bool(args.templates) + bool(args.instances)
+        # Only one of create, remove, instantiate,
+        # terminate, templates, instances can be active
+        sel_args = [args.create,
+                    args.remove,
+                    args.instantiate,
+                    args.terminate,
+                    args.template,
+                    args.instance]
+        arg_sum = len([x for x in sel_args if x])
 
         if arg_sum == 0:
-            print("One of --create, --remove, --terminate, --instantiate, --templates or --instances needed with slice subcommand.")
+            msg = "One of --create, --remove, --terminate, --instantiate, " \
+                  "--template or --instance needed with slice subcommand."
+            print(msg)
             exit(1)
 
         if arg_sum > 1:
-            print("Only one of --create, --remove, --terminate, --instantiate, --templates or --instances allowed with slice subcommand.")
+            msg = "Only one of --create, --remove, --terminate, " \
+                  "--instantiate, --template or --instance needed " \
+                  "with slice subcommand."
+            print(msg)
             exit(1)
 
-        if bool(args.templates) and not bool(args.get):
+        if args.name and not args.instantiate:
+            print("--name can only be combined with --instantiate.")
+            exit(1)
+
+        if args.description and not args.instantiate:
+            print("--description can only be combined with --instantiate.")
+            exit(1)
+
+        order = None
+        if args.template and not args.get:
             res, mes = tnglib.get_slice_templates()
             order = ['slice_uuid', 'name', 'version', 'created_at']
-            form_print(mes, order)
-            exit(not res)
-            
-        if bool(args.templates) and bool(args.get):
-            res, mes = tnglib.get_slice_template(args.get)
-            form_print(mes)
-            exit(not res)
 
-        if bool(args.instances) and not bool(args.get):
+        elif args.template and args.get:
+            res, mes = tnglib.get_slice_template(args.get)
+
+        elif args.instance and not args.get:
             res, mes = tnglib.get_slice_instances()
             order = ['instance_uuid', 'name', 'template_uuid', 'created_at']
-            form_print(mes, order)
-            exit(not res)
-            
-        if bool(args.instances) and bool(args.get):
+
+        elif args.instance and args.get:
             res, mes = tnglib.get_slice_instance(args.get)
-            form_print(mes)
-            exit(not res)
 
-        if bool(args.remove):
+        elif args.remove:
             res, mes = tnglib.delete_slice_template(args.remove)
-            form_print(mes)
-            exit(not res)
 
-        if bool(args.create):
+        elif args.create:
             res, mes = tnglib.create_slice_template(args.create)
-            form_print(mes)
-            exit(not res)
+
+        elif args.instantiate:
+            res, mes = tnglib.slice_instantiate(args.instantiate,
+                                                args.name,
+                                                args.description)
+
+        elif args.terminate:
+            res, mes = tnglib.slice_terminate(args.terminate)
+
+        form_print(mes, order)
+        exit(not res)
 
     elif args.subparser_name == 'policy':
         # --service and --sla can only appear with --attach
-        if (bool(args.service) or bool(args.sla)) and not bool(args.attach):
+        if (args.service or args.sla) and not args.attach:
             print("--service and --sla can only be combined with --attach")
             exit(1)
 
         # Only one of --get, --create, --remove or --attach can be selected
-        arg_sum = bool(args.get) + bool(args.create) + bool(args.remove) + bool(args.attach)
+        sel_args = [args.get, args.create, args.remove, args.attach]
+        arg_sum = len([x for x in sel_args if x])
 
         if arg_sum > 1:
-            print("Only one of --get, --create, --remove or --attach can be selected")
+            msg = "Only one of --get, --create, --remove or " \
+                  "--attach can be selected"
+            print(msg)
             exit(1)
 
         if arg_sum == 0:
@@ -427,15 +522,55 @@ def dispatch(args):
             if not (bool(args.service) and bool(args.sla)):
                 print("--attach requires both --service and --sla.")
             else:
-                res, mes = tnglib.attach_policy(args.attach, args.service, args.sla)
+                res, mes = tnglib.attach_policy(args.attach,
+                                                args.service,
+                                                args.sla)
                 form_print(mes)
                 exit(not res)
 
+    # tests subcommand
+    elif args.subparser_name == 'test':
+
+        if bool(args.get):
+            res, mes = tnglib.get_test_result(args.get)
+            form_print(mes)
+            exit(not res)
+        else:
+            res, mes = tnglib.get_tests_results()
+            order = ['uuid',
+                     'instance_uuid',
+                     'package_id',
+                     'service_uuid',
+                     'test_uuid',
+                     'status',
+                     'created_at']
+            form_print(mes, order)
+            exit(not res)
+
+    elif args.subparser_name == 'test-plan':
+
+        if bool(args.get):
+            res, mes = tnglib.get_test_plan(args.get)
+            form_print(mes)
+            exit(not res)
+        else:
+            res, mes = tnglib.get_tests_plans()
+            order = ['uuid',
+                     'package_id',
+                     'service_uuid',
+                     'test_uuid',
+                     'status',
+                     'description',
+                     'nsd',
+                     'testd']
+            form_print(mes, order)
+            exit(not res)
     elif args.subparser_name:
         print("Subcommand " + args.subparser_name + " not support yet")
         exit(0)
 
     return
+
 
 def parse_args(args):
     """
@@ -457,34 +592,45 @@ def parse_args(args):
                         default=False,
                         help='Verbose output')
 
-    subparsers = parser.add_subparsers(description='<submodule> -h for more info',
+    subparsers = parser.add_subparsers(description='',
                                        dest='subparser_name')
 
-    parser_pkg = subparsers.add_parser('package', help='actions related to packages')
-    parser_ser = subparsers.add_parser('service', help='actions related to services')
-    parser_req = subparsers.add_parser('request', help='actions related to requests')
-    parser_fun = subparsers.add_parser('function', help='actions related to functions')
-    parser_sla = subparsers.add_parser('sla', help='actions related to slas')
-    parser_slc = subparsers.add_parser('slice', help='actions related to slices')
-    parser_pol = subparsers.add_parser('policy', help='actions related to policies')
+    parser_pkg = subparsers.add_parser('package',
+                                       help='actions related to packages')
+    parser_ser = subparsers.add_parser('service',
+                                       help='actions related to services')
+    parser_req = subparsers.add_parser('request',
+                                       help='actions related to requests')
+    parser_fun = subparsers.add_parser('function',
+                                       help='actions related to functions')
+    parser_sla = subparsers.add_parser('sla',
+                                       help='actions related to slas')
+    parser_slc = subparsers.add_parser('slice',
+                                       help='actions related to slices')
+    parser_pol = subparsers.add_parser('policy',
+                                       help='actions related to policies')
+    parser_tests = subparsers.add_parser('test',
+                                         help='actions related to tests')
+    parser_test_plans = subparsers.add_parser('test-plan',
+                                         help='actions related to test-plans')
 
     # packages sub arguments
     parser_pkg.add_argument('-l',
-                            '--list', 
+                            '--list',
                             action='store_true',
                             required=False,
                             default=False,
                             help='list the available packages')
 
     parser_pkg.add_argument('-r',
-                            '--remove', 
+                            '--remove',
                             required=False,
                             default=False,
                             metavar='PACKAGE_UUID',
                             help='remove the specified package')
 
     parser_pkg.add_argument('-c',
-                            '--clean', 
+                            '--clean',
                             action='store_true',
                             required=False,
                             default=False,
@@ -495,10 +641,10 @@ def parse_args(args):
                             required=False,
                             default=False,
                             metavar='PACKAGE',
-                            help='upload the specified package')
+                            help='upload the package, from file or url')
 
     parser_pkg.add_argument('-g',
-                            '--get', 
+                            '--get',
                             metavar='PACKAGE_UUID',
                             required=False,
                             default=False,
@@ -506,244 +652,306 @@ def parse_args(args):
 
     # requests sub arguments
     parser_req.add_argument('-g',
-                            '--get', 
+                            '--get',
                             metavar='UUID',
                             required=False,
                             default=False,
                             help='Returns detailed info on specified request')
 
     # services sub arguments
-    parser_ser.add_argument('--descriptor', 
+    parser_ser.add_argument('--descriptor',
                             action='store_true',
                             required=False,
                             default=False,
                             help='List all available service descriptors')
 
-    parser_ser.add_argument('--instance', 
+    parser_ser.add_argument('--instance',
                             action='store_true',
                             required=False,
                             default=False,
                             help='List all available service instances')
 
+    help_mes = 'with --descriptor or --instace. Returns specified ' \
+               'info on descriptor or instance'
     parser_ser.add_argument('-g',
-                            '--get', 
+                            '--get',
                             metavar='UUID',
                             required=False,
                             default=False,
-                            help='with --descriptor or --instace. Returns specified info on descriptor or instance')
+                            help=help_mes)
 
     parser_ser.add_argument('-i',
-                            '--instantiate', 
+                            '--instantiate',
                             metavar='SERVICE UUID',
                             required=False,
                             default=False,
                             help='Intantiate a service')
 
     parser_ser.add_argument('-t',
-                            '--terminate', 
+                            '--terminate',
                             metavar='INSTANCE UUID',
                             required=False,
                             default=False,
                             help='Terminate a service')
 
+    help_mes = 'Only with --instantiate. Attach an SLA to instantiated service'
     parser_ser.add_argument('-s',
-                            '--sla', 
+                            '--sla',
                             metavar='SLA UUID',
                             required=False,
                             default=False,
-                            help='Only with --instantiate. Attach an SLA to instantiated service')
+                            help=help_mes)
 
     # functions sub arguments
-    parser_fun.add_argument('--descriptor', 
+    parser_fun.add_argument('--descriptor',
                             action='store_true',
                             required=False,
                             default=False,
                             help='List all available function descriptors')
 
-    parser_fun.add_argument('--instance', 
+    parser_fun.add_argument('--instance',
                             action='store_true',
                             required=False,
                             default=False,
                             help='List all available function instances')
 
+    help_mes = 'with --descriptor or --instace. Returns specified ' \
+               'info on descriptor or instance'
     parser_fun.add_argument('-g',
-                            '--get', 
+                            '--get',
                             metavar='UUID',
                             required=False,
                             default=False,
-                            help='with --descriptor or --instace. Returns specified info on descriptor or instance')
+                            help=help_mes)
 
     # sla sub arguments
-    parser_sla.add_argument('--template', 
+    help_mes = 'Specify an action related to SLA templates. If no extra ' \
+               'argument, returns all SLA templates.'
+    parser_sla.add_argument('--template',
                             action='store_true',
                             required=False,
                             default=False,
-                            help='Specify an action related to SLA templates. If no extra argument, returns all SLA templates.')
+                            help=help_mes)
 
-    parser_sla.add_argument('--agreement', 
+    help_mes = 'Specify an action related to SLA agreements. If no extra ' \
+               'argument, returns all SLA agreements.'
+    parser_sla.add_argument('--agreement',
                             action='store_true',
                             required=False,
                             default=False,
-                            help='Specify an action related to SLA agreements. If no extra argument, returns all SLA agreements.')
+                            help=help_mes)
 
-    parser_sla.add_argument('--violation', 
+    help_mes = 'Specify an action related to SLA violations. If no extra ' \
+               'argument, returns all SLA violations.'
+    parser_sla.add_argument('--violation',
                             action='store_true',
                             required=False,
                             default=False,
-                            help='Specify an action related to SLA violations. If no extra argument, returns all SLA violations.')
+                            help=help_mes)
 
-    parser_sla.add_argument('--guarantee', 
+    help_mes = 'List the available SLA guarantees. Does not require ' \
+               'additional arguments.'
+    parser_sla.add_argument('--guarantee',
                             action='store_true',
                             required=False,
                             default=False,
-                            help='List the available SLA guarantees. Does not require additional arguments.')
+                            help=help_mes)
 
+    help_mes = 'Only with --template --create. Specify the experation date'
     parser_sla.add_argument('-d',
-                            '--date', 
+                            '--date',
                             metavar='DD/MM/YYYY',
                             required=False,
                             default=False,
-                            help='Only with --template --create. Specify the experation date')
+                            help=help_mes)
 
+    help_mes = 'Only with --template --create. Specify the service uuid'
     parser_sla.add_argument('-s',
-                            '--nsd', 
+                            '--nsd',
                             metavar='SERVICE UUID',
                             required=False,
                             default=False,
-                            help='Only with --template --create. Specify the service uuid')
+                            help=help_mes)
 
+    help_mes = 'Only with --template --create. Specify the guarantee id'
     parser_sla.add_argument('-i',
-                            '--guarantee-id', 
+                            '--guarantee-id',
                             metavar='GUARANTEE ID',
-                            required=False,
                             default=False,
-                            help='Only with --template --create. Specify the guarantee id')
+                            help=help_mes)
 
+    help_mes = 'Only with --template. Create a new SLA template. ' \
+               'Requires -s and -i'
     parser_sla.add_argument('-c',
-                            '--create', 
+                            '--create',
                             metavar='SLA NAME',
                             required=False,
                             default=False,
-                            help='Only with --template. Create a new SLA template. Requires -s and -i')
+                            help=help_mes)
 
+    help_mes = 'Only with --template. Remove an SLA template.'
     parser_sla.add_argument('-r',
-                            '--remove', 
+                            '--remove',
                             metavar='SLA TEMPLATE UUID',
                             required=False,
                             default=False,
-                            help='Only with --template. Remove an SLA template.')
+                            help=help_mes)
 
+    help_mes = 'With --template, --agreement and --violation. Get ' \
+               'descriptor associated to uuid.'
     parser_sla.add_argument('-g',
-                            '--get', 
+                            '--get',
                             metavar='UUID',
                             required=False,
                             default=False,
-                            help='With --template, --agreement and --violation. Get descriptor associated to uuid.')
+                            help=help_mes)
 
+    help_mes = 'Only with --agreement or --violation. Specify ' \
+               'the service instance uuid'
     parser_sla.add_argument('-n',
-                            '--nsi', 
+                            '--nsi',
                             metavar='SERVICE INSTANCE UUID',
                             required=False,
                             default=False,
-                            help='Only with --agreement or --violation. Specify the service instance uuid')
+                            help=help_mes)
 
+    help_mes = 'Only with --agreement -n or --violation -n. ' \
+               'Specify the sla uuid'
     parser_sla.add_argument('-t',
-                            '--sla', 
+                            '--sla',
                             metavar='SERVICE INSTANCE UUID',
                             required=False,
                             default=False,
-                            help='Only with --agreement -n or --violation -n. Specify the sla uuid')
+                            help=help_mes)
 
     # slice related arguments
-    parser_slc.add_argument('--templates', 
+    parser_slc.add_argument('--template',
                             action='store_true',
                             required=False,
                             default=False,
                             help='List the available slice templates')
 
-    parser_slc.add_argument('--instances', 
+    parser_slc.add_argument('--instance',
                             action='store_true',
                             required=False,
                             default=False,
                             help='List the available slice instances')
 
+    help_mes = 'Use with --template or --instance. Returns single ' \
+               'template or instance'
     parser_slc.add_argument('-g',
-                            '--get', 
+                            '--get',
                             metavar='UUID',
                             required=False,
                             default=False,
-                            help='Use with --templates or --instances. Returns single template or instance')
+                            help=help_mes)
 
     parser_slc.add_argument('-r',
-                            '--remove', 
+                            '--remove',
                             metavar='TEMPLATE UUID',
                             required=False,
                             default=False,
                             help='Remove slice template')
 
     parser_slc.add_argument('-t',
-                            '--terminate', 
+                            '--terminate',
                             metavar='INSTANCE UUID',
                             required=False,
                             default=False,
                             help='Terminate slice instance')
 
     parser_slc.add_argument('-c',
-                            '--create', 
+                            '--create',
                             metavar='SLICE TEMPLATE',
                             required=False,
                             default=False,
                             help='Create a new slice template from file')
 
     parser_slc.add_argument('-i',
-                            '--instantiate', 
+                            '--instantiate',
                             metavar='TEMPLATE UUID',
                             required=False,
                             default=False,
                             help='Instantiate a new slice instance')
 
+    help_mes = 'Only with --instantiate. Define the name for the ' \
+               'slice instance.'
+    parser_slc.add_argument('-n',
+                            '--name',
+                            metavar='SLICE INSTANCE NAME',
+                            required=False,
+                            default=False,
+                            help=help_mes)
+
+    help_mes = 'Only with --instantiate. Define the description for the ' \
+               'slice instance.'
+    parser_slc.add_argument('-d',
+                            '--description',
+                            metavar='SLICE INSTANCE NAME',
+                            required=False,
+                            default=False,
+                            help=help_mes)
+
     # Policy subcommands
     parser_pol.add_argument('-g',
-                            '--get', 
+                            '--get',
                             metavar='POLICY UUID',
                             required=False,
                             default=False,
                             help='Get detailed policy information')
 
     parser_pol.add_argument('-c',
-                            '--create', 
+                            '--create',
                             metavar='POLICY FILE',
                             required=False,
                             default=False,
                             help='Create a new policy from json or yaml file')
 
     parser_pol.add_argument('-r',
-                            '--remove', 
+                            '--remove',
                             metavar='POLICY UUID',
                             required=False,
                             default=False,
                             help='Remove a policy descriptor')
 
+    help_mes = 'Requires --service and --sla. Attach policy ' \
+               'to a service and sla'
     parser_pol.add_argument('-a',
-                            '--attach', 
+                            '--attach',
                             metavar='POLICY UUID',
                             required=False,
                             default=False,
-                            help='Requires --service and --sla. Attach policy to a service and sla')
+                            help=help_mes)
 
+    help_mes = 'Only with --attach. Attach policy to a service'
     parser_pol.add_argument('-n',
-                            '--service', 
+                            '--service',
                             metavar='SERVICE UUID',
                             required=False,
                             default=False,
-                            help='Only with --attach. Attach policy to a service')
+                            help=help_mes)
 
     parser_pol.add_argument('-s',
-                            '--sla', 
+                            '--sla',
                             metavar='SLA UUID',
                             required=False,
                             default=False,
                             help='Only with --attach. Attach policy to an sla')
+
+    # tests sub arguments
+    parser_tests.add_argument('-g',
+                              '--get',
+                              metavar='UUID',
+                              required=False,
+                              default=False,
+                              help='Returns detailed info on specified test')
+
+    parser_test_plans.add_argument('-g',
+                              '--get',
+                              metavar='UUID',
+                              required=False,
+                              default=False,
+                              help='Returns detailed info on specified test-plan')
 
     return parser.parse_args(args)
 
@@ -792,6 +1000,7 @@ def form_print(data, order=None):
         print(data)
 
     return
+
 
 def init_logger(verbose):
     """

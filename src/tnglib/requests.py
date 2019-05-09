@@ -40,9 +40,14 @@ import tnglib.env as env
 
 LOG = logging.getLogger(__name__)
 
+
 def get_requests():
-    """
-    This function returns info on all requests
+    """Returns info on all requests.
+
+
+    :returns: A list. [0] is a bool with the result. [1] is a list of
+        dictionaries, each containing a request.
+
     """
 
     # get current list of requests
@@ -71,13 +76,19 @@ def get_requests():
 
     return True, req_res
 
+
 def get_request(request_uuid):
-    """
-    This function returns info on a specific request
+    """Returns info on a specific request.
+
+    :param request_uuid: A string. The uuid of the request.
+    :returns: A list. [0] is a bool with the result. [1] is a dictionary
+        containing the request.
+
     """
 
     # get request info
-    resp = requests.get(env.request_api + '/' + request_uuid, timeout=env.timeout)
+    resp = requests.get(env.request_api + '/' + request_uuid,
+                        timeout=env.timeout)
 
     if resp.status_code != 200:
         LOG.debug("Request for request returned with " +
@@ -88,8 +99,13 @@ def get_request(request_uuid):
 
 
 def service_instantiate(service_uuid, sla_uuid=None):
-    """
-    This function makes a request to instantiate a service
+    """Makes a request to instantiate a service.
+
+    :param service_uuid: A string. The uuid of the service.
+    :param sla_uuid: A string (Default value = None). The uuid of the SLA.
+    :returns: A list. [0] is a bool with the result. [1] is a string containing
+        the uuid of the instantiated service.
+
     """
     
     data = {"service_uuid": service_uuid,
@@ -98,27 +114,73 @@ def service_instantiate(service_uuid, sla_uuid=None):
     if sla_uuid:
         data['sla_id'] = sla_uuid
 
-    return post_request(data)
+    return _post_request(data)
 
 
 def service_terminate(instance_uuid):
-    """
-    This function makes a request to terminate a service
+    """Makes a request to terminate a service.
+
+    :param instance_uuid: A string. The uuid of the instance.
+    :returns: A list. [0] is a bool with the result. [1] is a string containing
+        the uuid of the terminated instance.
+
     """
     
     data = {"instance_uuid": instance_uuid,
             "request_type": "TERMINATE_SERVICE"}
 
-    return post_request(data)
+    return _post_request(data)
 
 
-def post_request(data):
+def slice_instantiate(slice_template_uuid, name=None, description=None):
+    """Makes a request to instantiate a slice.
+
+    :param slice_template_uuid: A string. The uuid of the slice template.
+    :param name: A string (Default value = None). A name for the slice 
+        instance.
+    :param description: A string (Default value = None). A description 
+        for the slice template
+    :returns: A list. [0] is a bool with the result. [1] is a string containing
+        the uuid of the instantiated slice.
+
     """
-    Generic request maker
+    
+    data = {"nst_id": slice_template_uuid,
+            "request_type": "CREATE_SLICE"}
+
+    if name:
+        data['name'] = name
+    else:
+        data['name'] = 'foobar'
+
+    if description:
+        data['description'] = description
+    else:
+        data['description'] = 'foobar'
+
+    return _post_request(data)
+
+
+def slice_terminate(instance_uuid):
+    """Makes a request to terminate a slice.
+
+    :param instance_uuid: A string. The uuid of the slice instance.
+    :returns: A list. [0] is a bool with the result. [1] is a string containing
+        the uuid of the terminated slice instance.
+
     """
+    
+    data = {"instance_uuid": instance_uuid,
+            "request_type": "TERMINATE_SLICE"}
+
+    return _post_request(data)
+
+
+def _post_request(data):
+    """ Generic request maker. """
 
     resp = requests.post(env.request_api,
-                         json = data,
+                         json=data,
                          timeout=env.timeout)
 
     if resp.status_code != 201:

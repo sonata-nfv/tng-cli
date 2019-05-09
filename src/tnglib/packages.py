@@ -31,6 +31,7 @@
 # partner consortium (www.5gtango.eu).
 
 import requests
+import tnglib.services as services
 import logging
 import json
 import time
@@ -40,9 +41,12 @@ import tnglib.env as env
 
 LOG = logging.getLogger(__name__)
 
+
 def get_packages():
-    """
-    This function returns info on all available packages
+    """Returns info on all available packages.
+
+    :returns: A list. [0] is a bool with the result. [1] is a list of 
+        dictionaries. Each dictionary contains a package descriptor.
     """
 
     # get current list of packages
@@ -60,7 +64,7 @@ def get_packages():
         dic = {'package_uuid': pkg['uuid'],
                'name': pkg['pd']['name'],
                'version': pkg['pd']['version'],
-               'created_at' : pkg['created_at']}
+               'created_at': pkg['created_at']}
         LOG.debug(str(dic))
         pkg_res.append(dic)
 
@@ -68,8 +72,10 @@ def get_packages():
 
 
 def remove_all_packages():
-    """
-    This function removes all packages from the catalogue
+    """Removes all packages from the catalogue.
+
+    :returns: A list. [0] is a bool with the result. [1] is a list of
+        uuids of packages that were removed.
     """
 
     res = []
@@ -85,8 +91,12 @@ def remove_all_packages():
 
 
 def remove_package(package_uuid):
-    """
-    This function removes one package from the catalogue
+    """Removes one package from the catalogue.
+
+    :param package_uuid: uuid of the package
+
+    :returns: A list. [0] is a bool with the result. [1] is a string 
+        with either the uuid or an error message.
     """
 
     url = env.pkg_api + '/' + package_uuid
@@ -101,15 +111,24 @@ def remove_package(package_uuid):
         return False, json.loads(resp.text)['error']
 
 
-def upload_package(pkg_path):
-    """
-    This function uploads a package
+def upload_package(pkg_path, url=False):
+    """Uploads a package from file.
+
+    :param pkg_path: relative path to the package that needs uploading, or url
+    :param pkg_path: A bool, True if pkg_path is an url
+
+    :returns: A list. [0] is a bool with the result. [1] is a string containing
+        the uuid of the uploaded package, or an error message.
     """
 
-    pkg = (os.path.basename(pkg_path), open(pkg_path, 'rb'))
+    if not url:
+        pkg = (os.path.basename(pkg_path), open(pkg_path, 'rb'))
+
+    else:
+        pkg = (pkg_path.split('/')[-1], requests.get(pkg_path).content)
 
     resp = requests.post(env.pkg_api,
-                         files={"package":pkg},
+                         files={"package": pkg},
                          timeout=env.timeout)
 
     pyld = json.loads(resp.text)
@@ -144,9 +163,14 @@ def upload_package(pkg_path):
     LOG.debug(msg)
     return False, msg
 
+
 def get_package(package_uuid):
-    """
-    This function returns info on a specific package
+    """Returns info on a specific package.
+
+    :param package_uuid: the uuid of the package
+
+    :returns: A list. [0] is a bool with the result. [1] is a dictionary 
+        containing a package descriptor.
     """
 
     # get package info
@@ -158,3 +182,31 @@ def get_package(package_uuid):
         return False, json.loads(resp.text)
 
     return True, json.loads(resp.text)
+
+def map_package_on_service(package_uuid):
+    """Return the uuid of a network service based on a package uuid.
+
+    :param package_uuid: the uuid of the package
+
+    :returns: A list. [0] is a bool with the result. [1] is a string 
+        containing a nsd uuid.
+    """
+
+    status, package_metadata = get_package(package_uuid)
+
+    if not status:
+        msg = "Couldn't obtain package metadata"
+        return False, msg
+
+    for cnt in package_metadata['pd']['package_content']:
+        if '5gtango.nsd' in cnt['content-type']:
+            name = cnt['id']['name']
+            version = cnt['id']['version']
+            vendor = cnt['id']['vendor']
+
+    nsds = services.get_service_descriptors()[1]
+    for nsd in nsds:
+        if (nsd['name'] == name) and (nsd['version'] == version):
+            return True, nsd['descriptor_uuid']
+
+    return False, "Couldn't find associated nsd"

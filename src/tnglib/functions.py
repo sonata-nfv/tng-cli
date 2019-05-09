@@ -40,9 +40,12 @@ import tnglib.env as env
 
 LOG = logging.getLogger(__name__)
 
+
 def get_function_descriptors():
-    """
-    This function returns info on all available function descriptors
+    """Returns info on all available function descriptors.
+
+    :returns: A list. [0] is a bool with the result. [1] is a list of 
+        dictionaries. Each dictionary contains a descriptor.
     """
 
     # get current list of function descriptors
@@ -60,19 +63,26 @@ def get_function_descriptors():
         dic = {'descriptor_uuid': function['uuid'],
                'name': function['vnfd']['name'],
                'version': function['vnfd']['version'],
-               'created_at' : function['created_at']}
+               'created_at': function['created_at']}
         LOG.debug(str(dic))
         functions_res.append(dic)
 
     return True, functions_res
 
+
 def get_function_descriptor(function_descriptor_uuid):
-    """
-    This function returns info on a specific function descriptor
+    """Returns info on a specific function descriptor.
+
+    :param function_descriptor_uuid: uuid of the vnfd.
+
+    :returns: A list. [0] is a bool with the result. [1] is a dictionary 
+        containing the vnfd.
     """
 
     # get function descriptor
-    resp = requests.get(env.function_descriptor_api + '/' + function_descriptor_uuid, timeout=env.timeout)
+    url = env.function_descriptor_api + '/' + function_descriptor_uuid
+    resp = requests.get(url,
+                        timeout=env.timeout)
 
     if resp.status_code != 200:
         LOG.debug("Request for function descriptor returned with " +
@@ -81,9 +91,12 @@ def get_function_descriptor(function_descriptor_uuid):
 
     return True, json.loads(resp.text)
 
+
 def get_function_instances():
-    """
-    This function returns info on all available function instances
+    """Returns info on all available function instances.
+
+    :returns: A list. [0] is a bool with the result. [1] is a list of 
+        dictionaries. Each dictionary contains a vnfr.
     """
 
     # get current list of function instances
@@ -107,13 +120,20 @@ def get_function_instances():
 
     return True, functions_res
 
+
 def get_function_instance(function_instance_uuid):
-    """
-    This function returns info on a specific function instance
+    """Returns info on a specific function instance.
+
+    :param function_instance_uuid: uuid of the vnfr.
+
+    :returns: A list. [0] is a bool with the result. [1] is a dictionary 
+        containing a vnfr.
     """
 
     # get function intsance info
-    resp = requests.get(env.function_instance_api + '/' + function_instance_uuid, timeout=env.timeout)
+    url = env.function_instance_api + '/' + function_instance_uuid
+    resp = requests.get(url,
+                        timeout=env.timeout)
 
     if resp.status_code != 200:
         LOG.debug("Request for function instance returned with " +
