@@ -62,6 +62,15 @@ def get_sp_path():
     return sp_path
 
 
+def set_timeout(timeout_in):
+    """Set the timeout.
+
+    :param timeout_in: new request timeout
+    """
+
+    global timeout
+    timeout = timeout_in
+
 def set_sp_path(new_base_path):
     """Set the path were the SP can be reached.
 

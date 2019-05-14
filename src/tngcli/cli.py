@@ -76,6 +76,10 @@ def dispatch(args):
             print("Missing path to SP. Use env SP_PATH or tng-cli -u")
             exit(1)
 
+    # Set timeout
+    if 'TIMEOUT' in os.environ:
+        tnglib.set_timeout(os.environ["TIMEOUT"])
+
     # Check if the SP is reachable
     if not tnglib.sp_health_check():
         print("Couldn't reach SP at \"" + tnglib.get_sp_path() + "\"")
