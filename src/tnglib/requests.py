@@ -56,6 +56,7 @@ def get_requests():
     if resp.status_code != 200:
         LOG.debug("Request for requests returned with " +
                   (str(resp.status_code)))
+        LOG.debug(str(resp.text))
         return False, []
 
     requests_dic = json.loads(resp.text)
@@ -93,6 +94,7 @@ def get_request(request_uuid):
     if resp.status_code != 200:
         LOG.debug("Request for request returned with " +
                   (str(resp.status_code)))
+        LOG.debug(str(resp.text))
         return False, json.loads(resp.text)
 
     return True, json.loads(resp.text)
@@ -175,6 +177,61 @@ def slice_terminate(instance_uuid):
 
     return _post_request(data)
 
+def service_scale_out(instance_uuid, vnfd_uuid, number_inst=1, vim_uuid=None):
+    """
+    Makes a request to scale out a service.
+
+    :param intstance_uuid: A string. The uuid of the service instance.
+    :param vnfd_uuid: A string. the uuid of the vnf descriptor to scale.
+    :param number_inst: An integer. Number of required extra intances.
+    :returns: A list. [0] is a bool with the result. [1] is a string containing
+        the uuid of the request.
+
+    """
+
+    if not vim_uuid:
+        vim_uuid = ''
+
+    data = {"instance_uuid": instance_uuid,
+            "request_type": "SCALE_SERVICE",
+            "scaling_type": "ADD_VNF",
+            "vnfd_uuid": vnfd_uuid,
+            "number_of_instances": number_inst,
+            "vim_uuid": vim_uuid}
+
+    return _post_request(data)
+
+def service_scale_in(instance_uuid, vnf_uuid, instance_def=True, number_inst=1):
+    """
+    Makes a request to scale in a service.
+
+    :param intstance_uuid: A string. The uuid of the service instance.
+    :param vnf_uuid: A string. the uuid of either the vnf descriptor or instance
+        that needs to be scaled in.
+    :param vnf_uuid: A bool. Indicates whether the instance to scale in is
+        defined or not. If True, it is defined and vnf_uuid contains the uuid of
+        a VNF instance. If False, it contains the uuid of a vnfd and the MANO
+        chooses which instance that relates to this vnfd it scales in.
+    :param number_inst: An integer. Number of required intances to scale in.
+        Only when instance_def is False.
+    :returns: A list. [0] is a bool with the result. [1] is a string containing
+        the uuid of the request.
+
+    """
+
+    if instance_def:
+        data = {"instance_uuid": instance_uuid,
+                "request_type": "SCALE_SERVICE",
+                "scaling_type": "REMOVE_VNF",
+                "vnf_uuid": vnf_uuid}
+    else:    
+        data = {"instance_uuid": instance_uuid,
+                "request_type": "SCALE_SERVICE",
+                "scaling_type": "REMOVE_VNF",
+                "vnfd_uuid": vnf_uuid,
+                "number_of_instances": number_inst}
+
+    return _post_request(data)
 
 def _post_request(data):
     """ Generic request maker. """
@@ -186,6 +243,7 @@ def _post_request(data):
     if resp.status_code != 201:
         LOG.debug("Request returned with " +
                   (str(resp.status_code)))
+        LOG.debug(str(resp.text))
         return False, json.loads(resp.text)
 
     return True, json.loads(resp.text)['id']
