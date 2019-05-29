@@ -56,14 +56,17 @@ def get_tests_plans():
 
     plans_res = []
     for plan in plans:
+        if plan['test_result_uuid']:
+            trid = plan['test_result_uuid']
+        else:
+            trid = ""
+
         dic = {'uuid': plan['uuid'],
-               'package_id': plan['package_id'],
                'service_uuid': plan['service_uuid'],
                'test_uuid': plan['test_uuid'],
-               'status': plan['status'],
-               'description': plan['description'],
-               'nsd': plan['nsd'],
-               'testd': plan['testd']}
+               'test_set_uuid': plan['test_set_uuid'],
+               'status': plan['test_status'],
+               'test_result_uuid': trid}
         LOG.debug(str(dic))
         plans_res.append(dic)
 
