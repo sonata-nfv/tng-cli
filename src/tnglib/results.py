@@ -37,61 +37,55 @@ import tnglib.env as env
 
 LOG = logging.getLogger(__name__)
 
-def get_test_descriptors():
-    """Returns info on all available test descriptors.
+def get_test_results():
+    """Returns info on all available tests results.
 
-    :returns: A list. [0] is a bool with the result. [1] is a list of
-        dictionaries. Each dictionary contains a test descriptor.
+    :returns: A list. [0] is a bool with the result. [1] is a list of 
+        dictionaries. Each dictionary contains a result.
     """
 
-    # get current list of test descriptors
-    resp = requests.get(env.test_descriptors_api, timeout=env.timeout)
+    # get current list of tests results
+    resp = requests.get(env.test_results_api, timeout=env.timeout)
 
     if resp.status_code != 200:
-        LOG.debug("Request for test descriptors returned with " +
+        LOG.debug("Request for test results returned with " +
                   (str(resp.status_code)))
         return False, []
 
-    descriptors = json.loads(resp.text)
+    tests = json.loads(resp.text)
 
-    descriptors_res = []
-    for descriptor in descriptors:
-
-        platforms = ""
-        for platform in descriptor['testd']['service_platforms']:
-            print (platform)
-            if platforms == "":
-                platforms = platform
-            else:
-                platforms = platforms + "," + platform
-
-        dic = {'uuid': descriptor['uuid'],
-               'name': descriptor['testd']['name'],
-               'vendor': descriptor['testd']['vendor'],
-               'version': descriptor['testd']['version'],
-               'platforms': platforms,
-               'status': descriptor['status'],
-               'updated_at': descriptor['updated_at']}
+    tests_res = []
+    for test in tests:
+        dic = {'uuid': test['uuid'],
+               'instance_uuid': test['instance_uuid'],
+               'package_id': test['package_id'],
+               'service_uuid': test['service_uuid'],
+               'test_uuid': test['test_uuid'],
+               #'test_instance_uuid': test['test_instance_uuid'],
+               'status': test['status'],
+               'created_at': test['created_at']}
         LOG.debug(str(dic))
-        descriptors_res.append(dic)
+        tests_res.append(dic)
 
-    return True, descriptors_res
+    return True, tests_res
 
-def get_test_descriptor(uuid):
-    """Returns info on a specific test descriptor.
 
-    :param uuid: uuid of test descriptor.
+def get_test_result(uuid):
+    """Returns info on a specific test result.
 
-    :returns: A list. [0] is a bool with the result. [1] is a dictionary
-        containing a test descriptor.
+    :param uuid: uuid of test.
+
+    :returns: A list. [0] is a bool with the result. [1] is a dictionary 
+        containing a test.
     """
 
-    url = env.test_descriptors_api + '/' + uuid
+    # get service instance info
+    url = env.test_results_api + '/' + uuid
     resp = requests.get(url,
                         timeout=env.timeout)
 
     if resp.status_code != 200:
-        LOG.debug("Request for test descriptor returned with " +
+        LOG.debug("Request for test returned with " +
                   (str(resp.status_code)))
         return False, json.loads(resp.text)
 

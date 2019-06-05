@@ -34,7 +34,9 @@ Usage
   services
   functions
   requests
+  plans
   policies
+  results
   slas
   slices
   tests
