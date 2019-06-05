@@ -560,13 +560,11 @@ def dispatch(args):
         else:
             res, mes = tnglib.get_tests_plans()
             order = ['uuid',
-                     'package_id',
                      'service_uuid',
                      'test_uuid',
+                     'test_set_uuid',
                      'status',
-                     'description',
-                     'nsd',
-                     'testd']
+                     'test_result_uuid']
             form_print(mes, order)
             exit(not res)
     elif args.subparser_name:
