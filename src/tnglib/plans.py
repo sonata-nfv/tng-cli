@@ -37,61 +37,56 @@ import tnglib.env as env
 
 LOG = logging.getLogger(__name__)
 
-def get_test_descriptors():
-    """Returns info on all available test descriptors.
+def get_test_plans():
+    """Returns info on all available test plans.
 
     :returns: A list. [0] is a bool with the result. [1] is a list of
-        dictionaries. Each dictionary contains a test descriptor.
+        dictionaries. Each dictionary contains a result.
     """
 
-    # get current list of test descriptors
-    resp = requests.get(env.test_descriptors_api, timeout=env.timeout)
+    # get current list of tests results
+    resp = requests.get(env.test_plans_api, timeout=env.timeout)
 
     if resp.status_code != 200:
-        LOG.debug("Request for test descriptors returned with " +
+        LOG.debug("Request for test plans returned with " +
                   (str(resp.status_code)))
         return False, []
 
-    descriptors = json.loads(resp.text)
+    plans = json.loads(resp.text)
 
-    descriptors_res = []
-    for descriptor in descriptors:
+    plans_res = []
+    for plan in plans:
+        if plan['test_result_uuid']:
+            trid = plan['test_result_uuid']
+        else:
+            trid = ""
 
-        platforms = ""
-        for platform in descriptor['testd']['service_platforms']:
-            print (platform)
-            if platforms == "":
-                platforms = platform
-            else:
-                platforms = platforms + "," + platform
-
-        dic = {'uuid': descriptor['uuid'],
-               'name': descriptor['testd']['name'],
-               'vendor': descriptor['testd']['vendor'],
-               'version': descriptor['testd']['version'],
-               'platforms': platforms,
-               'status': descriptor['status'],
-               'updated_at': descriptor['updated_at']}
+        dic = {'uuid': plan['uuid'],
+               'service_uuid': plan['service_uuid'],
+               'test_uuid': plan['test_uuid'],
+               'test_set_uuid': plan['test_set_uuid'],
+               'status': plan['test_status'],
+               'test_result_uuid': trid}
         LOG.debug(str(dic))
-        descriptors_res.append(dic)
+        plans_res.append(dic)
 
-    return True, descriptors_res
+    return True, plans_res
 
-def get_test_descriptor(uuid):
-    """Returns info on a specific test descriptor.
+def get_test_plan(uuid):
+    """Returns info on a specific test plan.
 
-    :param uuid: uuid of test descriptor.
+    :param uuid: uuid of test plan.
 
     :returns: A list. [0] is a bool with the result. [1] is a dictionary
-        containing a test descriptor.
+        containing a test plan.
     """
 
-    url = env.test_descriptors_api + '/' + uuid
+    url = env.test_plans_api + '/' + uuid
     resp = requests.get(url,
                         timeout=env.timeout)
 
     if resp.status_code != 200:
-        LOG.debug("Request for test descriptor returned with " +
+        LOG.debug("Request for test returned with " +
                   (str(resp.status_code)))
         return False, json.loads(resp.text)
 

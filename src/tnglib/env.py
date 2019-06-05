@@ -102,6 +102,7 @@ def _build_paths():
     global policy_bind_api
     global test_results_api
     global test_plans_api
+    global test_descriptors_api
 
     gtk_api = ":32002/api/v3"
     pkg_api = sp_path + gtk_api + "/packages"
@@ -121,3 +122,4 @@ def _build_paths():
     policy_bind_api = sp_path + gtk_api + "/policies/bind"
     test_results_api = sp_path + gtk_api + "/tests/results"
     test_plans_api = sp_path + gtk_api + "/tests/plans"
+    test_descriptors_api = sp_path + gtk_api + "/tests/descriptors"

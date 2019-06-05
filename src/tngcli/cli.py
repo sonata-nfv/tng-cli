@@ -532,33 +532,35 @@ def dispatch(args):
                 form_print(mes)
                 exit(not res)
 
-    # tests subcommand
-    elif args.subparser_name == 'test':
+    # results subcommand
+    elif args.subparser_name == 'result':
 
         if bool(args.get):
             res, mes = tnglib.get_test_result(args.get)
             form_print(mes)
             exit(not res)
         else:
-            res, mes = tnglib.get_tests_results()
+            res, mes = tnglib.get_test_results()
             order = ['uuid',
                      'instance_uuid',
                      'package_id',
                      'service_uuid',
                      'test_uuid',
+                     #'test_instance_uuid',
                      'status',
                      'created_at']
             form_print(mes, order)
             exit(not res)
 
-    elif args.subparser_name == 'test-plan':
+    # plans subcommand
+    elif args.subparser_name == 'plan':
 
         if bool(args.get):
             res, mes = tnglib.get_test_plan(args.get)
             form_print(mes)
             exit(not res)
         else:
-            res, mes = tnglib.get_tests_plans()
+            res, mes = tnglib.get_test_plans()
             order = ['uuid',
                      'service_uuid',
                      'test_uuid',
@@ -567,6 +569,26 @@ def dispatch(args):
                      'test_result_uuid']
             form_print(mes, order)
             exit(not res)
+
+    # tests subcommand
+    elif args.subparser_name == 'test':
+
+        if bool(args.get):
+            res, mes = tnglib.get_test_descriptor(args.get)
+            form_print(mes)
+            exit(not res)
+        else:
+            res, mes = tnglib.get_test_descriptors()
+            order = ['uuid',
+                     'name',
+                     'vendor',
+                     'version',
+                     'platforms',
+                     'status',
+                     'updated_at']
+            form_print(mes, order)
+            exit(not res)
+
     elif args.subparser_name:
         print("Subcommand " + args.subparser_name + " not support yet")
         exit(0)
@@ -612,9 +634,11 @@ def parse_args(args):
     parser_pol = subparsers.add_parser('policy',
                                        help='actions related to policies')
     parser_tests = subparsers.add_parser('test',
-                                         help='actions related to tests')
-    parser_test_plans = subparsers.add_parser('test-plan',
+                                         help='actions related to test descriptors')
+    parser_plans = subparsers.add_parser('plan',
                                          help='actions related to test-plans')
+    parser_results = subparsers.add_parser('result',
+                                         help='actions related to results')
 
     # packages sub arguments
     parser_pkg.add_argument('-l',
@@ -946,14 +970,21 @@ def parse_args(args):
                               metavar='UUID',
                               required=False,
                               default=False,
-                              help='Returns detailed info on specified test')
+                              help='Returns detailed info on specified test descriptor')
 
-    parser_test_plans.add_argument('-g',
+    parser_plans.add_argument('-g',
                               '--get',
                               metavar='UUID',
                               required=False,
                               default=False,
                               help='Returns detailed info on specified test-plan')
+
+    parser_results.add_argument('-g',
+                          '--get',
+                          metavar='UUID',
+                          required=False,
+                          default=False,
+                          help='Returns detailed info on specified test-plan')
 
     return parser.parse_args(args)
 
