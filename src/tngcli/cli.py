@@ -295,7 +295,15 @@ def dispatch(args):
                         args.get,
                         args.nsd,
                         args.guarantee_id,
-                        args.date]
+                        args.date,
+                        args.sl_type,
+                        args.as_instances,
+                        args.sl_date,
+                        args.initiator,
+                        args.provider,
+                        args.flavor,
+                        args.name]
+
             arg_sum = len([x for x in sel_args if x])
             if arg_sum == 0:
                 res, mes = tnglib.get_sla_templates()
@@ -313,20 +321,51 @@ def dispatch(args):
                     exit(not res)
 
                 if bool(args.create):
-                    if not (bool(args.nsd) and bool(args.guarantee_id)):
-                        msg = "Both --service and --guarantee are required " \
+                    if not (bool(args.nsd)):
+                        msg = " --service is required " \
                               "with --template --create <NAME>"
                         print(msg)
                         exit(1)
                     else:
+                        name = 'default'
+                        if bool(args.name):
+                            name = args.name
                         date = '01/01/2025'
                         if bool(args.date):
                             date = args.date
-                        guarantee = args.guarantee_id
+                        guarantee_id = None
+                        if bool(args.guarantee_id):
+                            guarantee_id = args.guarantee_id
+                        sl_type = 'public'
+                        if bool(args.sl_type):
+                            sl_type = args.sl_type
+                        as_instances = '100'
+                        if bool(args.as_instances):
+                                as_instances = args.as_instances
+                        sl_date = '01/01/2025'
+                        if bool(args.sl_date):
+                            sl_date = args.sl_date
+                        initiator = 'admin'
+                        if bool(args.initiator):
+                            initiator = args.initiator
+                        provider = 'default'
+                        if bool(args.provider):
+                            provider = args.provider
+                        flavor = 'default'
+                        if bool(args.flavor):
+                            flavor = args.flavor
+
                         res, mes = tnglib.create_sla_template(args.create,
                                                               args.nsd,
+                                                              name,
                                                               date,
-                                                              guarantee)
+                                                              guarantee_id,
+                                                              sl_type,
+                                                              as_instances,
+                                                              sl_date,
+                                                              initiator,
+                                                              provider,
+                                                              flavor)
                         print(mes)
                         exit(not res)
 
