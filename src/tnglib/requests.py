@@ -37,6 +37,7 @@ import time
 import os
 import yaml
 import tnglib.env as env
+import tnglib.functions as func
 
 LOG = logging.getLogger(__name__)
 
@@ -181,7 +182,7 @@ def service_scale_out(instance_uuid, vnfd_uuid, number_inst=1, vim_uuid=None):
     """
     Makes a request to scale out a service.
 
-    :param intstance_uuid: A string. The uuid of the service instance.
+    :param instance_uuid: A string. The uuid of the service instance.
     :param vnfd_uuid: A string. the uuid of the vnf descriptor to scale.
     :param number_inst: An integer. Number of required extra intances.
     :returns: A list. [0] is a bool with the result. [1] is a string containing
@@ -189,48 +190,52 @@ def service_scale_out(instance_uuid, vnfd_uuid, number_inst=1, vim_uuid=None):
 
     """
 
-    if not vim_uuid:
-        vim_uuid = ''
+    if not number_inst:
+        number_inst = 1
 
     data = {"instance_uuid": instance_uuid,
             "request_type": "SCALE_SERVICE",
             "scaling_type": "ADD_VNF",
             "vnfd_uuid": vnfd_uuid,
-            "number_of_instances": number_inst,
-            "vim_uuid": vim_uuid}
+            "number_of_instances": number_inst
+            }
+
+    if vim_uuid:
+        data["vim_uuid"] = vim_uuid
+    print(str(data))
 
     return _post_request(data)
 
-def service_scale_in(instance_uuid, vnf_uuid, instance_def=True, number_inst=1):
+def service_scale_in(instance_uuid, vnf_uuid=None, vnfd_uuid=None, number_inst=1):
     """
     Makes a request to scale in a service.
 
-    :param intstance_uuid: A string. The uuid of the service instance.
-    :param vnf_uuid: A string. the uuid of either the vnf descriptor or instance
+    :param instance_uuid: A string. The uuid of the service instance.
+    :param vnfd_uuid: A string. the uuid of either the vnf descriptor or instance
         that needs to be scaled in.
-    :param vnf_uuid: A bool. Indicates whether the instance to scale in is
-        defined or not. If True, it is defined and vnf_uuid contains the uuid of
-        a VNF instance. If False, it contains the uuid of a vnfd and the MANO
-        chooses which instance that relates to this vnfd it scales in.
+    :param vnf_uuid: A string. Contains the uuid of a VNF instance.
     :param number_inst: An integer. Number of required intances to scale in.
-        Only when instance_def is False.
+        Only when vnfd_uuid is present.
     :returns: A list. [0] is a bool with the result. [1] is a string containing
         the uuid of the request.
 
     """
+    if not number_inst:
+        number_inst = 1
 
-    if instance_def:
-        data = {"instance_uuid": instance_uuid,
-                "request_type": "SCALE_SERVICE",
-                "scaling_type": "REMOVE_VNF",
-                "vnf_uuid": vnf_uuid}
-    else:    
-        data = {"instance_uuid": instance_uuid,
-                "request_type": "SCALE_SERVICE",
-                "scaling_type": "REMOVE_VNF",
-                "vnfd_uuid": vnf_uuid,
-                "number_of_instances": number_inst}
+    data = {
+            "instance_uuid": instance_uuid,
+            "request_type": "SCALE_SERVICE",
+            "scaling_type": "REMOVE_VNF",
+        }
 
+    if vnf_uuid:
+        data["vnf_uuid"] = vnf_uuid
+
+    elif vnfd_uuid:
+        data["vnfd_uuid"] = vnfd_uuid
+        data["number_of_instances"] = number_inst
+    print(str(data))
     return _post_request(data)
 
 def _post_request(data):
