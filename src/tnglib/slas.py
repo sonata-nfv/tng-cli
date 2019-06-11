@@ -41,8 +41,13 @@ import tnglib.env as env
 LOG = logging.getLogger(__name__)
 
 
-def create_sla_template(templateName, nsd_uuid, expireDate, service_licence_type, allowed_service_instances, service_licence_expiration_date,
-                        guaranteeId=None, template_initiator=None, provider_name=None, dflavour_name=None):
+def create_sla_template(templateName, nsd_uuid, expireDate,
+                        guaranteeId, service_licence_type,
+                        allowed_service_instances,
+                        service_licence_expiration_date,
+                        template_initiator, provider_name,
+                        dflavour_name):
+
     """Generates an initial SLA template.
 
     :param templateName: name for the SLA template. 
@@ -108,7 +113,7 @@ def get_sla_templates():
     for template in templates:
         dic = {'name': template['slad']['name'],
                'created_at': template['created_at'],
-               'service': template['slad']['sla_template']['ns']['ns_name'],
+               'service': template['slad']['sla_template']['service']['ns_name'],
                'sla_uuid': template['uuid'],
                }
         LOG.debug(str(dic))
@@ -181,10 +186,10 @@ def get_sla_guarantees():
     guar_res = []
 
     for guarantee in guarantees:
-        dic = {'name': guarantee['name'],
+        dic = {'name': guarantee['guarantee_name'],
                'id': guarantee['guaranteeID'],
-               'operator': guarantee['operator'],
-               'value': guarantee['value']}
+               'operator': guarantee['guarantee_operator'],
+               'value': guarantee['guarantee_threshold']}
         LOG.debug(str(dic))
         guar_res.append(dic)
 
