@@ -202,7 +202,6 @@ def service_scale_out(instance_uuid, vnfd_uuid, number_inst=1, vim_uuid=None):
 
     if vim_uuid:
         data["vim_uuid"] = vim_uuid
-    print(str(data))
 
     return _post_request(data)
 
@@ -235,7 +234,7 @@ def service_scale_in(instance_uuid, vnf_uuid=None, vnfd_uuid=None, number_inst=1
     elif vnfd_uuid:
         data["vnfd_uuid"] = vnfd_uuid
         data["number_of_instances"] = number_inst
-    print(str(data))
+
     return _post_request(data)
 
 def _post_request(data):
