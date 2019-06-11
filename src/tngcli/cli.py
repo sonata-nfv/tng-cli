@@ -716,17 +716,11 @@ def parse_args(args):
                             default=False,
                             help='Specify the vnf instance uuid')
 
-    parser_req.add_argument('--service_uuid',
-                            metavar='service_uuid',
-                            required=False,
-                            default=False,
-                            help='Specify the service uuid for instantiation')
-
     parser_req.add_argument('--instance_uuid',
                             metavar='instance_uuid',
                             required=False,
                             default=False,
-                            help='Specify the service uuid ')
+                            help='Specify the service uuid to be scaled')
 
     parser_req.add_argument('--num_instances',
                             metavar='num_instances',

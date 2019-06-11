@@ -37,7 +37,6 @@ import time
 import os
 import yaml
 import tnglib.env as env
-import tnglib.functions as func
 
 LOG = logging.getLogger(__name__)
 
