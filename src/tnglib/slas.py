@@ -46,7 +46,7 @@ def create_sla_template(templateName, nsd_uuid, expireDate,
                         allowed_service_instances,
                         service_licence_expiration_date,
                         template_initiator, provider_name,
-                        dflavour_name):
+                        dflavour_name=None):
 
     """Generates an initial SLA template.
 

@@ -350,7 +350,7 @@ def dispatch(args):
                         provider = 'default'
                         if bool(args.provider):
                             provider = args.provider
-                        flavor = 'default'
+                        flavor = None
                         if bool(args.flavor):
                             flavor = args.flavor
 
