@@ -41,22 +41,41 @@ import tnglib.env as env
 LOG = logging.getLogger(__name__)
 
 
-def create_sla_template(templateName, nsd_uuid, expireDate, guaranteeId):
+def create_sla_template(templateName, nsd_uuid, expireDate,
+                        guaranteeId, service_licence_type,
+                        allowed_service_instances,
+                        service_licence_expiration_date,
+                        template_initiator, provider_name,
+                        dflavour_name):
+
     """Generates an initial SLA template.
 
     :param templateName: name for the SLA template. 
     :param nsd_uuid: uuid of the network service.
     :param expireDate: DD/MM/YYYY expiration date.
     :param guaranteeId: id of the SLA guarantee.
+    :param template_initiator: the one who creates the sla template e.g. Uprc.
+    :param provider_name: the vendor on behalf of whom the sla template is generated e.g. Telefonica.
+    :param dflavour_name: the mapped deployment flavor.
+    :param service_licence_type: the selected license type (public|trial|private).
+    :param allowed_service_instances: the allowed ns instances based on the license.
+    :param service_licence_expiration_date: DD/MM/YYYY license expiration date.
 
     :returns: A list. [0] is a bool with the result. [1] is a string containing
         the uuid of the created SLA template.
     """
+
     # generate sla template
     data = {'templateName': templateName,
             'nsd_uuid': nsd_uuid,
+            'guaranteeId':guaranteeId,
             'expireDate': expireDate,
-            'guaranteeId': guaranteeId}
+            'template_initiator': template_initiator,
+            'provider_name': provider_name,
+            'dflavour_name':dflavour_name,
+            'service_licence_type':service_licence_type,
+            'allowed_service_instances':allowed_service_instances,
+            'service_licence_expiration_date':service_licence_expiration_date}
 
     resp = requests.post(env.sl_templates_api,
                          data=data,
@@ -94,7 +113,7 @@ def get_sla_templates():
     for template in templates:
         dic = {'name': template['slad']['name'],
                'created_at': template['created_at'],
-               'service': template['slad']['sla_template']['ns']['ns_name'],
+               'service': template['slad']['sla_template']['service']['ns_name'],
                'sla_uuid': template['uuid'],
                }
         LOG.debug(str(dic))
@@ -167,10 +186,10 @@ def get_sla_guarantees():
     guar_res = []
 
     for guarantee in guarantees:
-        dic = {'name': guarantee['name'],
+        dic = {'name': guarantee['guarantee_name'],
                'id': guarantee['guaranteeID'],
-               'operator': guarantee['operator'],
-               'value': guarantee['value']}
+               'operator': guarantee['guarantee_operator'],
+               'value': guarantee['guarantee_threshold']}
         LOG.debug(str(dic))
         guar_res.append(dic)
 

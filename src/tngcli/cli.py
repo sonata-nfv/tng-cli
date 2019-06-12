@@ -303,7 +303,9 @@ def dispatch(args):
                         args.get,
                         args.nsd,
                         args.guarantee_id,
-                        args.date]
+                        args.date
+                        ]
+
             arg_sum = len([x for x in sel_args if x])
             if arg_sum == 0:
                 res, mes = tnglib.get_sla_templates()
@@ -321,8 +323,8 @@ def dispatch(args):
                     exit(not res)
 
                 if bool(args.create):
-                    if not (bool(args.nsd) and bool(args.guarantee_id)):
-                        msg = "Both --service and --guarantee are required " \
+                    if not (bool(args.nsd)):
+                        msg = " --service is required " \
                               "with --template --create <NAME>"
                         print(msg)
                         exit(1)
@@ -330,11 +332,38 @@ def dispatch(args):
                         date = '01/01/2025'
                         if bool(args.date):
                             date = args.date
-                        guarantee = args.guarantee_id
+                        guarantee_id = None
+                        if bool(args.guarantee_id):
+                            guarantee_id = args.guarantee_id
+                        sl_type = 'public'
+                        if bool(args.sl_type):
+                            sl_type = args.sl_type
+                        as_instances = '100'
+                        if bool(args.as_instances):
+                            as_instances = args.as_instances
+                        sl_date = '01/01/2025'
+                        if bool(args.sl_date):
+                            sl_date = args.sl_date
+                        initiator = 'admin'
+                        if bool(args.initiator):
+                            initiator = args.initiator
+                        provider = 'default'
+                        if bool(args.provider):
+                            provider = args.provider
+                        flavor = 'default'
+                        if bool(args.flavor):
+                            flavor = args.flavor
+
                         res, mes = tnglib.create_sla_template(args.create,
                                                               args.nsd,
                                                               date,
-                                                              guarantee)
+                                                              guarantee_id,
+                                                              sl_type,
+                                                              as_instances,
+                                                              sl_date,
+                                                              initiator,
+                                                              provider,
+                                                              flavor)
                         print(mes)
                         exit(not res)
 
@@ -853,6 +882,48 @@ def parse_args(args):
     parser_sla.add_argument('-i',
                             '--guarantee-id',
                             metavar='GUARANTEE ID',
+                            default=False,
+                            help=help_mes)
+
+    help_mes = 'Only with --template --create. Specify the license type'
+    parser_sla.add_argument('-slt',
+                            '--sl-type',
+                            metavar='LICENSE TYPE',
+                            default=False,
+                            help=help_mes)
+
+    help_mes = 'Only with --template --create. Specify the allowed number of instances'
+    parser_sla.add_argument('-asi',
+                            '--as-instances',
+                            metavar='ALLOWED INSTANCES',
+                            default=False,
+                            help=help_mes)
+
+    help_mes = 'Only with --template --create. Specify the license exp date'
+    parser_sla.add_argument('-sld',
+                            '--sl-date',
+                            metavar='LICENSE EXP DATE',
+                            default=False,
+                            help=help_mes)
+
+    help_mes = 'Only with --template --create. Specify the template initiator'
+    parser_sla.add_argument('-in',
+                            '--initiator',
+                            metavar='INITIATOR NAME',
+                            default=False,
+                            help=help_mes)
+
+    help_mes = 'Only with --template --create. Specify the the template provider'
+    parser_sla.add_argument('-pr',
+                            '--provider',
+                            metavar='PROVIDER NAME',
+                            default=False,
+                            help=help_mes)
+
+    help_mes = 'Only with --template --create. Specify the flavor name'
+    parser_sla.add_argument('-fl',
+                            '--flavor',
+                            metavar='FLAVOR NAME',
                             default=False,
                             help=help_mes)
 
