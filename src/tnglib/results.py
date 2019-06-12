@@ -90,3 +90,30 @@ def get_test_result(uuid):
         return False, json.loads(resp.text)
 
     return True, json.loads(resp.text)
+
+def get_test_uuid_by_instance_uuid(instance_uuid):
+    """Returns the test_uuid on a specific test result filtering by instance_uuid.
+    :returns: A list. [0] is a bool with the result. [1] is a list of
+        dictionaries. Each dictionary contains a test_uuid.
+    """
+
+    # get current list of tests results
+    resp = requests.get(env.test_results_api, timeout=env.timeout)
+
+    if resp.status_code != 200:
+        LOG.debug("Request for test results returned with " +
+                  (str(resp.status_code)))
+        return False, []
+
+    tests = json.loads(resp.text)
+
+    tests_uuids = []
+
+    for test in tests:
+        if test['instance_uuid'] == instance_uuid:
+            dic = {'uuid': test['uuid']}
+
+            LOG.debug(str(dic))
+            tests_uuids.append(dic)
+
+    return True, tests_uuids
