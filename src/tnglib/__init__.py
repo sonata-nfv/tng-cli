@@ -38,6 +38,7 @@ from tnglib.functions import *
 from tnglib.policies import *
 from tnglib.requests import *
 from tnglib.slices import *
+from tnglib.logs import *
 from tnglib.tests import *
 from tnglib.records import *
 from tnglib.env import set_sp_path, get_sp_path, set_timeout
