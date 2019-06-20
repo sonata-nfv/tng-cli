@@ -51,7 +51,9 @@ slice_instance_api = ''
 policy_api = ''
 policy_bind_api = ''
 test_results_api = ''
-
+graylog_username = "api"
+graylog_password = "apiapi"
+graylog_host = "logs.sonata-nfv.eu:12900"
 
 def get_sp_path():
     """Get the configured SP url.
