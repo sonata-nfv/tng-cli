@@ -100,11 +100,28 @@ def get_request(request_uuid):
     return True, json.loads(resp.text)
 
 
-def service_instantiate(service_uuid, sla_uuid=None):
+def service_instantiate(service_uuid, sla_uuid=None, mapping=None):
     """Makes a request to instantiate a service.
 
     :param service_uuid: A string. The uuid of the service.
     :param sla_uuid: A string (Default value = None). The uuid of the SLA.
+    :param input_mapping: dictionary with two keys: vnfs and vls. Both keys
+        contain a list. vnf list elements are dictionaries with two keys: vnf_id
+        and vim_id. vls list elements are dictionaries with three keys: vl_id,
+        external_net and vim_id.
+        ---
+        vnfs:
+          - vnf_id: <foo>
+            vim_id: <bar>
+          - vnf_id: <foo2>
+            vim_id: <bar2>
+        vls:
+          - vl_id: <foo>
+            vim_id: <bar>
+            external_net: <foo.bar>
+          - vl_id: <foo2>
+            vim_id: <bar2>
+            external_net: <foo.bar2>
     :returns: A list. [0] is a bool with the result. [1] is a string containing
         the uuid of the instantiated service.
 
@@ -115,6 +132,9 @@ def service_instantiate(service_uuid, sla_uuid=None):
 
     if sla_uuid:
         data['sla_id'] = sla_uuid
+
+    if mapping:
+        data['mapping'] = mapping
 
     return _post_request(data)
 
