@@ -147,6 +147,14 @@ def dispatch(args):
             res, mes = tnglib.get_request(args.get)
             form_print(mes)
             exit(not res)
+        elif args.scale_out:
+            res, mes = tnglib.service_scale_out(args.instance_uuid, args.vnfd_uuid, args.num_instances, args.vim_uuid)
+            form_print(mes)
+            exit(not res)
+        elif args.scale_in:
+            res, mes = tnglib.service_scale_in(args.instance_uuid, args.vnf_uuid, args.vnfd_uuid, args.num_instances)
+            form_print(mes)
+            exit(not res)
         else:
             res, mes = tnglib.get_requests()
             order = ['request_uuid',
@@ -295,7 +303,9 @@ def dispatch(args):
                         args.get,
                         args.nsd,
                         args.guarantee_id,
-                        args.date]
+                        args.date
+                        ]
+
             arg_sum = len([x for x in sel_args if x])
             if arg_sum == 0:
                 res, mes = tnglib.get_sla_templates()
@@ -313,8 +323,8 @@ def dispatch(args):
                     exit(not res)
 
                 if bool(args.create):
-                    if not (bool(args.nsd) and bool(args.guarantee_id)):
-                        msg = "Both --service and --guarantee are required " \
+                    if not (bool(args.nsd)):
+                        msg = " --service is required " \
                               "with --template --create <NAME>"
                         print(msg)
                         exit(1)
@@ -322,11 +332,38 @@ def dispatch(args):
                         date = '01/01/2025'
                         if bool(args.date):
                             date = args.date
-                        guarantee = args.guarantee_id
+                        guarantee_id = None
+                        if bool(args.guarantee_id):
+                            guarantee_id = args.guarantee_id
+                        sl_type = 'public'
+                        if bool(args.sl_type):
+                            sl_type = args.sl_type
+                        as_instances = '100'
+                        if bool(args.as_instances):
+                            as_instances = args.as_instances
+                        sl_date = '01/01/2025'
+                        if bool(args.sl_date):
+                            sl_date = args.sl_date
+                        initiator = 'admin'
+                        if bool(args.initiator):
+                            initiator = args.initiator
+                        provider = 'default'
+                        if bool(args.provider):
+                            provider = args.provider
+                        flavor = None
+                        if bool(args.flavor):
+                            flavor = args.flavor
+
                         res, mes = tnglib.create_sla_template(args.create,
                                                               args.nsd,
                                                               date,
-                                                              guarantee)
+                                                              guarantee_id,
+                                                              sl_type,
+                                                              as_instances,
+                                                              sl_date,
+                                                              initiator,
+                                                              provider,
+                                                              flavor)
                         print(mes)
                         exit(not res)
 
@@ -532,43 +569,63 @@ def dispatch(args):
                 form_print(mes)
                 exit(not res)
 
-    # tests subcommand
-    elif args.subparser_name == 'test':
+    # results subcommand
+    elif args.subparser_name == 'result':
 
         if bool(args.get):
             res, mes = tnglib.get_test_result(args.get)
             form_print(mes)
             exit(not res)
         else:
-            res, mes = tnglib.get_tests_results()
+            res, mes = tnglib.get_test_results()
             order = ['uuid',
                      'instance_uuid',
                      'package_id',
                      'service_uuid',
                      'test_uuid',
+                     #'test_instance_uuid',
                      'status',
                      'created_at']
             form_print(mes, order)
             exit(not res)
 
-    elif args.subparser_name == 'test-plan':
+    # plans subcommand
+    elif args.subparser_name == 'plan':
 
         if bool(args.get):
             res, mes = tnglib.get_test_plan(args.get)
             form_print(mes)
             exit(not res)
         else:
-            res, mes = tnglib.get_tests_plans()
+            res, mes = tnglib.get_test_plans()
             order = ['uuid',
-                     'package_id',
                      'service_uuid',
                      'test_uuid',
+                     'test_set_uuid',
                      'status',
-                     'description',
-                     'nsd',
-                     'testd']
+                     'test_result_uuid']
             form_print(mes, order)
             exit(not res)
+
+    # tests subcommand
+    elif args.subparser_name == 'test':
+
+        if bool(args.get):
+            res, mes = tnglib.get_test_descriptor(args.get)
+            form_print(mes)
+            exit(not res)
+        else:
+            res, mes = tnglib.get_test_descriptors()
+            order = ['uuid',
+                     'name',
+                     'vendor',
+                     'version',
+                     'platforms',
+                     'status',
+                     'updated_at']
+            form_print(mes, order)
+            exit(not res)
+
     elif args.subparser_name:
         print("Subcommand " + args.subparser_name + " not support yet")
         exit(0)
@@ -614,9 +671,11 @@ def parse_args(args):
     parser_pol = subparsers.add_parser('policy',
                                        help='actions related to policies')
     parser_tests = subparsers.add_parser('test',
-                                         help='actions related to tests')
-    parser_test_plans = subparsers.add_parser('test-plan',
+                                         help='actions related to test descriptors')
+    parser_plans = subparsers.add_parser('plan',
                                          help='actions related to test-plans')
+    parser_results = subparsers.add_parser('result',
+                                         help='actions related to results')
 
     # packages sub arguments
     parser_pkg.add_argument('-l',
@@ -661,6 +720,48 @@ def parse_args(args):
                             required=False,
                             default=False,
                             help='Returns detailed info on specified request')
+
+    parser_req.add_argument('--scale_in',
+                            action='store_true',
+                            required=False,
+                            default=False,
+                            help='Scale in a service')
+
+    parser_req.add_argument('--scale_out',
+                            action='store_true',
+                            required=False,
+                            default=False,
+                            help='Scale out a service')
+
+    parser_req.add_argument('--vnfd_uuid',
+                            metavar='vnfd_uuid',
+                            required=False,
+                            default=False,
+                            help='Specify the vnf descriptor uuid')
+
+    parser_req.add_argument('--vnf_uuid',
+                            metavar='vnfd_uuid',
+                            required=False,
+                            default=False,
+                            help='Specify the vnf instance uuid')
+
+    parser_req.add_argument('--instance_uuid',
+                            metavar='instance_uuid',
+                            required=False,
+                            default=False,
+                            help='Specify the service uuid to be scaled')
+
+    parser_req.add_argument('--num_instances',
+                            metavar='num_instances',
+                            required=False,
+                            default=False,
+                            help='Number of instances to add or remove to the service')
+
+    parser_req.add_argument('--vim_uuid',
+                            metavar='vim_uuid',
+                            required=False,
+                            default=False,
+                            help='VIM uuid to place the scaled service')
 
     # services sub arguments
     parser_ser.add_argument('--descriptor',
@@ -781,6 +882,48 @@ def parse_args(args):
     parser_sla.add_argument('-i',
                             '--guarantee-id',
                             metavar='GUARANTEE ID',
+                            default=False,
+                            help=help_mes)
+
+    help_mes = 'Only with --template --create. Specify the license type'
+    parser_sla.add_argument('-slt',
+                            '--sl-type',
+                            metavar='LICENSE TYPE',
+                            default=False,
+                            help=help_mes)
+
+    help_mes = 'Only with --template --create. Specify the allowed number of instances'
+    parser_sla.add_argument('-asi',
+                            '--as-instances',
+                            metavar='ALLOWED INSTANCES',
+                            default=False,
+                            help=help_mes)
+
+    help_mes = 'Only with --template --create. Specify the license exp date'
+    parser_sla.add_argument('-sld',
+                            '--sl-date',
+                            metavar='LICENSE EXP DATE',
+                            default=False,
+                            help=help_mes)
+
+    help_mes = 'Only with --template --create. Specify the template initiator'
+    parser_sla.add_argument('-in',
+                            '--initiator',
+                            metavar='INITIATOR NAME',
+                            default=False,
+                            help=help_mes)
+
+    help_mes = 'Only with --template --create. Specify the the template provider'
+    parser_sla.add_argument('-pr',
+                            '--provider',
+                            metavar='PROVIDER NAME',
+                            default=False,
+                            help=help_mes)
+
+    help_mes = 'Only with --template --create. Specify the flavor name'
+    parser_sla.add_argument('-fl',
+                            '--flavor',
+                            metavar='FLAVOR NAME',
                             default=False,
                             help=help_mes)
 
@@ -948,14 +1091,21 @@ def parse_args(args):
                               metavar='UUID',
                               required=False,
                               default=False,
-                              help='Returns detailed info on specified test')
+                              help='Returns detailed info on specified test descriptor')
 
-    parser_test_plans.add_argument('-g',
+    parser_plans.add_argument('-g',
                               '--get',
                               metavar='UUID',
                               required=False,
                               default=False,
                               help='Returns detailed info on specified test-plan')
+
+    parser_results.add_argument('-g',
+                          '--get',
+                          metavar='UUID',
+                          required=False,
+                          default=False,
+                          help='Returns detailed info on specified test-plan')
 
     return parser.parse_args(args)
 
