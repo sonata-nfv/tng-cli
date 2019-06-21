@@ -34,10 +34,12 @@ import graylog
 from graylog.rest import ApiException
 from tnglib import env
 
-def get_logs(_from, to, sp_path, file=True):
+def get_logs(_from, to, sp_path, filter, file=True):
     # _from = "2019-04-25 17:11:01.201" # Object | Timerange start. See description for date format
     # to = "2019-04-25 17:26:01.201" # Object | Timerange end. See description for date format
-    # sp_path =
+    # sp_path = "http://pre-int-sp-ath.5gtango.eu" | Complete url of the SP
+    # filter = "source:pre-int-sp-ath* AND container_name:tng-gtk-sp" | Complete filter with Graylogs sintax
+    # file = True/False | Write logs to file (Default is True)
 
     configuration = graylog.Configuration()
     configuration.username = env.graylog_username
@@ -50,6 +52,10 @@ def get_logs(_from, to, sp_path, file=True):
         source = sp_path
 
     query = "source:{} AND type:E".format(source)
+
+    if filter:
+        query = filter
+
     try:
         # Message search with absolute timerange.
         api_instance = graylog.SearchuniversalabsoluteApi()
