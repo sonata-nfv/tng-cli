@@ -37,9 +37,31 @@ cwd = path.dirname(__file__)
 with open(path.join(cwd, 'requirements.txt')) as f:
     requirements = f.read().splitlines()
 
+def install_deps():
+    """
+    Workaround to load GitHub-hosted Python packages
+    from requirements.txt.
+    see: https://github.com/pypa/pip/issues/3610#issuecomment-356687173
+    """
+    with open(path.join(cwd, 'requirements.txt')) as f:
+        requirements = f.read().splitlines()
+        new_pkgs = []
+        links = []
+        for r in requirements:
+            if "git+" in r:
+                pkg = r.split('#')[-1]
+                links.append(r.strip())
+                new_pkgs.append(pkg.replace('egg=', '').rstrip())
+            else:
+                new_pkgs.append(r.strip())
+        return new_pkgs, links
+
 longdesc = """
 Component to interface with the various 5GTANGO components
 """
+
+# load dependencies
+pkgs, new_links = install_deps()
 
 setup(name='tngcli',
       license='Apache License, Version 2.0',
@@ -50,7 +72,9 @@ setup(name='tngcli',
       long_description=longdesc,
       package_dir={'': 'src'},
       packages=find_packages('src'),  # dependency resolution
-      install_requires=requirements,
+      include_package_data=True,       # package data specified in MANIFEST.in
+      install_requires=pkgs,
+      dependency_links=new_links,
       zip_safe=False,
       entry_points={
           'console_scripts': [
