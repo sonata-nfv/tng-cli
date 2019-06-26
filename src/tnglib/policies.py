@@ -145,6 +145,32 @@ def delete_policy(policy_uuid):
     else:
         return False, json.loads(resp.text)
 
+def define_policy_as_default(policy_uuid,service_uuid):
+    """Define a Runtime Policy as default.
+
+    :param policy_uuid: uuid of a policy descriptor.
+
+    :returns: A list. [0] is a bool with the result. [1] is a string containing
+        the uuid of the terminated policy descriptor.
+    """
+
+    url = env.policy_api + '/default/' + policy_uuid
+
+    data = {'nsid': service_uuid, 'defaultPolicy': True}
+    resp = requests.patch(url,
+                          json=data,
+                          timeout=env.timeout)
+  
+    if resp.status_code != 200:
+        LOG.debug("Request returned with " + (str(resp.status_code)))
+        error = resp.text
+        return False, error
+
+    message = json.loads(resp.text)['message']
+
+    return True, message
+
+
 
 def attach_policy(policy_uuid, service_uuid, sla_uuid):
     """Attaches a policy to a service and SLA.
@@ -159,6 +185,32 @@ def attach_policy(policy_uuid, service_uuid, sla_uuid):
 
     data = {'nsid': service_uuid, 'slaid': sla_uuid}
     resp = requests.patch(env.policy_bind_api + '/' + policy_uuid,
+                          json=data,
+                          timeout=env.timeout)
+  
+    if resp.status_code != 200:
+        LOG.debug("Request returned with " + (str(resp.status_code)))
+        error = resp.text
+        return False, error
+
+    message = json.loads(resp.text)['message']
+
+    return True, message
+
+
+def define_policy_as_default(policy_uuid,service_uuid):
+    """Define a Runtime Policy as default.
+
+    :param policy_uuid: uuid of a policy descriptor.
+
+    :returns: A list. [0] is a bool with the result. [1] is a string containing
+        the uuid of the terminated policy descriptor.
+    """
+
+    url = env.policy_api + '/default/' + policy_uuid
+
+    data = {'nsid': service_uuid, 'defaultPolicy': True}
+    resp = requests.patch(url,
                           json=data,
                           timeout=env.timeout)
   
