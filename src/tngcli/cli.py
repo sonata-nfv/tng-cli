@@ -36,6 +36,7 @@ import tnglib
 import yaml
 import os
 import logging
+import getpass
 
 
 LOG = logging.getLogger(__name__)
@@ -84,6 +85,34 @@ def dispatch(args):
     if not tnglib.sp_health_check():
         print("Couldn't reach SP at \"" + tnglib.get_sp_path() + "\"")
         exit(1)
+
+    # Check if token exists
+    token = tnglib.get_token()
+
+    if token[0]:
+        if tnglib.is_token_valid():
+           # pass token into headers
+           tnglib.add_token_to_header(token[1])
+        else:
+            if args.subparser_name != 'login':
+                print("Token is outdated. Obtain a new token through tng-cli login")
+                exit(1)
+
+    # login subcommand
+    if args.subparser_name == 'login':
+        # login needs exactly one argument
+        if args.username:
+            pswd = getpass.getpass('Password:')
+            res, mes = tnglib.update_token(args.username, pswd, True)
+            if not res:
+                print(mes)
+            exit(not res)
+        else:
+            msg = "Missing arguments for tng-cli login, " \
+                  "-u/--username is required."
+            print(msg)
+            exit(1)
+
 
     # packages subcommand
     if args.subparser_name == 'package':
@@ -676,6 +705,15 @@ def parse_args(args):
                                          help='actions related to test-plans')
     parser_results = subparsers.add_parser('result',
                                          help='actions related to results')
+    parser_login = subparsers.add_parser('login',
+                                         help='actions related to login')
+
+    # login sub arguments
+    parser_login.add_argument('-u',
+                              '--username',
+                              required=True,
+                              metavar="USERNAME",
+                              help='provide username')
 
     # packages sub arguments
     parser_pkg.add_argument('-l',

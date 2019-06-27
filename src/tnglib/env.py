@@ -35,6 +35,8 @@ timeout = 15.0
 
 # Building all paths for global use
 sp_path = ''
+root_api = ''
+session_api = ''
 pkg_api = ''
 pkg_status_api = ''
 request_api = ''
@@ -54,6 +56,7 @@ test_results_api = ''
 graylog_username = "api"
 graylog_password = "apiapi"
 graylog_host = "logs.sonata-nfv.eu:12900"
+header = {}
 
 def get_sp_path():
     """Get the configured SP url.
@@ -62,7 +65,6 @@ def get_sp_path():
     """
 
     return sp_path
-
 
 def set_timeout(timeout_in):
     """Set the timeout.
@@ -83,11 +85,21 @@ def set_sp_path(new_base_path):
     sp_path = new_base_path
     _build_paths()
 
+def add_token_to_header(token):
+    """Set the header for all requests with the token.
+
+    :param token: the token
+    """
+
+    global header
+    header = {'Authorization': 'Bearer ' + token}
 
 def _build_paths():
     """ """
 
+    global root_api
     global pkg_api
+    global session_api
     global pkg_status_api
     global request_api
     global service_descriptor_api
@@ -107,6 +119,8 @@ def _build_paths():
     global test_descriptors_api
 
     gtk_api = ":32002/api/v3"
+    root_api = sp_path + gtk_api
+    session_api = sp_path + gtk_api + "/users/sessions"
     pkg_api = sp_path + gtk_api + "/packages"
     pkg_status_api = pkg_api + "/status"
     request_api = sp_path + gtk_api + "/requests"

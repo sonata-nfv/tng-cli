@@ -37,6 +37,8 @@ import time
 import os
 import tnglib.env as env
 
+from datetime import datetime, timedelta
+
 LOG = logging.getLogger(__name__)
 
 
@@ -45,9 +47,88 @@ def sp_health_check():
 
     :returns: bool.
     """
-    url = env.pkg_api
+    url = env.root_api
     try:
         resp = requests.get(url, timeout=env.timeout)
         return True
     except:
         return False
+
+def update_token(username, password, store_token=False):
+    """Obtain a new authentication token
+
+    :param username: A string.
+    :param password: A string.
+    :returns: A string containing the token.
+
+    """
+
+    data = {}
+    data['username'] = username
+    data['password'] = password
+
+    resp = requests.post(env.session_api,
+                         json=data,
+                         timeout=env.timeout)
+    
+    if resp.status_code != 200:
+        LOG.debug("Request returned with " +
+                  (str(resp.status_code)))
+        LOG.debug(str(resp.text))
+        return False, json.loads(resp.text)
+
+    token = json.loads(resp.text)['token']
+
+    if store_token:
+        payload = {}
+
+        try:
+            with open('/tmp/tngcli.txt', 'r') as file:
+                for line in file:
+                    payload = json.loads(line)
+        except:
+            pass
+
+        payload[env.get_sp_path()] = {'token': token}
+        #datetime to string. Return with strptime(s, format)
+        exp_t = datetime.now().strftime('%Y-%m-%d %H:%M')
+        payload[env.get_sp_path()]['exp_t'] = exp_t
+        with open('/tmp/tngcli.txt', 'w+') as file:
+            file.write(json.dumps(payload))
+            file.close()
+
+    return True, token
+
+def get_token():
+    """Obtain the token from storage
+    
+    :returns: A string containing the token.
+    """
+
+    try:
+        with open('/tmp/tngcli.txt', 'r') as file:
+            for line in file:
+                payload = json.loads(line)
+                return True, payload[env.get_sp_path()]['token']
+
+    except:
+        return False, 'no token file found'
+
+def is_token_valid():
+    """Check whether the token is still valid.
+    
+    :returns: A bool.
+    """
+
+    try:
+        with open('/tmp/tngcli.txt', 'r') as file:
+            for line in file:
+                payload = json.loads(line)
+
+    except:
+        return False, 'no token file found'
+
+    exp_t = payload[env.get_sp_path()]['exp_t']
+    exp_t_datetime = datetime.strptime(exp_t, '%Y-%m-%d %H:%M')
+
+    return (datetime.now() - exp_t_datetime) < timedelta(minutes=58)
