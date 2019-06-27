@@ -96,6 +96,9 @@ def get_test_result(uuid):
 
 def get_test_uuid_by_instance_uuid(instance_uuid):
     """Returns the test_uuid on a specific test result filtering by instance_uuid.
+
+    :param uuid: instance uuid.
+
     :returns: A list. [0] is a bool with the result. [1] is a list of
         dictionaries. Each dictionary contains a test_uuid.
     """
