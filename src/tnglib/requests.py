@@ -51,7 +51,9 @@ def get_requests():
     """
 
     # get current list of requests
-    resp = requests.get(env.request_api, timeout=env.timeout)
+    resp = requests.get(env.request_api,
+                        timeout=env.timeout,
+                        headers=env.header)
 
     if resp.status_code != 200:
         LOG.debug("Request for requests returned with " +
@@ -89,7 +91,8 @@ def get_request(request_uuid):
 
     # get request info
     resp = requests.get(env.request_api + '/' + request_uuid,
-                        timeout=env.timeout)
+                        timeout=env.timeout,
+                        headers=env.header)
 
     if resp.status_code != 200:
         LOG.debug("Request for request returned with " +
@@ -110,12 +113,12 @@ def service_instantiate(service_uuid, sla_uuid=None, mapping=None):
         and vim_id. vls list elements are dictionaries with three keys: vl_id,
         external_net and vim_id.
         ---
-        vnfs:
+        network_functions:
           - vnf_id: <foo>
             vim_id: <bar>
           - vnf_id: <foo2>
             vim_id: <bar2>
-        vls:
+        virtual_links:
           - vl_id: <foo>
             vim_id: <bar>
             external_net: <foo.bar>
@@ -261,7 +264,8 @@ def _post_request(data):
 
     resp = requests.post(env.request_api,
                          json=data,
-                         timeout=env.timeout)
+                         timeout=env.timeout,
+                         headers=env.header)
 
     if resp.status_code != 201:
         LOG.debug("Request returned with " +

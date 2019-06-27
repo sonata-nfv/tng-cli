@@ -49,7 +49,9 @@ def get_policies():
     """
 
     # get current list of policies
-    resp = requests.get(env.policy_api, timeout=env.timeout)
+    resp = requests.get(env.policy_api,
+                        timeout=env.timeout,
+                        headers=env.header)
 
     if resp.status_code != 200:
         LOG.debug("Request for policies returned with " +
@@ -81,7 +83,7 @@ def get_policy(policy_uuid):
 
     # get policy info
     url = env.policy_api + '/' + policy_uuid
-    resp = requests.get(url, timeout=env.timeout)
+    resp = requests.get(url, timeout=env.timeout, headers=env.header)
 
     if resp.status_code != 200:
         LOG.debug("Request for policy returned with " +
@@ -113,7 +115,8 @@ def create_policy(path):
 
     resp = requests.post(env.policy_api,
                          json=template,
-                         timeout=env.timeout)
+                         timeout=env.timeout,
+                         headers=env.header)
 
     if resp.status_code != 200:
         LOG.debug("Request returned with " + (str(resp.status_code)))
@@ -136,7 +139,7 @@ def delete_policy(policy_uuid):
 
     url = env.policy_api + '/' + policy_uuid
 
-    resp = requests.delete(url, timeout=env.timeout)
+    resp = requests.delete(url, timeout=env.timeout, headers=env.header)
     LOG.debug(policy_uuid)
     LOG.debug(str(resp.text))
 
@@ -160,7 +163,8 @@ def attach_policy(policy_uuid, service_uuid, sla_uuid):
     data = {'nsid': service_uuid, 'slaid': sla_uuid}
     resp = requests.patch(env.policy_bind_api + '/' + policy_uuid,
                           json=data,
-                          timeout=env.timeout)
+                          timeout=env.timeout,
+                          headers=env.header)
   
     if resp.status_code != 200:
         LOG.debug("Request returned with " + (str(resp.status_code)))

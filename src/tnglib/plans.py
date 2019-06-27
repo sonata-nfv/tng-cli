@@ -45,7 +45,9 @@ def get_test_plans():
     """
 
     # get current list of tests results
-    resp = requests.get(env.test_plans_api, timeout=env.timeout)
+    resp = requests.get(env.test_plans_api,
+                        timeout=env.timeout,
+                        headers=env.header)
 
     if resp.status_code != 200:
         LOG.debug("Request for test plans returned with " +
@@ -83,7 +85,8 @@ def get_test_plan(uuid):
 
     url = env.test_plans_api + '/' + uuid
     resp = requests.get(url,
-                        timeout=env.timeout)
+                        timeout=env.timeout,
+                        headers=env.header)
 
     if resp.status_code != 200:
         LOG.debug("Request for test returned with " +

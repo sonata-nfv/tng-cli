@@ -45,7 +45,9 @@ def get_test_descriptors():
     """
 
     # get current list of test descriptors
-    resp = requests.get(env.test_descriptors_api, timeout=env.timeout)
+    resp = requests.get(env.test_descriptors_api,
+                        timeout=env.timeout,
+                        headers=env.header)
 
     if resp.status_code != 200:
         LOG.debug("Request for test descriptors returned with " +
@@ -88,7 +90,8 @@ def get_test_descriptor(uuid):
 
     url = env.test_descriptors_api + '/' + uuid
     resp = requests.get(url,
-                        timeout=env.timeout)
+                        timeout=env.timeout,
+                        headers=env.header)
 
     if resp.status_code != 200:
         LOG.debug("Request for test descriptor returned with " +

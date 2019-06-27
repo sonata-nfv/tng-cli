@@ -50,7 +50,9 @@ def get_packages():
     """
 
     # get current list of packages
-    resp = requests.get(env.pkg_api, timeout=env.timeout)
+    resp = requests.get(env.pkg_api,
+                        timeout=env.timeout,
+                        headers=env.header)
 
     if resp.status_code != 200:
         LOG.debug("Request for packages returned with " +
@@ -101,7 +103,10 @@ def remove_package(package_uuid):
 
     url = env.pkg_api + '/' + package_uuid
 
-    resp = requests.delete(url, timeout=env.timeout)
+    resp = requests.delete(url,
+                           timeout=env.timeout,
+                           headers=env.header)
+
     LOG.debug(package_uuid)
     LOG.debug(str(resp.text))
 
@@ -129,7 +134,8 @@ def upload_package(pkg_path, url=False):
 
     resp = requests.post(env.pkg_api,
                          files={"package": pkg},
-                         timeout=env.timeout)
+                         timeout=env.timeout,
+                         headers=env.header)
 
     pyld = json.loads(resp.text)
     LOG.debug(pyld)
@@ -142,7 +148,7 @@ def upload_package(pkg_path, url=False):
     url = env.pkg_status_api + '/' + pkg_proc_id
 
     for i in range(10):
-        resp = requests.get(url, timeout=env.timeout)
+        resp = requests.get(url, timeout=env.timeout, headers=env.header)
         pyld = json.loads(resp.text)
         LOG.debug(pyld)
         if resp.status_code != 200:
@@ -174,7 +180,9 @@ def get_package(package_uuid):
     """
 
     # get package info
-    resp = requests.get(env.pkg_api + '/' + package_uuid, timeout=env.timeout)
+    resp = requests.get(env.pkg_api + '/' + package_uuid,
+                        timeout=env.timeout,
+                        headers=env.header)
 
     if resp.status_code != 200:
         LOG.debug("Request for package returned with " +
