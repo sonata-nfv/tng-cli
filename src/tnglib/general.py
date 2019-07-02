@@ -132,3 +132,30 @@ def is_token_valid():
     exp_t_datetime = datetime.strptime(exp_t, '%Y-%m-%d %H:%M')
 
     return (datetime.now() - exp_t_datetime) < timedelta(minutes=58)
+
+def register(username, password, name='', email='', role=''):
+    """Register a new user.
+    
+    :returns: A bool.
+    """
+    data = {}
+    data['username'] = username
+    data['password'] = password
+    data['name'] = name
+    data['email'] = email
+    data['role'] = role
+
+    resp = requests.post(env.user_api,
+                         json=data,
+                         timeout=env.timeout)
+    
+    print(resp.text)
+    print(resp.status_code)
+
+    if resp.status_code != 200:
+        LOG.debug("Request returned with " +
+                  (str(resp.status_code)))
+        LOG.debug(str(resp.text))
+        return False, json.loads(resp.text)
+
+    return True
