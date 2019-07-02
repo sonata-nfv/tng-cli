@@ -176,14 +176,6 @@ def dispatch(args):
             res, mes = tnglib.get_request(args.get)
             form_print(mes)
             exit(not res)
-        elif args.scale_out:
-            res, mes = tnglib.service_scale_out(args.instance_uuid, args.vnfd_uuid, args.num_instances, args.vim_uuid)
-            form_print(mes)
-            exit(not res)
-        elif args.scale_in:
-            res, mes = tnglib.service_scale_in(args.instance_uuid, args.vnf_uuid, args.vnfd_uuid, args.num_instances)
-            form_print(mes)
-            exit(not res)
         else:
             res, mes = tnglib.get_requests()
             order = ['request_uuid',
@@ -200,7 +192,9 @@ def dispatch(args):
         sel_args = [args.descriptor,
                     args.instance,
                     args.instantiate,
-                    args.terminate]
+                    args.terminate,
+                    args.scale_out,
+                    args.scale_in]
         arg_sum = len([x for x in sel_args if x])
         if arg_sum == 0:
             msg = "Missing arguments for subcommand service. " \
@@ -256,6 +250,32 @@ def dispatch(args):
 
         if bool(args.terminate):
             res, mes = tnglib.service_terminate(args.terminate)
+            form_print(mes)
+            exit(not res)
+
+        if bool(args.scale_out):
+            if not bool(args.vnfd_uuid):
+                print(" --vnfd_uuid is needed with --scale_out")
+                exit(1)
+
+            res, mes = tnglib.service_scale_out(args.scale_out,
+                                                args.vnfd_uuid,
+                                                args.num_instances,
+                                                args.vim_uuid)
+            form_print(mes)
+            exit(not res)
+
+        if bool(args.scale_in):
+            if not (bool(args.vnfd_uuid) or bool(args.vnf_uuid)):
+                msg = " --either --vnfd_uuid or --vnf_uuid is " \
+                      "needed with --scale_in"
+                print(msg)
+                exit(1)
+
+            res, mes = tnglib.service_scale_in(args.scale_in,
+                                               args.vnf_uuid,
+                                               args.vnfd_uuid,
+                                               args.num_instances)
             form_print(mes)
             exit(not res)
 
@@ -759,48 +779,6 @@ def parse_args(args):
                             default=False,
                             help='Returns detailed info on specified request')
 
-    parser_req.add_argument('--scale_in',
-                            action='store_true',
-                            required=False,
-                            default=False,
-                            help='Scale in a service')
-
-    parser_req.add_argument('--scale_out',
-                            action='store_true',
-                            required=False,
-                            default=False,
-                            help='Scale out a service')
-
-    parser_req.add_argument('--vnfd_uuid',
-                            metavar='vnfd_uuid',
-                            required=False,
-                            default=False,
-                            help='Specify the vnf descriptor uuid')
-
-    parser_req.add_argument('--vnf_uuid',
-                            metavar='vnfd_uuid',
-                            required=False,
-                            default=False,
-                            help='Specify the vnf instance uuid')
-
-    parser_req.add_argument('--instance_uuid',
-                            metavar='instance_uuid',
-                            required=False,
-                            default=False,
-                            help='Specify the service uuid to be scaled')
-
-    parser_req.add_argument('--num_instances',
-                            metavar='num_instances',
-                            required=False,
-                            default=False,
-                            help='Number of instances to add or remove to the service')
-
-    parser_req.add_argument('--vim_uuid',
-                            metavar='vim_uuid',
-                            required=False,
-                            default=False,
-                            help='VIM uuid to place the scaled service')
-
     # services sub arguments
     parser_ser.add_argument('--descriptor',
                             action='store_true',
@@ -844,6 +822,48 @@ def parse_args(args):
                             required=False,
                             default=False,
                             help=help_mes)
+
+    help_mes = 'Scale in a service, requires either --vnf_uuid or --vnfd_uuid'
+    parser_ser.add_argument('--scale_in',
+                            metavar='INSTANCE UUID',
+                            required=False,
+                            default=False,
+                            help=help_mes)
+
+    help_mes = 'Scale out a service, requires --vnfd_uuid'
+    parser_ser.add_argument('--scale_out',
+                            metavar='INSTANCE UUID',
+                            required=False,
+                            default=False,
+                            help=help_mes)
+
+    help_mes = 'Specify the vnf descriptor uuid, used with --scale_out '\
+               ' and --scale_in'
+    parser_ser.add_argument('--vnfd_uuid',
+                            metavar='VNFD UUID',
+                            required=False,
+                            default=False,
+                            help=help_mes)
+
+    help_mes = 'Specify the vnf instance uuid, used wit --scale_in'
+    parser_ser.add_argument('--vnf_uuid',
+                            metavar='VNF UUID',
+                            required=False,
+                            default=False,
+                            help=help_mes)
+
+    help_mes = 'Number of instances to add/remove when scaling'
+    parser_ser.add_argument('--num_instances',
+                            metavar='NUMBER OF INSTANCES',
+                            required=False,
+                            default=False,
+                            help=help_mes)
+
+    parser_ser.add_argument('--vim_uuid',
+                            metavar='VIM UUID',
+                            required=False,
+                            default=False,
+                            help='Specify VIM uuid, only with --vnfd_uuid')
 
     # functions sub arguments
     parser_fun.add_argument('--descriptor',
