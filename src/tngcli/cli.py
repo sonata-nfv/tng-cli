@@ -770,6 +770,8 @@ def parse_args(args):
                                          help='actions related to test-plans')
     parser_results = subparsers.add_parser('result',
                                          help='actions related to results')
+    parser_mon = subparsers.add_parser('monitor',
+                                         help='actions related to monitoring')
     parser_login = subparsers.add_parser('login',
                                          help='actions related to login')
 
@@ -1187,7 +1189,46 @@ def parse_args(args):
                             required=False,
                             default=False,
                             help='Only with --attach. Attach policy to an sla')
+    # monitoring sub arguments
+    help_mes = 'Get list of monitoring endpoints'
+    parser_mon.add_argument('-trl',
+                            '--target-list',
+                            action='store_true',
+                            required=False,
+                            default=False,
+                            help=help_mes)
 
+    help_mes = 'Get active monitoring services'
+    parser_mon.add_argument('-srv',
+                            '--service-list',
+                            metavar='SERVICE UUID',
+                            required=False,
+                            default=False,
+                            help=help_mes)
+
+    help_mes = 'Only with --metric-list. Get metric list per vnf/vdu'
+    parser_mon.add_argument('-vnf',
+                            '--vnf-uuid',
+                            metavar='FUNCTION UUID',
+                            required=False,
+                            default=False,
+                            help=help_mes)
+
+    help_mes = 'Only with --metric-list. Get metric list per vnf/vdu'
+    parser_mon.add_argument('-vdu',
+                            '--vdu-uuid',
+                            metavar='VDU UUID',
+                            required=False,
+                            default=False,
+                            help=help_mes)
+
+    help_mes = 'Get metrics list'
+    parser_mon.add_argument('-mtr',
+                            '--metric-list',
+                            action='store_true',
+                            required=False,
+                            default=False,
+                            help=help_mes)
     # tests sub arguments
     parser_tests.add_argument('-g',
                               '--get',
@@ -1227,7 +1268,7 @@ def form_print(data, order=None):
         # print header
         header = ''
         for key in order:
-            if 'uuid' in key:
+            if 'uuid' or 'metric' in key:
                 new_seg = key.replace('_', ' ').upper().ljust(40)
             # elif key == 'version':
             #     new_seg = key.upper().ljust(10)
@@ -1239,8 +1280,8 @@ def form_print(data, order=None):
         # print content
         for data_seg in data:
             line = ''
-            for key in order:
-                if 'uuid' in key:
+            for key  in order:
+                if 'uuid' or 'metric' in key:
                     new_seg = data_seg[key].ljust(40)
                 elif key in ['created_at', 'updated_at', 'violation_time']:
                     new_seg = data_seg[key][:16].replace('T', ' ').ljust(20)

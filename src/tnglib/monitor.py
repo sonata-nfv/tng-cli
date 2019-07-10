@@ -52,8 +52,8 @@ def get_prometheus_targets():
                         headers=env.header)
 
     if resp.status_code != 200:
-        LOG.debug("Request returned with " + (str(resp.status_code)))
-        error = resp.text
+        LOG.debug("Request returned with " + (str(resp.text)))
+        error = "Request returned with " + str(resp.status_code)
         return False, error
 
     templates = json.loads(resp.text)
@@ -94,8 +94,8 @@ def get_services(srv_uuid):
                         headers=env.header)
 
     if resp.status_code != 200:
-        LOG.debug("Request returned with " + (str(resp.status_code)))
-        error = resp.text
+        LOG.debug("Request returned with " + (str(resp.text)))
+        error = "Request returned with " + str(resp.status_code)
         return False, error
 
     templates = json.loads(resp.text)
@@ -137,8 +137,8 @@ def get_metrics(vnf_uuid, vdu_uuid):
                         headers=env.header)
 
     if resp.status_code != 200:
-        LOG.debug("Request returned with " + (str(resp.status_code)))
-        error = resp.text
+        LOG.debug("Request returned with " + (str(resp.text)))
+        error = "Request returned with " + str(resp.status_code)
         return False, error
 
     templates = json.loads(resp.text)
