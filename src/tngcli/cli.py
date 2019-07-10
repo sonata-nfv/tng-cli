@@ -185,7 +185,52 @@ def dispatch(args):
                      'instance_uuid']
             form_print(mes, order)
             exit(not res)
+    
+    #monitor subcommand
+    elif args.subparser_name == 'monitor':
+        sel_args = [args.target_list, args.service_list, args.metric_list, args.vnf_uuid, args.vdu_uuid]
+        arg_sum = len([x for x in sel_args if x])
+        if arg_sum == 0:
+            msg = "Missing arguments for tng-cli monitor. " \
+                  "Type tng-cli monitor -h"
+            print(msg)
+            exit(1)
 
+        if arg_sum > 3:
+            msg = "Too many arguments for subcommand monitor. " \
+                  "Type tng-cli monitor -h"
+            print(msg)
+            exit(1)
+
+        if args.target_list:
+            res, mes = tnglib.get_prometheus_targets()
+            order = ['target', 'endpoint']
+            form_print(mes, order)
+            exit(not res)
+
+        if args.service_list:
+            res, mes = tnglib.get_services(args.service_list)
+            order = ['vnf_uuid', 'vdu_uuid']
+            form_print(mes, order)
+            exit(not res)
+
+        if args.metric_list:
+            if not args.vnf_uuid:
+                msg = "VNF uuid is missing " \
+                      "Type tng-cli monitor -h"
+                print(msg)
+                exit(1)
+            if not args.vdu_uuid:
+                msg = "VDU uuid is missing " \
+                      "Type tng-cli monitor -h"
+                print(msg)
+                exit(1)
+
+            res, mes = tnglib.get_metrics(args.vnf_uuid, args.vdu_uuid)
+            order = ['metric_name',]
+            form_print(mes, order)
+            exit(not res)
+    
     # services subcommand
     elif args.subparser_name == 'service':
         # services needs exactly one argument
