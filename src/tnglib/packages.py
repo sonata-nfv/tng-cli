@@ -116,6 +116,27 @@ def remove_package(package_uuid):
         return False, json.loads(resp.text)['error']
 
 
+def package_status(pkg_id):
+    """Check the status of a package.
+
+    :param pkg_id: uuid of the package
+
+    :returns: A list. [0] is a bool with the result. [1] is a dictionayr
+        containing metadata of the package.
+    """
+
+    url = env.pkg_status_api + '/' + pkg_id
+
+    resp = requests.get(url, timeout=env.timeout, headers=env.header)
+
+    pyld = json.loads(resp.text)
+    LOG.debug(pyld)
+    if resp.status_code != 200:
+        return False, str(pyld)
+
+    return True, pyld
+
+
 def upload_package(pkg_path, url=False):
     """Uploads a package from file.
 
