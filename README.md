@@ -43,7 +43,7 @@ tng-cli <subcommand> -h
 The tool needs to know which 5GTANGO Service Platform or V&V you want to interface with. For this, you should use the `-u` argument:
 
 ```
-tng-cli -u <URL_TO_SP> packages --list
+tng-cli -u <URL_TO_SP> package --list
 ```
 
 As it is cumbersome to have to specify this argument for every command, you can make it available through the `SP_PATH` env parameter:
