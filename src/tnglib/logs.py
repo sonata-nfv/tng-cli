@@ -3,7 +3,7 @@ import graylog
 from graylog.rest import ApiException
 from tnglib import env
 
-def get_logs(_from, to, sp_path, filter, file=True):
+def get_logs(_from, to, sp_path, filter=None, file=True):
     # _from = "2019-04-25 17:11:01.201" # Object | Timerange start. See description for date format
     # to = "2019-04-25 17:26:01.201" # Object | Timerange end. See description for date format
     # sp_path = "http://pre-int-sp-ath.5gtango.eu" | Complete url of the SP
