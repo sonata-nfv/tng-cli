@@ -49,6 +49,8 @@ def get_test_results():
                         timeout=env.timeout,
                         headers=env.header)
 
+    env.set_return_header(resp.headers)
+
     if resp.status_code != 200:
         LOG.debug("Request for test results returned with " +
                   (str(resp.status_code)))
@@ -87,6 +89,8 @@ def get_test_result(uuid):
                         timeout=env.timeout,
                         headers=env.header)
 
+    env.set_return_header(resp.headers)
+
     if resp.status_code != 200:
         LOG.debug("Request for test returned with " +
                   (str(resp.status_code)))
@@ -107,6 +111,8 @@ def get_test_uuid_by_instance_uuid(instance_uuid):
     resp = requests.get(env.test_results_api,
                         timeout=env.timeout,
                         headers=env.header)
+
+    env.set_return_header(resp.headers)
 
     if resp.status_code != 200:
         LOG.debug("Request for test results returned with " +

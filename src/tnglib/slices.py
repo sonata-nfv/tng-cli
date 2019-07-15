@@ -53,6 +53,8 @@ def get_slice_templates():
                         timeout=env.timeout,
                         headers=env.header)
 
+    env.set_return_header(resp.headers)
+
     if resp.status_code != 200:
         LOG.debug("Request for slices returned with " +
                   (str(resp.status_code)))
@@ -85,6 +87,8 @@ def get_slice_template(slice_template_uuid):
     url = env.slice_template_api + '/' + slice_template_uuid
     resp = requests.get(url, timeout=env.timeout, headers=env.header)
 
+    env.set_return_header(resp.headers)
+
     if resp.status_code != 200:
         LOG.debug("Request for slice returned with " +
                   (str(resp.status_code)))
@@ -104,6 +108,8 @@ def get_slice_instances():
     resp = requests.get(env.slice_instance_api,
                         timeout=env.timeout,
                         headers=env.header)
+
+    env.set_return_header(resp.headers)
 
     if resp.status_code != 200:
         LOG.debug("Request for slices returned with " +
@@ -137,6 +143,8 @@ def get_slice_instance(slice_instance_uuid):
     url = env.slice_instance_api + '/' + slice_instance_uuid
     resp = requests.get(url, timeout=env.timeout, headers=env.header)
 
+    env.set_return_header(resp.headers)
+
     if resp.status_code != 200:
         LOG.debug("Request for slice returned with " +
                   (str(resp.status_code)))
@@ -157,6 +165,8 @@ def delete_slice_template(slice_template_uuid):
     # delete slice
     url = env.slice_template_api + '/' + slice_template_uuid
     resp = requests.delete(url, timeout=env.timeout, headers=env.header)
+
+    env.set_return_header(resp.headers)
 
     if resp.status_code != 200:
         LOG.debug("Request for slice removal returned with " +
@@ -190,6 +200,8 @@ def create_slice_template(path):
                          json=template,
                          timeout=env.timeout,
                          headers=env.header)
+
+    env.set_return_header(resp.headers)
 
     if resp.status_code != 201:
         msg = "Request returned with " + (str(resp.status_code))

@@ -53,6 +53,8 @@ def get_service_descriptors():
                         timeout=env.timeout,
                         headers=env.header)
 
+    env.set_return_header(resp.headers)
+
     if resp.status_code != 200:
         LOG.debug("Request for service descriptors returned with " +
                   (str(resp.status_code)))
@@ -89,6 +91,8 @@ def get_service_descriptor(service_descriptor_uuid):
                         timeout=env.timeout,
                         headers=env.header)
 
+    env.set_return_header(resp.headers)
+
     if resp.status_code != 200:
         LOG.debug("Request for service descriptor returned with " +
                   (str(resp.status_code)))
@@ -108,6 +112,8 @@ def get_service_instances():
     resp = requests.get(env.service_instance_api,
                         timeout=env.timeout,
                         headers=env.header)
+
+    env.set_return_header(resp.headers)
 
     if resp.status_code != 200:
         LOG.debug("Request for service instances returned with " +
@@ -146,6 +152,8 @@ def get_service_instance(service_instance_uuid):
     resp = requests.get(url,
                         timeout=env.timeout,
                         headers=env.header)
+
+    env.set_return_header(resp.headers)
 
     if resp.status_code != 200:
         LOG.debug("Request for service instance returned with " +

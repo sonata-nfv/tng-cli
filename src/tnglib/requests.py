@@ -55,6 +55,8 @@ def get_requests():
                         timeout=env.timeout,
                         headers=env.header)
 
+    env.set_return_header(resp.headers)
+
     if resp.status_code != 200:
         LOG.debug("Request for requests returned with " +
                   (str(resp.status_code)))
@@ -93,6 +95,8 @@ def get_request(request_uuid):
     resp = requests.get(env.request_api + '/' + request_uuid,
                         timeout=env.timeout,
                         headers=env.header)
+
+    env.set_return_header(resp.headers)
 
     if resp.status_code != 200:
         LOG.debug("Request for request returned with " +
@@ -266,6 +270,8 @@ def _post_request(data):
                          json=data,
                          timeout=env.timeout,
                          headers=env.header)
+
+    env.set_return_header(resp.headers)
 
     if resp.status_code != 201:
         LOG.debug("Request returned with " +

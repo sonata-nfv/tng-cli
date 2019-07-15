@@ -1268,7 +1268,7 @@ def form_print(data, order=None):
         # print header
         header = ''
         for key in order:
-            if 'uuid' or 'metric' in key:
+            if ('uuid' in key) or ('metric' in key):
                 new_seg = key.replace('_', ' ').upper().ljust(40)
             # elif key == 'version':
             #     new_seg = key.upper().ljust(10)
@@ -1280,8 +1280,8 @@ def form_print(data, order=None):
         # print content
         for data_seg in data:
             line = ''
-            for key  in order:
-                if 'uuid' or 'metric' in key:
+            for key in order:
+                if ('uuid' in key) or ('metric' in key):
                     new_seg = data_seg[key].ljust(40)
                 elif key in ['created_at', 'updated_at', 'violation_time']:
                     new_seg = data_seg[key][:16].replace('T', ' ').ljust(20)

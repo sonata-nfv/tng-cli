@@ -49,6 +49,8 @@ def get_test_plans():
                         timeout=env.timeout,
                         headers=env.header)
 
+    env.set_return_header(resp.headers)
+
     if resp.status_code != 200:
         LOG.debug("Request for test plans returned with " +
                   (str(resp.status_code)))
@@ -87,6 +89,8 @@ def get_test_plan(uuid):
     resp = requests.get(url,
                         timeout=env.timeout,
                         headers=env.header)
+
+    env.set_return_header(resp.headers)
 
     if resp.status_code != 200:
         LOG.debug("Request for test returned with " +

@@ -53,6 +53,8 @@ def get_policies():
                         timeout=env.timeout,
                         headers=env.header)
 
+    env.set_return_header(resp.headers)
+
     if resp.status_code != 200:
         LOG.debug("Request for policies returned with " +
                   (str(resp.status_code)))
@@ -84,6 +86,8 @@ def get_policy(policy_uuid):
     # get policy info
     url = env.policy_api + '/' + policy_uuid
     resp = requests.get(url, timeout=env.timeout, headers=env.header)
+
+    env.set_return_header(resp.headers)
 
     if resp.status_code != 200:
         LOG.debug("Request for policy returned with " +
@@ -118,6 +122,8 @@ def create_policy(path):
                          timeout=env.timeout,
                          headers=env.header)
 
+    env.set_return_header(resp.headers)
+
     if resp.status_code != 200:
         LOG.debug("Request returned with " + (str(resp.status_code)))
         error = resp.text
@@ -143,6 +149,8 @@ def delete_policy(policy_uuid):
     LOG.debug(policy_uuid)
     LOG.debug(str(resp.text))
 
+    env.set_return_header(resp.headers)
+
     if resp.status_code == 200:
         return True, policy_uuid
     else:
@@ -165,6 +173,8 @@ def attach_policy(policy_uuid, service_uuid, sla_uuid):
                           json=data,
                           timeout=env.timeout,
                           headers=env.header)
+
+    env.set_return_header(resp.headers)
   
     if resp.status_code != 200:
         LOG.debug("Request returned with " + (str(resp.status_code)))
