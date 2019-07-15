@@ -197,14 +197,11 @@ def create_slice_template(path):
     return True, uuid
 
 
-def conver_to_json(yaml_nstd):
+def add_sla(yaml_nstd, sla_uuid, sla_name):
     json_nstd = yaml.load(yaml_nstd)
-    return json_nstd
 
-
-def add_sla(json_nstd, sla_uuid, sla_name):
     for subnet_item in json_nstd['slice_ns_subnets']:
         subnet_item['sla-name'] = sla_name
         subnet_item['sla-ref'] = sla_uuid
         
-    return updated_json_nstd
+    return json_nstd
