@@ -59,6 +59,26 @@ graylog_username = "api"
 graylog_password = "apiapi"
 graylog_host = "logs.sonata-nfv.eu:12900"
 header = {}
+return_header = {}
+
+def get_return_header():
+    """
+    Return the header of the last curl response.
+
+    :returns: dictionary containg header of last curl response.
+    """
+
+    return return_header
+
+def set_return_header(header):
+    """
+    Store the header of the last curl response.
+
+    :param header: the header to store
+    """
+
+    global return_header
+    return_header = header
 
 def get_sp_path():
     """Get the configured SP url.

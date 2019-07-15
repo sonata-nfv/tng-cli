@@ -70,6 +70,7 @@ def get_packages():
         LOG.debug(str(dic))
         pkg_res.append(dic)
 
+    env.set_return_header(resp.headers)
     return True, pkg_res
 
 
@@ -110,6 +111,8 @@ def remove_package(package_uuid):
     LOG.debug(package_uuid)
     LOG.debug(str(resp.text))
 
+    env.set_return_header(resp.headers)
+
     if resp.status_code == 204:
         return True, package_uuid
     else:
@@ -132,6 +135,9 @@ def package_status(pkg_id):
 
     pyld = json.loads(resp.text)
     LOG.debug(pyld)
+
+    env.set_return_header(resp.headers)
+
     if resp.status_code != 200:
         return False, str(pyld)
 
@@ -164,6 +170,8 @@ def upload_package(pkg_path, url=False, return_process_uuid=False):
 
     pyld = json.loads(resp.text)
     LOG.debug(pyld)
+
+    env.set_return_header(resp.headers)
 
     if resp.status_code != 200:
         LOG.debug(str(pyld))
@@ -210,6 +218,8 @@ def get_package(package_uuid):
     resp = requests.get(env.pkg_api + '/' + package_uuid,
                         timeout=env.timeout,
                         headers=env.header)
+
+    env.set_return_header(resp.headers)
 
     if resp.status_code != 200:
         LOG.debug("Request for package returned with " +

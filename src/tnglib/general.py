@@ -71,6 +71,8 @@ def update_token(username, password, store_token=False):
                          json=data,
                          timeout=env.timeout)
     
+    env.set_return_header(resp.headers)
+
     if resp.status_code != 200:
         LOG.debug("Request returned with " +
                   (str(resp.status_code)))
@@ -151,6 +153,8 @@ def register(username, password, name='', email='', role=''):
     
     print(resp.text)
     print(resp.status_code)
+
+    env.set_return_header(resp.headers)
 
     if resp.status_code != 200:
         LOG.debug("Request returned with " +

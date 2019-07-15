@@ -85,6 +85,8 @@ def create_sla_template(templateName, nsd_uuid, expireDate,
                          timeout=env.timeout,
                          headers=env.header)
 
+    env.set_return_header(resp.headers)
+
     if resp.status_code != 201:
         LOG.debug("Request returned with " + (str(resp.status_code)))
         error = resp.text
@@ -106,6 +108,8 @@ def get_sla_templates():
     resp = requests.get(env.sl_templates_api,
                         timeout=env.timeout,
                         headers=env.header)
+
+    env.set_return_header(resp.headers)
 
     if resp.status_code != 200:
         LOG.debug("Request returned with " + (str(resp.status_code)))
@@ -141,6 +145,8 @@ def get_sla_template(sla_uuid):
     url = env.sl_templates_api + '/' + sla_uuid
     resp = requests.get(url, timeout=env.timeout, headers=env.header)
 
+    env.set_return_header(resp.headers)
+
     if resp.status_code != 200:
         LOG.debug("Request returned with " + (str(resp.status_code)))
         error = resp.text
@@ -166,6 +172,8 @@ def delete_sla_template(sla_template_uuid):
     LOG.debug(sla_template_uuid)
     LOG.debug(str(resp.text))
 
+    env.set_return_header(resp.headers)
+
     if resp.status_code == 200:
         return True, sla_template_uuid
     else:
@@ -183,6 +191,8 @@ def get_sla_guarantees():
     resp = requests.get(env.sl_guarantees_api,
                         timeout=env.timeout,
                         headers=env.header)
+
+    env.set_return_header(resp.headers)
 
     if resp.status_code != 200:
         LOG.debug("Request returned with " + (str(resp.status_code)))
@@ -220,6 +230,8 @@ def get_agreements(nsi_uuid=None):
     # get current list of agreements
     resp = requests.get(url, timeout=env.timeout, headers=env.header)
 
+    env.set_return_header(resp.headers)
+
     if resp.status_code != 200:
         LOG.debug("Request returned with " + (str(resp.status_code)))
         error = resp.text
@@ -248,6 +260,8 @@ def get_detailed_agreement(sla_uuid, nsi_uuid):
     LOG.debug("SLA UUID: " + sla_uuid + "NSI UUID: " + nsi_uuid)
     LOG.debug(str(resp.text))
 
+    env.set_return_header(resp.headers)
+
     if resp.status_code == 200:
         return True, json.loads(resp.text)
     else:
@@ -269,6 +283,8 @@ def get_violations(nsi_uuid=None):
 
     # get current list of violations
     resp = requests.get(url, timeout=env.timeout, headers=env.header)
+
+    env.set_return_header(resp.headers)
 
     if resp.status_code != 200:
         LOG.debug("Request returned with " + (str(resp.status_code)))
@@ -294,6 +310,8 @@ def get_violations_per_nsi_sla(sla_uuid, nsi_uuid):
 
     # get current list of violations
     resp = requests.get(url, timeout=env.timeout, headers=env.header)
+
+    env.set_return_header(resp.headers)
 
     if resp.status_code != 200:
         LOG.debug("Request returned with " + (str(resp.status_code)))
