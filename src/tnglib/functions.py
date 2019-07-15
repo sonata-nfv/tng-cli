@@ -62,6 +62,8 @@ def get_function_descriptors():
 
     functions_res = []
     for function in functions:
+        if function['platform'] == 'osm':
+            continue
         dic = {'descriptor_uuid': function['uuid'],
                'name': function['vnfd']['name'],
                'version': function['vnfd']['version'],
