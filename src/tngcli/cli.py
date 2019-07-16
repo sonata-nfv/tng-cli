@@ -987,7 +987,9 @@ def parse_args(args):
                             metavar='SERVICE UUID',
                             required=False,
                             default=False,
-                            help=help_mes)help_mes = 'Get last value of metric'
+                            help=help_mes)
+
+    help_mes = 'Get last value of metric'
     parser_mon.add_argument('-mtn',
                             '--metric-name',
                             metavar='METRIC NAME',
