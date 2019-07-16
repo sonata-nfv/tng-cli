@@ -188,7 +188,7 @@ def dispatch(args):
     
     #monitor subcommand
     elif args.subparser_name == 'monitor':
-        sel_args = [args.target_list, args.service_list, args.metric_list, args.vnf_uuid, args.vdu_uuid]
+        sel_args = [args.target_list, args.service_list, args.metric_list, args.vnf_uuid, args.vdu_uuid, args.metric_name]
         arg_sum = len([x for x in sel_args if x])
         if arg_sum == 0:
             msg = "Missing arguments for tng-cli monitor. " \
@@ -211,6 +211,12 @@ def dispatch(args):
         if args.service_list:
             res, mes = tnglib.get_services(args.service_list)
             order = ['vnf_uuid', 'vdu_uuid']
+            form_print(mes, order)
+            exit(not res)
+            
+        if args.metric_name:
+            res, mes = tnglib.get_metric(args.metric_name)
+            order = ['job','instance','value']
             form_print(mes, order)
             exit(not res)
 
@@ -981,6 +987,12 @@ def parse_args(args):
                             metavar='SERVICE UUID',
                             required=False,
                             default=False,
+                            help=help_mes)help_mes = 'Get last value of metric'
+    parser_mon.add_argument('-mtn',
+                            '--metric-name',
+                            metavar='METRIC NAME',
+                            required=False,
+                            default=False,
                             help=help_mes)
 
     help_mes = 'Only with --template --create. Specify the guarantee id'
@@ -1226,6 +1238,14 @@ def parse_args(args):
     parser_mon.add_argument('-mtr',
                             '--metric-list',
                             action='store_true',
+                            required=False,
+                            default=False,
+                            help=help_mes)
+
+    help_mes = 'Get last value of metric'
+    parser_mon.add_argument('-mtn',
+                            '--metric-name',
+                            metavar='METRIC NAME',
                             required=False,
                             default=False,
                             help=help_mes)
