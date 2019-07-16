@@ -161,3 +161,20 @@ def register(username, password, name='', email='', role=''):
 
     return True, json.loads(resp.text), resp.status_code
 
+def delete_users():
+    """Clean the DB deleting all users .
+
+    :returns: A list. [0] is a bool with the result
+    """
+    resp = requests.delete(env.user_api,
+                 timeout=env.timeout)
+    
+    env.set_return_header(resp.headers)
+
+    if resp.status_code != 200:
+        LOG.debug("Request returned with " +
+                  (str(resp.status_code)))
+        LOG.debug(str(resp.text))
+        return False, json.loads(resp.text)
+
+    return True, json.loads(resp.text), resp.status_code
