@@ -212,3 +212,26 @@ def create_slice_template(path):
     uuid = json.loads(resp.text)['uuid']
 
     return True, uuid
+
+
+def add_sla_to_nstd_subnets(yaml_nstd, sla_uuid, sla_name):
+    """Adds SLA information into the NSTD passed as param.
+
+    :param yaml_nstd: yaml object with the NSTD to modify.
+    :param sla_uuid: uuid object identying the sla to associate with the NS within the NSTD.
+    :param sla_name: string object naming the sla to associate with the NS within the NSTD.
+
+    :returns: A json objectA list. [0] is a bool with the result. [1] is a json containing the NSTD.
+    """
+    nstd_dict = yaml.load(yaml_nstd)
+
+    if not nstd_dict:
+        error = "No JSON object arrived."
+        LOG.debug(error)
+        return False, error
+
+    for subnet_item in nstd_dict['slice_ns_subnets']:
+        subnet_item['sla-name'] = sla_name
+        subnet_item['sla-ref'] = sla_uuid
+    
+    return True, nstd_dict
