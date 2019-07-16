@@ -151,9 +151,6 @@ def register(username, password, name='', email='', role=''):
                          json=data,
                          timeout=env.timeout)
     
-    print(resp.text)
-    print(resp.status_code)
-
     env.set_return_header(resp.headers)
 
     if resp.status_code != 200:
@@ -162,4 +159,5 @@ def register(username, password, name='', email='', role=''):
         LOG.debug(str(resp.text))
         return False, json.loads(resp.text)
 
-    return True
+    return True, json.loads(resp.text), resp.status_code
+
