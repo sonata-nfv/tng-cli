@@ -160,3 +160,35 @@ def get_metrics(vnf_uuid, vdu_uuid):
         LOG.debug("Request returned with " + (json.dumps(templates)))
         error = "VDUs not found"
         return False, error
+
+def get_metric(metric_name):
+    """
+    Returns value per metric name.
+
+    """
+    resp = requests.get(env.monitor_api+'/prometheus/metrics/name/'+metric_name,
+                        timeout=env.timeout,
+                        headers=env.header)
+
+    if resp.status_code != 200:
+        LOG.debug("Request returned with " + (str(resp.status_code)))
+        error = resp.text
+        return False, error
+
+    templates = json.loads(resp.text)
+
+    temp_res = []
+
+    if 'metrics' in templates and  'result' in templates['metrics']:
+        for res in templates['metrics']['result']:
+            dic = {'job': res['metric']['job'],'instance': res['metric']['instance'],'value': res['value'][1]
+                               }
+            LOG.debug(str(dic))
+            if not dic in temp_res:
+                temp_res.append(dic)
+
+        return True, temp_res
+    else:
+        LOG.debug("Request returned with " + (json.dumps(templates)))
+        error = "VDUs not found"
+        return False, error
