@@ -206,15 +206,15 @@ def add_sla_to_nstd_subnets(yaml_nstd, sla_uuid, sla_name):
 
     :returns: A json objectA list. [0] is a bool with the result. [1] is a json containing the NSTD.
     """
-    json_nstd = yaml.load(yaml_nstd)
+    nstd_dict = yaml.load(yaml_nstd)
 
-    if not json_nstd:
+    if not nstd_dict:
         error = "No JSON object arrived."
         LOG.debug(error)
         return False, error
 
-    for subnet_item in json_nstd['slice_ns_subnets']:
+    for subnet_item in nstd_dict['slice_ns_subnets']:
         subnet_item['sla-name'] = sla_name
         subnet_item['sla-ref'] = sla_uuid
-        
-    return True, json_nstd
+    
+    return True, nstd_dict
