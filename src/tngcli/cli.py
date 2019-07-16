@@ -989,14 +989,6 @@ def parse_args(args):
                             default=False,
                             help=help_mes)
 
-    help_mes = 'Get last value of metric'
-    parser_mon.add_argument('-mtn',
-                            '--metric-name',
-                            metavar='METRIC NAME',
-                            required=False,
-                            default=False,
-                            help=help_mes)
-
     help_mes = 'Only with --template --create. Specify the guarantee id'
     parser_sla.add_argument('-i',
                             '--guarantee-id',
