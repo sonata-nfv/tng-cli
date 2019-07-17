@@ -215,7 +215,7 @@ def logout_user(token):
 
     :returns: A list. [0] is a bool with the result
     """
-    url = env.user_api + '/' + sessions
+    url = env.user_api + '/' + 'sessions'
     resp = requests.delete(url,
                            headers={'Authorization': 'bearer {}'.format(token)},
                            timeout=env.timeout)
