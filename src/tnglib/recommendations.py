@@ -90,6 +90,8 @@ def get_users():
 def delete_user(username):
     """Delete a user with his/her corresponding testing tags.
 
+    :param username: username of the user to be deleted
+
     :returns: A list. [0] is a bool with the result. [1] is the response
 	of the request.
     """
