@@ -135,9 +135,10 @@ def is_token_valid():
 
     return (datetime.now() - exp_t_datetime) < timedelta(minutes=58)
 
+
 def register(username, password, name='', email='', role=''):
     """Register a new user.
-    
+
     :returns: A bool.
     """
     data = {}
@@ -161,6 +162,7 @@ def register(username, password, name='', email='', role=''):
 
     return True, json.loads(resp.text)
 
+
 def delete_users():
     """Clean the DB deleting all users .
 
@@ -178,3 +180,23 @@ def delete_users():
         return False, json.loads(resp.text)
 
     return True, json.loads(resp.text)
+
+
+def delete_user(username):
+    """Deleting a specific user
+
+    :returns: A list. [0] is a bool with the result
+    """
+    resp = requests.delete(env.user_api,
+                           timeout=env.timeout)
+
+    env.set_return_header(resp.headers)
+
+    if resp.status_code != 200:
+        LOG.debug("Request returned with " +
+                  (str(resp.status_code)))
+        LOG.debug(str(resp.text))
+        return False
+
+    return True
+
