@@ -229,3 +229,24 @@ def logout_user(token):
         return False, None
 
     return True, None
+
+
+def user_info(username):
+    """Log out the session user.
+
+    :param username:  Logded in username
+
+    :returns: A list. [0] is a bool with the result [1] is a json with the user information
+    """
+    url = env.user_api + '/' + username
+    resp = requests.get(url, timeout=env.timeout)
+
+    env.set_return_header(resp.headers)
+
+    if resp.status_code != 200:
+        LOG.debug("Request returned with " +
+                  (str(resp.status_code)))
+        LOG.debug(str(resp.text))
+        return False, None
+
+    return True, json.loads(resp.text)
