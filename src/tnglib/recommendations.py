@@ -87,7 +87,7 @@ def get_users():
 
     return True, users
 	
-def delete_user(username):
+def delete_rec_user(username):
     """Delete a user with his/her corresponding testing tags.
 
     :param username: username of the user to be deleted
