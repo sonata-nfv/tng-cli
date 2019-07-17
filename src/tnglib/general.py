@@ -54,6 +54,7 @@ def sp_health_check():
     except:
         return False
 
+
 def update_token(username, password, store_token=False):
     """Obtain a new authentication token
 
@@ -101,6 +102,7 @@ def update_token(username, password, store_token=False):
 
     return True, token
 
+
 def get_token():
     """Obtain the token from storage
     
@@ -115,6 +117,7 @@ def get_token():
 
     except:
         return False, 'no token file found'
+
 
 def is_token_valid():
     """Check whether the token is still valid.
@@ -135,9 +138,10 @@ def is_token_valid():
 
     return (datetime.now() - exp_t_datetime) < timedelta(minutes=58)
 
+
 def register(username, password, name='', email='', role=''):
     """Register a new user.
-    
+
     :returns: A bool.
     """
     data = {}
@@ -161,13 +165,14 @@ def register(username, password, name='', email='', role=''):
 
     return True, json.loads(resp.text)
 
+
 def delete_users():
     """Clean the DB deleting all users .
 
     :returns: A list. [0] is a bool with the result
     """
     resp = requests.delete(env.user_api,
-                 timeout=env.timeout)
+                           timeout=env.timeout)
     
     env.set_return_header(resp.headers)
 
@@ -178,3 +183,27 @@ def delete_users():
         return False, json.loads(resp.text)
 
     return True, json.loads(resp.text)
+
+
+def delete_user(username):
+    """Deleting a specific user
+
+    :param username:  username of the user
+
+    :returns: A list. [0] is a bool with the result
+    """
+    url = env.user_api + '/' + username
+
+    resp = requests.delete(url,
+                           timeout=env.timeout,
+                           headers=env.header)
+    env.set_return_header(resp.headers)
+
+    if resp.status_code != 200:
+        LOG.debug("Request returned with " +
+                  (str(resp.status_code)))
+        LOG.debug(str(resp.text))
+        return False, None
+
+    return True, None
+
