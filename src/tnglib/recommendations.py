@@ -47,8 +47,7 @@ def get_testing_tags():
         dictionaries. Each dictionary contains an SLA guarantee.
     """
 
-	url = recommendations_api + '/test_items'
-
+    url = recommendations_api + '/test_items'
     resp = requests.get(url,
                         timeout=env.timeout,
                         headers=env.header)
@@ -71,8 +70,8 @@ def get_users():
         dictionaries. Each dictionary contains an SLA guarantee.
     """
 
-	url = recommendations_api + '/users'
-
+    url = recommendations_api + '/users'
+    
     resp = requests.get(url,
                         timeout=env.timeout,
                         headers=env.header)
@@ -95,8 +94,8 @@ def delete_user(username):
         dictionaries. Each dictionary contains an SLA guarantee.
     """
 
-	url = recommendations_api + '/users/' + username
-
+    url = recommendations_api + '/users/' + username
+	
     resp = requests.delete(url,
                         timeout=env.timeout,
                         headers=env.header)
@@ -110,4 +109,4 @@ def delete_user(username):
 
     response = json.loads(resp.text)
 
-    return True, response	
+    return True, response
