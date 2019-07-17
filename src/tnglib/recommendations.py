@@ -47,7 +47,7 @@ def get_testing_tags():
 		the currently stored testing tags.
     """
 
-    url = recommendations_api + '/test_items'
+    url = env.recommendations_api + '/test_items'
     resp = requests.get(url,
                         timeout=env.timeout,
                         headers=env.header)
@@ -70,7 +70,7 @@ def get_users():
 	the currently stored users.
     """
 
-    url = recommendations_api + '/users'
+    url = env.recommendations_api + '/users'
     
     resp = requests.get(url,
                         timeout=env.timeout,
@@ -96,7 +96,7 @@ def delete_user(username):
 	of the request.
     """
 
-    url = recommendations_api + '/users/' + username
+    url = env.recommendations_api + '/users/' + username
 	
     resp = requests.delete(url,
                         timeout=env.timeout,
