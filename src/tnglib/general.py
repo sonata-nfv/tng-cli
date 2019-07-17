@@ -159,7 +159,7 @@ def register(username, password, name='', email='', role=''):
         LOG.debug(str(resp.text))
         return False, json.loads(resp.text)
 
-    return True, json.loads(resp.text), resp.status_code
+    return True, json.loads(resp.text)
 
 def delete_users():
     """Clean the DB deleting all users .
@@ -177,4 +177,4 @@ def delete_users():
         LOG.debug(str(resp.text))
         return False, json.loads(resp.text)
 
-    return True, json.loads(resp.text), resp.status_code
+    return True, json.loads(resp.text)
