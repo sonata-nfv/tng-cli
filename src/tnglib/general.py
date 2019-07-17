@@ -222,7 +222,7 @@ def logout_user(token):
 
     env.set_return_header(resp.headers)
 
-    if resp.status_code != 200:
+    if resp.status_code != 204:
         LOG.debug("Request returned with " +
                   (str(resp.status_code)))
         LOG.debug(str(resp.text))
