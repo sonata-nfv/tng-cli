@@ -207,3 +207,25 @@ def delete_user(username):
 
     return True, None
 
+
+def logout_user(token):
+    """Log out the session user.
+
+    :param token:  Token that authorizes the session user
+
+    :returns: A list. [0] is a bool with the result
+    """
+    url = env.user_api + '/' + 'sessions'
+    resp = requests.delete(url,
+                           headers={'Authorization': 'bearer {}'.format(token)},
+                           timeout=env.timeout)
+
+    env.set_return_header(resp.headers)
+
+    if resp.status_code != 204:
+        LOG.debug("Request returned with " +
+                  (str(resp.status_code)))
+        LOG.debug(str(resp.text))
+        return False, None
+
+    return True, None
