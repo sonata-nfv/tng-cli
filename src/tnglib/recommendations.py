@@ -43,8 +43,8 @@ LOG = logging.getLogger(__name__)
 def get_testing_tags():
     """Returns the currently stored testing tags.
 
-    :returns: A list. [0] is a bool with the result. [1] is a list of 
-        dictionaries. Each dictionary contains an SLA guarantee.
+    :returns: A list. [0] is a bool with the result. [1] is a list with
+		the currently stored testing tags.
     """
 
     url = recommendations_api + '/test_items'
@@ -66,8 +66,8 @@ def get_testing_tags():
 def get_users():
     """Returns the currently stored users.
 
-    :returns: A list. [0] is a bool with the result. [1] is a list of 
-        dictionaries. Each dictionary contains an SLA guarantee.
+    :returns: A list. [0] is a bool with the result. [1] is a list with 
+	the currently stored users.
     """
 
     url = recommendations_api + '/users'
@@ -90,8 +90,8 @@ def get_users():
 def delete_user(username):
     """Delete a user with his/her corresponding testing tags.
 
-    :returns: A list. [0] is a bool with the result. [1] is a list of 
-        dictionaries. Each dictionary contains an SLA guarantee.
+    :returns: A list. [0] is a bool with the result. [1] is the response
+	of the request.
     """
 
     url = recommendations_api + '/users/' + username
