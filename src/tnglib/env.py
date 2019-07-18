@@ -36,6 +36,7 @@ timeout = 15.0
 # Building all paths for global use
 sp_path = ''
 root_api = ''
+ia_api = ''
 user_api = ''
 session_api = ''
 pkg_api = ''
@@ -121,6 +122,7 @@ def _build_paths():
 
     global root_api
     global pkg_api
+    global ia_api
     global session_api
     global user_api
     global pkg_status_api
@@ -147,6 +149,7 @@ def _build_paths():
     user_api = sp_path + gtk_api + '/users'
     session_api = sp_path + gtk_api + "/users/sessions"
     pkg_api = sp_path + gtk_api + "/packages"
+    ia_api = sp_path + gtk_api + "/settings"
     pkg_status_api = pkg_api + "/status"
     request_api = sp_path + gtk_api + "/requests"
     service_descriptor_api = sp_path + gtk_api + "/services"

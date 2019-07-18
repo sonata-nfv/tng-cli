@@ -45,5 +45,6 @@ from tnglib.env import set_sp_path, get_sp_path, set_timeout, add_token_to_heade
 from tnglib.plans import *
 from tnglib.results import *
 from tnglib.monitor import *
+from tnglib.vimwim import *
 
 set_sp_path('localhost')
