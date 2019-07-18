@@ -120,9 +120,12 @@ def create_policy(path):
         error = resp.text
         return False, error
 
-    uuid = json.loads((json.loads(resp.text)['returnobject']))['uuid']
+    #uuid = json.loads((json.loads(resp.text)['returnobject']))['uuid']
 
-    return True, uuid
+    #return True, uuid
+    message = json.loads(resp.text)['uuid']
+
+    return True, message
 
 
 def delete_policy(policy_uuid):
@@ -171,7 +174,6 @@ def define_policy_as_default(policy_uuid,service_uuid):
     return True, message
 
 
-
 def attach_policy(policy_uuid, service_uuid, sla_uuid):
     """Attaches a policy to a service and SLA.
 
@@ -197,28 +199,24 @@ def attach_policy(policy_uuid, service_uuid, sla_uuid):
 
     return True, message
 
+def deactivate_policy(nsr_id):
+    """Deactivates an enforced policy.
 
-def define_policy_as_default(policy_uuid,service_uuid):
-    """Define a Runtime Policy as default.
-
-    :param policy_uuid: uuid of a policy descriptor.
+    :param nsr_id: uuid of a network service record.
 
     :returns: A list. [0] is a bool with the result. [1] is a string containing
-        the uuid of the terminated policy descriptor.
+        a message.
     """
 
-    url = env.policy_api + '/default/' + policy_uuid
+    url = env.policy_api + '/deactivate/' + nsr_id
 
-    data = {'nsid': service_uuid, 'defaultPolicy': True}
-    resp = requests.patch(url,
-                          json=data,
-                          timeout=env.timeout)
-  
-    if resp.status_code != 200:
-        LOG.debug("Request returned with " + (str(resp.status_code)))
-        error = resp.text
-        return False, error
+    resp = requests.get(url, timeout=env.timeout)
+    LOG.debug(policy_uuid)
+    LOG.debug(str(resp.text))
 
-    message = json.loads(resp.text)['message']
+    if resp.status_code == 200:
+        return True, policy_uuid
+    else:
+        return False, json.loads(resp.text)
 
-    return True, message
+
