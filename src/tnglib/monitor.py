@@ -192,3 +192,53 @@ def get_metric(metric_name):
         LOG.debug("Request returned with " + (json.dumps(templates)))
         error = "VDUs not found"
         return False, error
+
+def get_vnv_tests(test_uuid):
+    """
+        Returns list of stored tests.
+
+        """
+    test = 'http://192.168.1.127:8001'
+    if test_uuid:
+        resp = requests.get(test + '/api/v2/passive-monitoring-tests/test/' + test_uuid +'?limit=5000',
+                            timeout=env.timeout,
+                            headers=env.header)
+    else:
+        resp = requests.get(test + '/api/v2/passive-monitoring-tests?limit=5000',
+                            timeout=env.timeout,
+                            headers=env.header)
+    '''
+    if test_uuid:
+        resp = requests.get(env.monitor_api + '/api/v2/passive-monitoring-tests/test/' + test_uuid +'?limit=5000',
+                            timeout=env.timeout,
+                            headers=env.header)
+    else:
+        resp = requests.get(env.monitor_api + '/api/v2/passive-monitoring-tests?limit=5000',
+                            timeout=env.timeout,
+                            headers=env.header)
+    '''
+
+    if resp.status_code != 200:
+        LOG.debug("Request returned with " + (str(resp.status_code)))
+        error = 'This command is available only on VnV platform ('+ (str(resp.status_code)) +')'
+        return False, error
+
+    templates = json.loads(resp.text)
+
+    temp_res = []
+
+    if 'results' in templates:
+        for res in templates['results']:
+            dic = {'test_uuid': res['test_id'], 'srv_uuid': res['service_id'], 'started': res['created'], 'terminated':res['terminated']
+                   }
+            if 'data' in res:
+                dic['data'] = res['data']
+            LOG.debug(str(dic))
+            if not dic in temp_res:
+                temp_res.append(dic)
+
+        return True, temp_res
+    else:
+        LOG.debug("Request returned with " + (json.dumps(templates)))
+        error = "Stored test data not found"
+        return False, error
