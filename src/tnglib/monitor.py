@@ -132,7 +132,8 @@ def get_metrics(vnf_uuid, vdu_uuid):
     Returns all metrics per vnf and vdu.
 
     """
-    resp = requests.get(env.monitor_api+'/vnfs/'+vnf_uuid+'/vdu/'+vdu_uuid+'/metrics',
+    resp=requests.get(env.monitor_api+'/vnfs/'+vnf_uuid+
+                        '/vdu/'+vdu_uuid+'/metrics',
                         timeout=env.timeout,
                         headers=env.header)
 
@@ -166,7 +167,7 @@ def get_metric(metric_name):
     Returns value per metric name.
 
     """
-    resp = requests.get(env.monitor_api+'/prometheus/metrics/name/'+metric_name,
+    resp=requests.get(env.monitor_api+'/prometheus/metrics/name/'+metric_name,
                         timeout=env.timeout,
                         headers=env.header)
 
@@ -181,8 +182,10 @@ def get_metric(metric_name):
 
     if 'metrics' in templates and  'result' in templates['metrics']:
         for res in templates['metrics']['result']:
-            dic = {'job': res['metric']['job'],'instance': res['metric']['instance'],'value': res['value'][1]
-                               }
+            dic = {'job': res['metric']['job'],
+                   'instance': res['metric']['instance'],
+                   'value': res['value'][1]
+                    }
             LOG.debug(str(dic))
             if not dic in temp_res:
                 temp_res.append(dic)
@@ -200,18 +203,22 @@ def get_vnv_tests(test_uuid):
     """
 
     if test_uuid:
-        resp = requests.get(env.monitor_api + '/api/v2/passive-monitoring-tests/test/' + test_uuid +'?limit=5000',
+        resp = requests.get(env.monitor_api + 
+            '/api/v2/passive-monitoring-tests/test/' + 
+            test_uuid +'?limit=5000',
                             timeout=env.timeout,
                             headers=env.header)
     else:
-        resp = requests.get(env.monitor_api + '/api/v2/passive-monitoring-tests?limit=5000',
+        resp = requests.get(env.monitor_api + 
+            '/api/v2/passive-monitoring-tests?limit=5000',
                             timeout=env.timeout,
                             headers=env.header)
 
 
     if resp.status_code != 200:
         LOG.debug("Request returned with " + (str(resp.status_code)))
-        error = 'This command is available only on VnV platform ('+ (str(resp.status_code)) +')'
+        error = 'This command is available only on VnV platform ('+ 
+                (str(resp.status_code)) +')'
         return False, error
 
     templates = json.loads(resp.text)
@@ -220,7 +227,10 @@ def get_vnv_tests(test_uuid):
 
     if 'results' in templates:
         for res in templates['results']:
-            dic = {'test_uuid': res['test_id'], 'srv_uuid': res['service_id'], 'started': res['created'], 'terminated':res['terminated']
+            dic = {'test_uuid': res['test_id'], 
+                   'srv_uuid': res['service_id'],
+                   'started': res['created'], 
+                   'terminated':res['terminated']
                    }
             if 'data' in res:
                 dic['data'] = res['data']

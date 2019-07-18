@@ -188,7 +188,9 @@ def dispatch(args):
     
     #monitor subcommand
     elif args.subparser_name == 'monitor':
-        sel_args = [args.target_list, args.service_list, args.metric_list, args.vnf_uuid, args.vdu_uuid, args.metric_name,args.vnv_tests, args.test_uuid]
+        sel_args = [args.target_list, args.service_list, args.metric_list, 
+                    args.vnf_uuid, args.vdu_uuid, args.metric_name,
+                    args.vnv_tests, args.test_uuid]
         arg_sum = len([x for x in sel_args if x])
         if arg_sum == 0:
             msg = "Missing arguments for tng-cli monitor. " \
