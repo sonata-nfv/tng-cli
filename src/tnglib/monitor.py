@@ -132,7 +132,7 @@ def get_metrics(vnf_uuid, vdu_uuid):
     Returns all metrics per vnf and vdu.
 
     """
-    resp=requests.get(env.monitor_api+'/vnfs/'+vnf_uuid+
+    resp=requests.get(env.monitor_api+'/vnfs/'+vnf_uuid + \
                         '/vdu/'+vdu_uuid+'/metrics',
                         timeout=env.timeout,
                         headers=env.header)
@@ -203,13 +203,13 @@ def get_vnv_tests(test_uuid):
     """
 
     if test_uuid:
-        resp = requests.get(env.monitor_api + 
-            '/api/v2/passive-monitoring-tests/test/' + 
+        resp = requests.get(env.monitor_api + \
+            '/api/v2/passive-monitoring-tests/test/' + \
             test_uuid +'?limit=5000',
                             timeout=env.timeout,
                             headers=env.header)
     else:
-        resp = requests.get(env.monitor_api + 
+        resp = requests.get(env.monitor_api + \
             '/api/v2/passive-monitoring-tests?limit=5000',
                             timeout=env.timeout,
                             headers=env.header)
@@ -217,7 +217,7 @@ def get_vnv_tests(test_uuid):
 
     if resp.status_code != 200:
         LOG.debug("Request returned with " + (str(resp.status_code)))
-        error = 'This command is available only on VnV platform ('+ 
+        error = 'This command is available only on VnV platform ('+ \
                 (str(resp.status_code)) +')'
         return False, error
 
