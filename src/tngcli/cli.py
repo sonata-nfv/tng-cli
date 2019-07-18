@@ -211,7 +211,7 @@ def dispatch(args):
                         fn = cwd+'/'+m['test_uuid']+'.yaml'
                         m['datafile']=m['test_uuid']+'.yaml'
                         DataFile = open(fn, 'w')
-                        DataFile.write(yaml.dump(m['data'], indent=4, sort_keys=True))
+                        DataFile.write(yaml.dump(m['data'], indent=4))
                         DataFile.close()
                 order = ['test_uuid', 'srv_uuid','started','terminated','datafile']
                 form_print(mes, order)

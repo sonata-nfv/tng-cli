@@ -197,17 +197,8 @@ def get_vnv_tests(test_uuid):
     """
         Returns list of stored tests.
 
-        """
-    test = 'http://192.168.1.127:8001'
-    if test_uuid:
-        resp = requests.get(test + '/api/v2/passive-monitoring-tests/test/' + test_uuid +'?limit=5000',
-                            timeout=env.timeout,
-                            headers=env.header)
-    else:
-        resp = requests.get(test + '/api/v2/passive-monitoring-tests?limit=5000',
-                            timeout=env.timeout,
-                            headers=env.header)
-    '''
+    """
+
     if test_uuid:
         resp = requests.get(env.monitor_api + '/api/v2/passive-monitoring-tests/test/' + test_uuid +'?limit=5000',
                             timeout=env.timeout,
@@ -216,7 +207,7 @@ def get_vnv_tests(test_uuid):
         resp = requests.get(env.monitor_api + '/api/v2/passive-monitoring-tests?limit=5000',
                             timeout=env.timeout,
                             headers=env.header)
-    '''
+
 
     if resp.status_code != 200:
         LOG.debug("Request returned with " + (str(resp.status_code)))
