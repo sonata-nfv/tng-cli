@@ -41,23 +41,55 @@ import tnglib.env as env
 LOG = logging.getLogger(__name__)
 
 
-def get_policy_rules(nsr_id):
-    """Returns the number of activate policy monitoring rules.
+def get_vims(type=None):
+    """Obtain the available Vims.
 
-    :param nsr_id: uuid of a network service record.
+    :param type: optional type of vim
 
-    :returns: A list. [0] is a bool with the result. [1] the number of rules.
+    :returns: A list. [0] is a bool with the result. [1] is a list of 
+        dictionaries. Each dictionary contains a vim.
     """
 
-    # get policy monitoring rules
-    url = env.monitoring_manager_api + '/policymng/rules/service/' + nsr_id
-    resp = requests.get(url, timeout=env.timeout)
+    # get current list of vims
+    url = env.ia_api + '/vims'
+    if type:
+        url = url + '?type=' + type 
+    resp = requests.get(url,
+                        timeout=env.timeout,
+                        headers=env.header)
+
+    env.set_return_header(resp.headers)
 
     if resp.status_code != 200:
-        LOG.debug("Request for monitoring policy rule returned with " +
+        LOG.debug("Request for vims returned with " +
                   (str(resp.status_code)))
-        return False, json.loads(resp.text)
-    
-    num_of_rules = json.loads(resp.text)['count']
+        return False, []
 
-    return True, num_of_rules
+    return True, json.loads(resp.text)
+
+
+def get_wims(type=None):
+    """Obtain the available Wims.
+
+    :param type: optional type of wim
+
+    :returns: A list. [0] is a bool with the result. [1] is a list of 
+        dictionaries. Each dictionary contains a wim.
+    """
+
+    # get current list of vims
+    url = env.ia_api + '/wims'
+    if type:
+        url = url + '?type=' + type 
+    resp = requests.get(url,
+                        timeout=env.timeout,
+                        headers=env.header)
+
+    env.set_return_header(resp.headers)
+
+    if resp.status_code != 200:
+        LOG.debug("Request for wims returned with " +
+                  (str(resp.status_code)))
+        return False, []
+
+    return True, json.loads(resp.text)

@@ -49,7 +49,11 @@ def get_function_descriptors():
     """
 
     # get current list of function descriptors
-    resp = requests.get(env.function_descriptor_api, timeout=env.timeout)
+    resp = requests.get(env.function_descriptor_api,
+                        timeout=env.timeout,
+                        headers=env.header)
+
+    env.set_return_header(resp.headers)
 
     if resp.status_code != 200:
         LOG.debug("Request for function descriptors returned with " +
@@ -60,6 +64,8 @@ def get_function_descriptors():
 
     functions_res = []
     for function in functions:
+        if function['platform'] == 'osm':
+            continue
         dic = {'descriptor_uuid': function['uuid'],
                'name': function['vnfd']['name'],
                'version': function['vnfd']['version'],
@@ -82,7 +88,10 @@ def get_function_descriptor(function_descriptor_uuid):
     # get function descriptor
     url = env.function_descriptor_api + '/' + function_descriptor_uuid
     resp = requests.get(url,
-                        timeout=env.timeout)
+                        timeout=env.timeout,
+                        headers=env.header)
+
+    env.set_return_header(resp.headers)
 
     if resp.status_code != 200:
         LOG.debug("Request for function descriptor returned with " +
@@ -100,7 +109,11 @@ def get_function_instances():
     """
 
     # get current list of function instances
-    resp = requests.get(env.function_instance_api, timeout=env.timeout)
+    resp = requests.get(env.function_instance_api,
+                        timeout=env.timeout,
+                        headers=env.header)
+
+    env.set_return_header(resp.headers)
 
     if resp.status_code != 200:
         LOG.debug("Request for function instances returned with " +
@@ -133,7 +146,10 @@ def get_function_instance(function_instance_uuid):
     # get function intsance info
     url = env.function_instance_api + '/' + function_instance_uuid
     resp = requests.get(url,
-                        timeout=env.timeout)
+                        timeout=env.timeout,
+                        headers=env.header)
+
+    env.set_return_header(resp.headers)
 
     if resp.status_code != 200:
         LOG.debug("Request for function instance returned with " +

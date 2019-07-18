@@ -49,7 +49,11 @@ def get_slice_templates():
     """
 
     # get current list of slices
-    resp = requests.get(env.slice_template_api, timeout=env.timeout)
+    resp = requests.get(env.slice_template_api,
+                        timeout=env.timeout,
+                        headers=env.header)
+
+    env.set_return_header(resp.headers)
 
     if resp.status_code != 200:
         LOG.debug("Request for slices returned with " +
@@ -81,7 +85,9 @@ def get_slice_template(slice_template_uuid):
 
     # get slice info
     url = env.slice_template_api + '/' + slice_template_uuid
-    resp = requests.get(url, timeout=env.timeout)
+    resp = requests.get(url, timeout=env.timeout, headers=env.header)
+
+    env.set_return_header(resp.headers)
 
     if resp.status_code != 200:
         LOG.debug("Request for slice returned with " +
@@ -99,7 +105,11 @@ def get_slice_instances():
     """
 
     # get current list of slices
-    resp = requests.get(env.slice_instance_api, timeout=env.timeout)
+    resp = requests.get(env.slice_instance_api,
+                        timeout=env.timeout,
+                        headers=env.header)
+
+    env.set_return_header(resp.headers)
 
     if resp.status_code != 200:
         LOG.debug("Request for slices returned with " +
@@ -131,7 +141,9 @@ def get_slice_instance(slice_instance_uuid):
 
     # get slice info
     url = env.slice_instance_api + '/' + slice_instance_uuid
-    resp = requests.get(url, timeout=env.timeout)
+    resp = requests.get(url, timeout=env.timeout, headers=env.header)
+
+    env.set_return_header(resp.headers)
 
     if resp.status_code != 200:
         LOG.debug("Request for slice returned with " +
@@ -152,7 +164,9 @@ def delete_slice_template(slice_template_uuid):
 
     # delete slice
     url = env.slice_template_api + '/' + slice_template_uuid
-    resp = requests.delete(url, timeout=env.timeout)
+    resp = requests.delete(url, timeout=env.timeout, headers=env.header)
+
+    env.set_return_header(resp.headers)
 
     if resp.status_code != 200:
         LOG.debug("Request for slice removal returned with " +
@@ -184,7 +198,10 @@ def create_slice_template(path):
 
     resp = requests.post(env.slice_template_api,
                          json=template,
-                         timeout=env.timeout)
+                         timeout=env.timeout,
+                         headers=env.header)
+
+    env.set_return_header(resp.headers)
 
     if resp.status_code != 201:
         msg = "Request returned with " + (str(resp.status_code))
@@ -195,3 +212,26 @@ def create_slice_template(path):
     uuid = json.loads(resp.text)['uuid']
 
     return True, uuid
+
+
+def add_sla_to_nstd_subnets(yaml_nstd, sla_uuid, sla_name):
+    """Adds SLA information into the NSTD passed as param.
+
+    :param yaml_nstd: yaml object with the NSTD to modify.
+    :param sla_uuid: uuid object identying the sla to associate with the NS within the NSTD.
+    :param sla_name: string object naming the sla to associate with the NS within the NSTD.
+
+    :returns: A json objectA list. [0] is a bool with the result. [1] is a json containing the NSTD.
+    """
+    nstd_dict = yaml.load(yaml_nstd)
+
+    if not nstd_dict:
+        error = "No JSON object arrived."
+        LOG.debug(error)
+        return False, error
+
+    for subnet_item in nstd_dict['slice_ns_subnets']:
+        subnet_item['sla-name'] = sla_name
+        subnet_item['sla-ref'] = sla_uuid
+    
+    return True, nstd_dict

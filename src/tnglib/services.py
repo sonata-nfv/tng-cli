@@ -49,7 +49,11 @@ def get_service_descriptors():
     """
 
     # get current list of service descriptors
-    resp = requests.get(env.service_descriptor_api, timeout=env.timeout)
+    resp = requests.get(env.service_descriptor_api,
+                        timeout=env.timeout,
+                        headers=env.header)
+
+    env.set_return_header(resp.headers)
 
     if resp.status_code != 200:
         LOG.debug("Request for service descriptors returned with " +
@@ -60,6 +64,8 @@ def get_service_descriptors():
 
     services_res = []
     for service in services:
+        if service['platform'] != '5gtango':
+            continue
         dic = {'descriptor_uuid': service['uuid'],
                'name': service['nsd']['name'],
                'version': service['nsd']['version'],
@@ -82,7 +88,10 @@ def get_service_descriptor(service_descriptor_uuid):
     # get service info
     url = env.service_descriptor_api + '/' + service_descriptor_uuid
     resp = requests.get(url,
-                        timeout=env.timeout)
+                        timeout=env.timeout,
+                        headers=env.header)
+
+    env.set_return_header(resp.headers)
 
     if resp.status_code != 200:
         LOG.debug("Request for service descriptor returned with " +
@@ -100,7 +109,11 @@ def get_service_instances():
     """
 
     # get current list of service instances
-    resp = requests.get(env.service_instance_api, timeout=env.timeout)
+    resp = requests.get(env.service_instance_api,
+                        timeout=env.timeout,
+                        headers=env.header)
+
+    env.set_return_header(resp.headers)
 
     if resp.status_code != 200:
         LOG.debug("Request for service instances returned with " +
@@ -137,7 +150,10 @@ def get_service_instance(service_instance_uuid):
     # get service instance info
     url = env.service_instance_api + '/' + service_instance_uuid
     resp = requests.get(url,
-                        timeout=env.timeout)
+                        timeout=env.timeout,
+                        headers=env.header)
+
+    env.set_return_header(resp.headers)
 
     if resp.status_code != 200:
         LOG.debug("Request for service instance returned with " +

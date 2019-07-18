@@ -35,6 +35,10 @@ timeout = 15.0
 
 # Building all paths for global use
 sp_path = ''
+root_api = ''
+ia_api = ''
+user_api = ''
+session_api = ''
 pkg_api = ''
 pkg_status_api = ''
 request_api = ''
@@ -52,9 +56,32 @@ policy_api = ''
 monitoring_manager_api = ''
 policy_bind_api = ''
 test_results_api = ''
+monitor_api = ''
+recommendations_api = ''
 graylog_username = "api"
 graylog_password = "apiapi"
 graylog_host = "logs.sonata-nfv.eu:12900"
+header = {}
+return_header = {}
+
+def get_return_header():
+    """
+    Return the header of the last curl response.
+
+    :returns: dictionary containg header of last curl response.
+    """
+
+    return return_header
+
+def set_return_header(header):
+    """
+    Store the header of the last curl response.
+
+    :param header: the header to store
+    """
+
+    global return_header
+    return_header = header
 
 def get_sp_path():
     """Get the configured SP url.
@@ -63,7 +90,6 @@ def get_sp_path():
     """
 
     return sp_path
-
 
 def set_timeout(timeout_in):
     """Set the timeout.
@@ -84,11 +110,23 @@ def set_sp_path(new_base_path):
     sp_path = new_base_path
     _build_paths()
 
+def add_token_to_header(token):
+    """Set the header for all requests with the token.
+
+    :param token: the token
+    """
+
+    global header
+    header = {'Authorization': 'Bearer ' + token}
 
 def _build_paths():
     """ """
 
+    global root_api
     global pkg_api
+    global ia_api
+    global session_api
+    global user_api
     global pkg_status_api
     global request_api
     global service_descriptor_api
@@ -107,9 +145,15 @@ def _build_paths():
     global test_results_api
     global test_plans_api
     global test_descriptors_api
+    global monitor_api
+    global recommendations_api
 
     gtk_api = ":32002/api/v3"
+    root_api = sp_path + gtk_api
+    user_api = sp_path + gtk_api + '/users'
+    session_api = sp_path + gtk_api + "/users/sessions"
     pkg_api = sp_path + gtk_api + "/packages"
+    ia_api = sp_path + gtk_api + "/settings"
     pkg_status_api = pkg_api + "/status"
     request_api = sp_path + gtk_api + "/requests"
     service_descriptor_api = sp_path + gtk_api + "/services"
@@ -128,3 +172,5 @@ def _build_paths():
     test_plans_api = sp_path + gtk_api + "/tests/plans"
     test_descriptors_api = sp_path + gtk_api + "/tests/descriptors"
     monitoring_manager_api = sp_path + ":8000/api/v1"
+    monitor_api = sp_path + gtk_api + "/monitoring/data"
+    recommendations_api = sp_path + gtk_api + "/recommendations"
