@@ -46,5 +46,6 @@ from tnglib.plans import *
 from tnglib.results import *
 from tnglib.monitor import *
 from tnglib.vimwim import *
+from tnglib.recommendations import *
 
 set_sp_path('localhost')
