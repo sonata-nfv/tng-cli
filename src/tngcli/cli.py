@@ -190,7 +190,7 @@ def dispatch(args):
     elif args.subparser_name == 'monitor':
         sel_args = [args.target_list, args.service_list, args.metric_list, 
                     args.vnf_uuid, args.vdu_uuid, args.metric_name,
-                    args.vnv_tests, args.test_uuid]
+                    args.vnv_tests, args.service_uuid]
         arg_sum = len([x for x in sel_args if x])
         if arg_sum == 0:
             msg = "Missing arguments for tng-cli monitor. " \
@@ -205,13 +205,13 @@ def dispatch(args):
             exit(1)
 
         if args.vnv_tests:
-            if args.test_uuid:
-                res, mes = tnglib.get_vnv_tests(args.test_uuid)
+            if args.service_uuid:
+                res, mes = tnglib.get_vnv_tests(args.service_uuid)
                 for m in mes:
                     if 'data' in m:
                         cwd = os.getcwd()
-                        fn = cwd+'/'+m['test_uuid']+'.yaml'
-                        m['datafile']=m['test_uuid']+'.yaml'
+                        fn = cwd+'/'+m['service_uuid']+'.yaml'
+                        m['datafile']=m['sevice_uuid']+'.yaml'
                         DataFile = open(fn, 'w')
                         DataFile.write(yaml.dump(m['data'], indent=4))
                         DataFile.close()
@@ -1278,8 +1278,8 @@ def parse_args(args):
 
     help_mes = 'Only with --vnv-tests. Get stored montiring data'
     parser_mon.add_argument('-test',
-                            '--test-uuid',
-                            metavar='TEST UUID',
+                            '--service-uuid',
+                            metavar='SERVICE UUID',
                             required=False,
                             default=False,
                             help=help_mes)

@@ -196,16 +196,16 @@ def get_metric(metric_name):
         error = "VDUs not found"
         return False, error
 
-def get_vnv_tests(test_uuid):
+def get_vnv_tests(service_uuid):
     """
-        Returns list of stored tests.
+        Returns list of stored tests. 
 
     """
 
-    if test_uuid:
+    if service_uuid:
         resp = requests.get(env.monitor_api + \
-            '/api/v2/passive-monitoring-tests/test/' + \
-            test_uuid +'?limit=5000',
+            '/api/v2/passive-monitoring-tests/service/' + \
+            service_uuid +'?limit=5000',
                             timeout=env.timeout,
                             headers=env.header)
     else:
