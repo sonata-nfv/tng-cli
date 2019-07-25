@@ -190,7 +190,7 @@ def dispatch(args):
     elif args.subparser_name == 'monitor':
         sel_args = [args.target_list, args.service_list, args.metric_list, 
                     args.vnf_uuid, args.vdu_uuid, args.metric_name,
-                    args.vnv_tests, args.service_uuid]
+                    args.vnv_tests, args.service_uuid, args.remove_service]
         arg_sum = len([x for x in sel_args if x])
         if arg_sum == 0:
             msg = "Missing arguments for tng-cli monitor. " \
@@ -203,6 +203,12 @@ def dispatch(args):
                   "Type tng-cli monitor -h"
             print(msg)
             exit(1)
+
+        if args.remove_service:
+            res, mes = tnglib.stop_monitoring(args.remove_service)
+            order = ['srv_uuid']
+            form_print(mes, order)
+            exit(not res)
 
         if args.vnv_tests:
             if args.service_uuid:
@@ -1284,6 +1290,13 @@ def parse_args(args):
                             default=False,
                             help=help_mes)
 
+    help_mes = 'Stop collecting data per service.'
+    parser_mon.add_argument('-rm',
+                            '--remove-service',
+                            metavar='SERVICE UUID',
+                            required=False,
+                            default=False,
+                            help=help_mes)
 
     # tests sub arguments
     parser_tests.add_argument('-g',

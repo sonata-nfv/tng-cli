@@ -196,6 +196,28 @@ def get_metric(metric_name):
         error = "VDUs not found"
         return False, error
 
+def stop_monitoring(service_uuid):
+    """
+    Stop collecting data related to specific service.
+
+    """
+    url = env.monitor_api+'/services/'+ \
+                        service_uuid
+    resp = requests.delete(url,
+                        timeout=env.timeout,
+                        headers=env.header)
+
+    if resp.status_code != 204:
+        LOG.debug("Request returned with " + (str(resp.status_code)))
+        error = resp.text
+        return False, error
+
+    temp_res = []
+    temp_res.append({'srv_uuid': service_uuid})
+
+    return True, temp_res
+
+
 def get_vnv_tests(service_uuid):
     """
         Returns list of stored tests. 
