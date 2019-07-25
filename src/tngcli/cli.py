@@ -1283,7 +1283,7 @@ def parse_args(args):
                             help=help_mes)
 
     help_mes = 'Only with --vnv-tests. Get stored montiring data'
-    parser_mon.add_argument('-test',
+    parser_mon.add_argument('-nst',
                             '--service-uuid',
                             metavar='SERVICE UUID',
                             required=False,
