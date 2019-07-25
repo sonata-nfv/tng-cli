@@ -207,7 +207,7 @@ def stop_monitoring(service_uuid):
                         timeout=env.timeout,
                         headers=env.header)
 
-    if resp.status_code != 204:
+    if resp.status_code != 200:
         LOG.debug("Request returned with " + (str(resp.status_code)))
         error = resp.text
         return False, error
