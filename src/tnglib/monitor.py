@@ -247,21 +247,18 @@ def get_vnv_tests(service_uuid):
 
     temp_res = []
 
-    if 'results' in templates:
-        for res in templates['results']:
-            dic = {'test_uuid': res['test_id'], 
-                   'srv_uuid': res['service_id'],
-                   'started': res['created'], 
-                   'terminated':res['terminated']
-                   }
-            if 'data' in res:
-                dic['data'] = res['data']
-            LOG.debug(str(dic))
-            if not dic in temp_res:
-                temp_res.append(dic)
+        if 'results' in templates:
+        if len(templates['results']) > 0:
+            for res in templates['results']:
+                dic = {'test_uuid': res['test_id'], 'srv_uuid': res['service_id'], 
+                       'started': res['created'], 'terminated':res['terminated']}
+                if 'data' in res:
+                    dic['data'] = res['data']
+                LOG.debug(str(dic))
+                if not dic in temp_res:
+                    temp_res.append(dic)
+            return True, temp_res
 
-        return True, temp_res
-    else:
-        LOG.debug("Request returned with " + (json.dumps(templates)))
-        error = "Stored test data not found"
-        return False, error
+    LOG.debug("Request returned with " + (json.dumps(templates)))
+    error = "Stored test data not found"
+    return False, error
