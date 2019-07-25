@@ -247,7 +247,7 @@ def get_vnv_tests(service_uuid):
 
     temp_res = []
 
-        if 'results' in templates:
+    if 'results' in templates:
         if len(templates['results']) > 0:
             for res in templates['results']:
                 dic = {'test_uuid': res['test_id'], 'srv_uuid': res['service_id'], 
