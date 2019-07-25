@@ -226,13 +226,13 @@ def get_vnv_tests(service_uuid):
 
     if service_uuid:
         resp = requests.get(env.monitor_api + \
-            '/api/v2/passive-monitoring-tests/service/' + \
-            service_uuid +'?limit=5000',
+            '/passive-monitoring-tests/service/' + \
+            service_uuid,
                             timeout=env.timeout,
                             headers=env.header)
     else:
         resp = requests.get(env.monitor_api + \
-            '/api/v2/passive-monitoring-tests?limit=5000',
+            '/passive-monitoring-tests?limit=5000',
                             timeout=env.timeout,
                             headers=env.header)
 

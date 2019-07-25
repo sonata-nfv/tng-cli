@@ -216,8 +216,8 @@ def dispatch(args):
                 for m in mes:
                     if 'data' in m:
                         cwd = os.getcwd()
-                        fn = cwd+'/'+m['service_uuid']+'.yaml'
-                        m['datafile']=m['sevice_uuid']+'.yaml'
+                        fn = cwd+'/'+m['srv_uuid']+'.yaml'
+                        m['datafile']=m['srv_uuid']+'.yaml'
                         DataFile = open(fn, 'w')
                         DataFile.write(yaml.dump(m['data'], indent=4))
                         DataFile.close()
