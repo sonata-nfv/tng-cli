@@ -211,7 +211,7 @@ def deactivate_policy(nsr_id):
     url = env.policy_api + '/deactivate/' + nsr_id
 
     resp = requests.get(url, timeout=env.timeout)
-    LOG.debug(policy_uuid)
+    LOG.debug(nsr_id)
     LOG.debug(str(resp.text))
 
     if resp.status_code == 200:
@@ -219,4 +219,25 @@ def deactivate_policy(nsr_id):
     else:
         return False, json.loads(resp.text)
 
+def get_policy_action(nsr_id):
+    """Checks if exists any policy action generated for the given nsr_id.
+
+    :param nsr_id: uuid of a network service record.
+
+    :returns: A list. [0] is a bool with the result. [1] is a string containing
+        a message.
+    """
+
+    url = env.policy_api + '/actions' 
+
+    resp = requests.get(url, timeout=env.timeout)
+    LOG.debug(nsr_id)
+    LOG.debug(str(resp.text))
+    
+    actions_string = str(resp.text)
+
+    if resp.status_code == 200:
+        return True, nsr_id in actions_string
+    else:
+        return False, json.loads(resp.text)
 
