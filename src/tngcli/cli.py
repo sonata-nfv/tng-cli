@@ -188,7 +188,9 @@ def dispatch(args):
     
     #monitor subcommand
     elif args.subparser_name == 'monitor':
-        sel_args = [args.target_list, args.service_list, args.metric_list, args.vnf_uuid, args.vdu_uuid]
+        sel_args = [args.target_list, args.service_list, args.metric_list, 
+                    args.vnf_uuid, args.vdu_uuid, args.metric_name,
+                    args.vnv_tests, args.test_uuid]
         arg_sum = len([x for x in sel_args if x])
         if arg_sum == 0:
             msg = "Missing arguments for tng-cli monitor. " \
@@ -202,6 +204,28 @@ def dispatch(args):
             print(msg)
             exit(1)
 
+        if args.vnv_tests:
+            if args.test_uuid:
+                res, mes = tnglib.get_vnv_tests(args.test_uuid)
+                for m in mes:
+                    if 'data' in m:
+                        cwd = os.getcwd()
+                        fn = cwd+'/'+m['test_uuid']+'.yaml'
+                        m['datafile']=m['test_uuid']+'.yaml'
+                        DataFile = open(fn, 'w')
+                        DataFile.write(yaml.dump(m['data'], indent=4))
+                        DataFile.close()
+                order = ['test_uuid', 'srv_uuid','started','terminated','datafile']
+                form_print(mes, order)
+
+            else:
+                res, mes = tnglib.get_vnv_tests(None)
+                order = ['test_uuid', 'srv_uuid', 'started', 'terminated']
+                form_print(mes, order)
+
+            exit(not res)
+
+
         if args.target_list:
             res, mes = tnglib.get_prometheus_targets()
             order = ['target', 'endpoint']
@@ -211,6 +235,12 @@ def dispatch(args):
         if args.service_list:
             res, mes = tnglib.get_services(args.service_list)
             order = ['vnf_uuid', 'vdu_uuid']
+            form_print(mes, order)
+            exit(not res)
+            
+        if args.metric_name:
+            res, mes = tnglib.get_metric(args.metric_name)
+            order = ['job','instance','value']
             form_print(mes, order)
             exit(not res)
 
@@ -1229,6 +1259,32 @@ def parse_args(args):
                             required=False,
                             default=False,
                             help=help_mes)
+
+    help_mes = 'Get last value of metric'
+    parser_mon.add_argument('-mtn',
+                            '--metric-name',
+                            metavar='METRIC NAME',
+                            required=False,
+                            default=False,
+                            help=help_mes)
+
+    help_mes = 'Get stored tests list. (Available only in VnV Platform) '
+    parser_mon.add_argument('-ptest',
+                            '--vnv-tests',
+                            action='store_true',
+                            required=False,
+                            default=False,
+                            help=help_mes)
+
+    help_mes = 'Only with --vnv-tests. Get stored montiring data'
+    parser_mon.add_argument('-test',
+                            '--test-uuid',
+                            metavar='TEST UUID',
+                            required=False,
+                            default=False,
+                            help=help_mes)
+
+
     # tests sub arguments
     parser_tests.add_argument('-g',
                               '--get',
