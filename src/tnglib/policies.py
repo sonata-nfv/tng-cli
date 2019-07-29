@@ -215,7 +215,7 @@ def deactivate_policy(nsr_id):
     LOG.debug(str(resp.text))
 
     if resp.status_code == 200:
-        return True, policy_uuid
+        return True, json.loads(resp.text)
     else:
         return False, json.loads(resp.text)
 

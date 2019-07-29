@@ -181,7 +181,7 @@ def get_policy_rules(nsr_id):
     
     num_of_rules = json.loads(resp.text)['count']
 
-    return True, num_of_rules
+    return True, str(num_of_rules)
 
 def get_metric(metric_name):
     """
