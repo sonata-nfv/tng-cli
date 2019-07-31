@@ -55,6 +55,8 @@ def get_requests():
                         timeout=env.timeout,
                         headers=env.header)
 
+    env.set_return_header(resp.headers)
+
     if resp.status_code != 200:
         LOG.debug("Request for requests returned with " +
                   (str(resp.status_code)))
@@ -94,6 +96,8 @@ def get_request(request_uuid):
                         timeout=env.timeout,
                         headers=env.header)
 
+    env.set_return_header(resp.headers)
+
     if resp.status_code != 200:
         LOG.debug("Request for request returned with " +
                   (str(resp.status_code)))
@@ -126,7 +130,7 @@ def service_instantiate(service_uuid, sla_uuid=None, mapping=None):
             vim_id: <bar2>
             external_net: <foo.bar2>
     :returns: A list. [0] is a bool with the result. [1] is a string containing
-        the uuid of the instantiated service.
+        the uuid of the request.
 
     """
     
@@ -266,6 +270,8 @@ def _post_request(data):
                          json=data,
                          timeout=env.timeout,
                          headers=env.header)
+
+    env.set_return_header(resp.headers)
 
     if resp.status_code != 201:
         LOG.debug("Request returned with " +

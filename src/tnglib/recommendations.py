@@ -33,59 +33,21 @@
 import requests
 import logging
 import json
+import time
+import os
+import yaml
 import tnglib.env as env
 
 LOG = logging.getLogger(__name__)
 
-def get_test_plans():
-    """Returns info on all available test plans.
+def get_testing_tags():
+    """Returns the currently stored testing tags.
 
-    :returns: A list. [0] is a bool with the result. [1] is a list of
-        dictionaries. Each dictionary contains a result.
+    :returns: A list. [0] is a bool with the result. [1] is a list with
+		the currently stored testing tags.
     """
 
-    # get current list of tests results
-    resp = requests.get(env.test_plans_api,
-                        timeout=env.timeout,
-                        headers=env.header)
-
-    env.set_return_header(resp.headers)
-
-    if resp.status_code != 200:
-        LOG.debug("Request for test plans returned with " +
-                  (str(resp.status_code)))
-        return False, []
-
-    plans = json.loads(resp.text)
-
-    plans_res = []
-    for plan in plans:
-        if plan['test_result_uuid']:
-            trid = plan['test_result_uuid']
-        else:
-            trid = ""
-
-        dic = {'uuid': plan['uuid'],
-               'service_uuid': plan['service_uuid'],
-               'test_uuid': plan['test_uuid'],
-               'test_set_uuid': plan['test_set_uuid'],
-               'status': plan['test_status'],
-               'test_result_uuid': trid}
-        LOG.debug(str(dic))
-        plans_res.append(dic)
-
-    return True, plans_res
-
-def get_test_plan(uuid):
-    """Returns info on a specific test plan.
-
-    :param uuid: uuid of test plan.
-
-    :returns: A list. [0] is a bool with the result. [1] is a dictionary
-        containing a test plan.
-    """
-
-    url = env.test_plans_api + '/' + uuid
+    url = env.recommendations_api + '/test_items'
     resp = requests.get(url,
                         timeout=env.timeout,
                         headers=env.header)
@@ -93,8 +55,60 @@ def get_test_plan(uuid):
     env.set_return_header(resp.headers)
 
     if resp.status_code != 200:
-        LOG.debug("Request for test returned with " +
-                  (str(resp.status_code)))
-        return False, json.loads(resp.text)
+        LOG.debug("Request returned with " + (str(resp.status_code)))
+        error = resp.text
+        return False, error
 
-    return True, json.loads(resp.text)
+    test_items = json.loads(resp.text)
+
+    return True, test_items
+
+def get_users():
+    """Returns the currently stored users.
+
+    :returns: A list. [0] is a bool with the result. [1] is a list with 
+	the currently stored users.
+    """
+
+    url = env.recommendations_api + '/users'
+    
+    resp = requests.get(url,
+                        timeout=env.timeout,
+                        headers=env.header)
+
+    env.set_return_header(resp.headers)
+
+    if resp.status_code != 200:
+        LOG.debug("Request returned with " + (str(resp.status_code)))
+        error = resp.text
+        return False, error
+
+    users = json.loads(resp.text)
+
+    return True, users
+	
+def delete_rec_user(username):
+    """Delete a user with his/her corresponding testing tags.
+
+    :param username: username of the user to be deleted
+
+    :returns: A list. [0] is a bool with the result. [1] is the response
+	of the request.
+    """
+
+    url = env.recommendations_api + '/users/' + username
+	
+    resp = requests.delete(url,
+                        timeout=env.timeout,
+                        headers=env.header)
+
+    env.set_return_header(resp.headers)
+
+    if resp.status_code != 200:
+        LOG.debug("Request returned with " + (str(resp.status_code)))
+        error = resp.text
+        return False, error
+
+    response = json.loads(resp.text)
+
+    return True, response

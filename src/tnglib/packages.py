@@ -70,6 +70,7 @@ def get_packages():
         LOG.debug(str(dic))
         pkg_res.append(dic)
 
+    env.set_return_header(resp.headers)
     return True, pkg_res
 
 
@@ -110,20 +111,50 @@ def remove_package(package_uuid):
     LOG.debug(package_uuid)
     LOG.debug(str(resp.text))
 
+    env.set_return_header(resp.headers)
+
     if resp.status_code == 204:
         return True, package_uuid
     else:
         return False, json.loads(resp.text)['error']
 
 
-def upload_package(pkg_path, url=False):
+def package_status(pkg_id):
+    """Check the status of the package uploading process. Can be used to
+    obtain the duration of the upload.
+
+    :param pkg_id: uuid of the package uploading process
+
+    :returns: A list. [0] is a bool with the result. [1] is a dictionary
+        containing metadata of the package.
+    """
+
+    url = env.pkg_status_api + '/' + pkg_id
+
+    resp = requests.get(url, timeout=env.timeout, headers=env.header)
+
+    pyld = json.loads(resp.text)
+    LOG.debug(pyld)
+
+    env.set_return_header(resp.headers)
+
+    if resp.status_code != 200:
+        return False, str(pyld)
+
+    return True, pyld
+
+
+def upload_package(pkg_path, url=False, return_process_uuid=False):
     """Uploads a package from file.
 
     :param pkg_path: relative path to the package that needs uploading, or url
     :param pkg_path: A bool, True if pkg_path is an url
+    :param return_process_uuid: A bool, if you want the package_process_uuid
+        returned instead of the package_uuid
 
     :returns: A list. [0] is a bool with the result. [1] is a string containing
-        the uuid of the uploaded package, or an error message.
+        either the uuid of the uploaded package, the process uuid of the package
+         or an error message.
     """
 
     if not url:
@@ -139,6 +170,8 @@ def upload_package(pkg_path, url=False):
 
     pyld = json.loads(resp.text)
     LOG.debug(pyld)
+
+    env.set_return_header(resp.headers)
 
     if resp.status_code != 200:
         LOG.debug(str(pyld))
@@ -157,6 +190,8 @@ def upload_package(pkg_path, url=False):
         if 'package_process_status' in pyld:
             status = pyld['package_process_status']
             if status == 'success':
+                if return_process_uuid:
+                    return True, pkg_proc_id
                 return True, pyld['package_id']
             elif status == 'failed':
                 error = str(pyld["package_metadata"]["error"])
@@ -183,6 +218,8 @@ def get_package(package_uuid):
     resp = requests.get(env.pkg_api + '/' + package_uuid,
                         timeout=env.timeout,
                         headers=env.header)
+
+    env.set_return_header(resp.headers)
 
     if resp.status_code != 200:
         LOG.debug("Request for package returned with " +
