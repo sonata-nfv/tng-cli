@@ -36,7 +36,6 @@ from tnglib.general import *
 from tnglib.services import *
 from tnglib.functions import *
 from tnglib.policies import *
-from tnglib.monitoring import *
 from tnglib.requests import *
 from tnglib.slices import *
 from tnglib.logs import *
