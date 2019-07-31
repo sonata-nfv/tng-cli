@@ -161,6 +161,27 @@ def get_metrics(vnf_uuid, vdu_uuid):
         LOG.debug("Request returned with " + (json.dumps(templates)))
         error = "VDUs not found"
         return False, error
+    
+def get_policy_rules(nsr_id):
+    """Returns the number of activate policy monitoring rules.
+
+    :param nsr_id: uuid of a network service record.
+
+    :returns: A list. [0] is a bool with the result. [1] the number of rules.
+    """
+
+    # get policy monitoring rules
+    url = env.monitoring_manager_api + '/policymng/rules/service/' + nsr_id
+    resp = requests.get(url, timeout=env.timeout)
+
+    if resp.status_code != 200:
+        LOG.debug("Request for monitoring policy rule returned with " +
+                  (str(resp.status_code)))
+        return False, json.loads(resp.text)
+    
+    num_of_rules = json.loads(resp.text)['count']
+
+    return True, str(num_of_rules)
 
 def get_metric(metric_name):
     """

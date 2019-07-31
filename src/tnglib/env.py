@@ -53,6 +53,7 @@ sl_guarantees_api = ''
 slice_template_api = ''
 slice_instance_api = ''
 policy_api = ''
+monitoring_manager_api = ''
 policy_bind_api = ''
 test_results_api = ''
 monitor_api = ''
@@ -139,6 +140,7 @@ def _build_paths():
     global slice_template_api
     global slice_instance_api
     global policy_api
+    global monitoring_manager_api
     global policy_bind_api
     global test_results_api
     global test_plans_api
@@ -169,5 +171,6 @@ def _build_paths():
     test_results_api = sp_path + gtk_api + "/tests/results"
     test_plans_api = sp_path + gtk_api + "/tests/plans"
     test_descriptors_api = sp_path + gtk_api + "/tests/descriptors"
+    monitoring_manager_api = sp_path + ":8000/api/v1"
     monitor_api = sp_path + gtk_api + "/monitoring/data"
     recommendations_api = sp_path + gtk_api + "/recommendations"

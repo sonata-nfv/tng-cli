@@ -130,7 +130,7 @@ def service_instantiate(service_uuid, sla_uuid=None, mapping=None):
             vim_id: <bar2>
             external_net: <foo.bar2>
     :returns: A list. [0] is a bool with the result. [1] is a string containing
-        the uuid of the instantiated service.
+        the uuid of the request.
 
     """
     
