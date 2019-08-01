@@ -171,6 +171,6 @@ def _build_paths():
     test_results_api = sp_path + gtk_api + "/tests/results"
     test_plans_api = sp_path + gtk_api + "/tests/plans"
     test_descriptors_api = sp_path + gtk_api + "/tests/descriptors"
-    monitoring_manager_api = sp_path + ":8000/api/v1"
+    monitoring_manager_api = sp_path + ":8000/api/v2"
     monitor_api = sp_path + gtk_api + "/monitoring/data"
     recommendations_api = sp_path + gtk_api + "/recommendations"
