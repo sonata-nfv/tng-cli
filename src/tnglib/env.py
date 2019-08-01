@@ -58,6 +58,7 @@ policy_bind_api = ''
 test_results_api = ''
 monitor_api = ''
 recommendations_api = ''
+analytics_engine_api = ''
 graylog_username = "api"
 graylog_password = "apiapi"
 graylog_host = "logs.sonata-nfv.eu:12900"
@@ -147,6 +148,7 @@ def _build_paths():
     global test_descriptors_api
     global monitor_api
     global recommendations_api
+    global analytics_engine_api
 
     gtk_api = ":32002/api/v3"
     root_api = sp_path + gtk_api
@@ -174,3 +176,4 @@ def _build_paths():
     monitoring_manager_api = sp_path + ":8000/api/v2"
     monitor_api = sp_path + gtk_api + "/monitoring/data"
     recommendations_api = sp_path + gtk_api + "/recommendations"
+    analytics_engine_api = sp_path + ":8085"
