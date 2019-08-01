@@ -171,7 +171,8 @@ def get_policy_rules(nsr_id):
     """
 
     # get policy monitoring rules
-    url = env.monitoring_manager_api + '/policymng/rules/service/' + nsr_id
+    url = env.monitoring_manager_api + '/policies/monitoring-rules/service/' + nsr_id
+    
     resp = requests.get(url, timeout=env.timeout)
 
     if resp.status_code != 200:
