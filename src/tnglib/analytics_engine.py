@@ -36,3 +36,74 @@ import json
 import tnglib.env as env
 
 LOG = logging.getLogger(__name__)
+
+
+def get_analytic_services():
+    """Returns a json array with all available analytic services.
+
+    :param uuid: none
+
+    :returns: A list. [0] is a bool with the result. [1] is a dictionary
+        containing all available analytic services.
+    """
+
+    url = env.analytics_engine_api + '/list'
+    resp = requests.get(url,
+                        timeout=env.timeout,
+                        headers=env.header)
+
+    env.set_return_header(resp.headers)
+
+    if resp.status_code != 200:
+        LOG.debug("Request for test descriptor returned with " +
+                  (str(resp.status_code)))
+        return False, json.loads(resp.text)
+    
+    return True, len(json.loads(resp.text))
+
+def invoke_analytic_process(testr_uuid,service_name):
+    """invoke an analytic process for a specific vnv test results uuid
+
+    :param path: testr_uuid and service_name
+
+    :returns:  a bool with the result
+    """
+
+    url = env.analytics_engine_api + '/analytic_service'
+
+    data = {'name': service_name, 'vendor':'5gtango.vnv','testr_uuid': testr_uuid,'step':'5s'}
+    resp = requests.post(url,
+                          json=data,
+                          timeout=env.timeout)
+    
+    if resp.status_code != 200:
+        LOG.debug("Request returned with " + (str(resp.status_code)))
+        return False
+
+    return True
+
+def get_analytic_results():
+    """Returns a json array with all available analytic service results.
+
+    :param uuid: none
+
+    :returns: A list. [0] is a bool with the result. [1] is a dictionary
+        containing all available analytic service results.
+    """
+
+    url = env.analytics_engine_api + '/results/list'
+    resp = requests.get(url,
+                        timeout=env.timeout,
+                        headers=env.header)
+
+    env.set_return_header(resp.headers)
+
+    if resp.status_code != 200:
+        LOG.debug("Request for test descriptor returned with " +
+                  (str(resp.status_code)))
+        return False, json.loads(resp.text)
+    
+    return True, len(json.loads(resp.text))
+
+
+
