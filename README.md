@@ -21,7 +21,7 @@ python3 setup.py install
 Automated installation using pip3, with permissions:
 
 ```
-pip3 install git+https://github.com/sonata-nfv/tng-cli
+pip3 install tngcli
 ```
 
 ## Usage
