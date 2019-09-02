@@ -67,7 +67,7 @@ tng-cli package --list
 To obtain a list of all running network services:
 
 ```
-tng-cli service --instances
+tng-cli service --instance
 ```
 
 To instantiate a new network service:
