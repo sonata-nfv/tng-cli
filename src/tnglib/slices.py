@@ -44,7 +44,7 @@ LOG = logging.getLogger(__name__)
 def get_slice_templates():
     """Returns info on all available slice templates.
 
-    :returns: A list. [0] is a bool with the result. [1] is a list of 
+    :returns: A tuple. [0] is a bool with the result. [1] is a list of 
         dictionaries. Each dictionary contains a slice template.
     """
 
@@ -79,7 +79,7 @@ def get_slice_template(slice_template_uuid):
 
     :param slice_template_uuid: uuid of a slice template.
 
-    :returns: A list. [0] is a bool with the result. [1] is a dictionary 
+    :returns: A tuple. [0] is a bool with the result. [1] is a dictionary 
         containing a slice template.
     """
 
@@ -100,7 +100,7 @@ def get_slice_template(slice_template_uuid):
 def get_slice_instances():
     """Returns info on all slice instances.
 
-    :returns: A list. [0] is a bool with the result. [1] is a list of 
+    :returns: A tuple. [0] is a bool with the result. [1] is a list of 
         dictionaries. Each dictionary contains a slice instance record.
     """
 
@@ -135,7 +135,7 @@ def get_slice_instance(slice_instance_uuid):
 
     :param slice_instance_uuid: uuid of a slice instance.
 
-    :returns: A list. [0] is a bool with the result. [1] is a dictionary 
+    :returns: A tuple. [0] is a bool with the result. [1] is a dictionary 
         containing a slice instance record.
     """
 
@@ -158,7 +158,7 @@ def delete_slice_template(slice_template_uuid):
 
     :param slice_template_uuid: uuid of a slice template.
 
-    :returns: A list. [0] is a bool with the result. [1] is a string containing
+    :returns: A tuple. [0] is a bool with the result. [1] is a string containing
         the uuid of the removed slice template.
     """
 
@@ -181,7 +181,7 @@ def create_slice_template(path):
 
     :param path: relative path to where the slice template is stored.
 
-    :returns: A list. [0] is a bool with the result. [1] is a string containing
+    :returns: A tuple. [0] is a bool with the result. [1] is a string containing
         the uuid of the uploaded slice template, or an error message.
     """
 
@@ -221,7 +221,7 @@ def add_sla_to_nstd_subnets(yaml_nstd, sla_uuid, sla_name):
     :param sla_uuid: uuid object identying the sla to associate with the NS within the NSTD.
     :param sla_name: string object naming the sla to associate with the NS within the NSTD.
 
-    :returns: A json objectA list. [0] is a bool with the result. [1] is a json containing the NSTD.
+    :returns: A json objectA tuple. [0] is a bool with the result. [1] is a json containing the NSTD.
     """
     nstd_dict = yaml.load(yaml_nstd)
 

@@ -45,7 +45,7 @@ def get_requests():
     """Returns info on all requests.
 
 
-    :returns: A list. [0] is a bool with the result. [1] is a list of
+    :returns: A tuple. [0] is a bool with the result. [1] is a list of
         dictionaries, each containing a request.
 
     """
@@ -86,7 +86,7 @@ def get_request(request_uuid):
     """Returns info on a specific request.
 
     :param request_uuid: A string. The uuid of the request.
-    :returns: A list. [0] is a bool with the result. [1] is a dictionary
+    :returns: A tuple. [0] is a bool with the result. [1] is a dictionary
         containing the request.
 
     """
@@ -129,7 +129,7 @@ def service_instantiate(service_uuid, sla_uuid=None, mapping=None):
           - vl_id: <foo2>
             vim_id: <bar2>
             external_net: <foo.bar2>
-    :returns: A list. [0] is a bool with the result. [1] is a string containing
+    :returns: A tuple. [0] is a bool with the result. [1] is a string containing
         the uuid of the request.
 
     """
@@ -150,7 +150,7 @@ def service_terminate(instance_uuid):
     """Makes a request to terminate a service.
 
     :param instance_uuid: A string. The uuid of the instance.
-    :returns: A list. [0] is a bool with the result. [1] is a string containing
+    :returns: A tuple. [0] is a bool with the result. [1] is a string containing
         the uuid of the terminated instance.
 
     """
@@ -169,7 +169,7 @@ def slice_instantiate(slice_template_uuid, name=None, description=None):
         instance.
     :param description: A string (Default value = None). A description 
         for the slice template
-    :returns: A list. [0] is a bool with the result. [1] is a string containing
+    :returns: A tuple. [0] is a bool with the result. [1] is a string containing
         the uuid of the instantiated slice.
 
     """
@@ -194,7 +194,7 @@ def slice_terminate(instance_uuid):
     """Makes a request to terminate a slice.
 
     :param instance_uuid: A string. The uuid of the slice instance.
-    :returns: A list. [0] is a bool with the result. [1] is a string containing
+    :returns: A tuple. [0] is a bool with the result. [1] is a string containing
         the uuid of the terminated slice instance.
 
     """
@@ -211,7 +211,7 @@ def service_scale_out(instance_uuid, vnfd_uuid, number_inst=1, vim_uuid=None):
     :param instance_uuid: A string. The uuid of the service instance.
     :param vnfd_uuid: A string. the uuid of the vnf descriptor to scale.
     :param number_inst: An integer. Number of required extra intances.
-    :returns: A list. [0] is a bool with the result. [1] is a string containing
+    :returns: A tuple. [0] is a bool with the result. [1] is a string containing
         the uuid of the request.
 
     """
@@ -241,7 +241,7 @@ def service_scale_in(instance_uuid, vnf_uuid=None, vnfd_uuid=None, number_inst=1
     :param vnf_uuid: A string. Contains the uuid of a VNF instance.
     :param number_inst: An integer. Number of required intances to scale in.
         Only when vnfd_uuid is present.
-    :returns: A list. [0] is a bool with the result. [1] is a string containing
+    :returns: A tuple. [0] is a bool with the result. [1] is a string containing
         the uuid of the request.
 
     """

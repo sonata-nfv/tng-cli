@@ -41,7 +41,7 @@ LOG = logging.getLogger(__name__)
 def get_test_descriptors():
     """Returns info on all available test descriptors.
 
-    :returns: A list. [0] is a bool with the result. [1] is a list of
+    :returns: A tuple. [0] is a bool with the result. [1] is a list of
         dictionaries. Each dictionary contains a test descriptor.
     """
 
@@ -87,7 +87,7 @@ def get_test_descriptor(uuid):
 
     :param uuid: uuid of test descriptor.
 
-    :returns: A list. [0] is a bool with the result. [1] is a dictionary
+    :returns: A tuple. [0] is a bool with the result. [1] is a dictionary
         containing a test descriptor.
     """
 
@@ -110,7 +110,7 @@ def get_latest_succesful_test_results():
 
     :param uuid: none
 
-    :returns: A list. [0] is a bool with the result. [1] is a dictionary
+    :returns: A tuple. [0] is a bool with the result. [1] is a dictionary
         containing the test results metadata.
     """
 

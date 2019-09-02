@@ -44,7 +44,7 @@ LOG = logging.getLogger(__name__)
 def get_service_descriptors():
     """Returns info on all available service descriptors.
 
-    :returns: A list. [0] is a bool with the result. [1] is a list of 
+    :returns: A tuple. [0] is a bool with the result. [1] is a list of 
         dictionaries. Each dictionary contains an nsd.
     """
 
@@ -81,7 +81,7 @@ def get_service_descriptor(service_descriptor_uuid):
 
     :param service_descriptor_uuid: uuid of the nsd.
 
-    :returns: A list. [0] is a bool with the result. [1] is a dictionary 
+    :returns: A tuple. [0] is a bool with the result. [1] is a dictionary 
         containing an nsd.
     """
 
@@ -104,7 +104,7 @@ def get_service_descriptor(service_descriptor_uuid):
 def get_service_instances():
     """Returns info on all available service instances.
 
-    :returns: A list. [0] is a bool with the result. [1] is a list of 
+    :returns: A tuple. [0] is a bool with the result. [1] is a list of 
         dictionaries. Each dictionary contains an nsr.
     """
 
@@ -143,7 +143,7 @@ def get_service_instance(service_instance_uuid):
 
     :param service_instance_uuid: uid of nsr.
 
-    :returns: A list. [0] is a bool with the result. [1] is a dictionary 
+    :returns: A tuple. [0] is a bool with the result. [1] is a dictionary 
         containing an nsr.
     """
 
@@ -167,7 +167,7 @@ def get_service_vnfrs(service_instance_uuid):
 
     :param service_instance_uuid: uid of nsr.
 
-    :returns: A list. [0] is a bool with the result. [1] is a dictionary 
+    :returns: A tuple. [0] is a bool with the result. [1] is a dictionary 
         containing an nsr.
     """
 

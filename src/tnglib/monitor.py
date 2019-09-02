@@ -167,7 +167,7 @@ def get_policy_rules(nsr_id):
 
     :param nsr_id: uuid of a network service record.
 
-    :returns: A list. [0] is a bool with the result. [1] the number of rules.
+    :returns: A tuple. [0] is a bool with the result. [1] the number of rules.
     """
 
     # get policy monitoring rules

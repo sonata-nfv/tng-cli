@@ -37,6 +37,7 @@ import yaml
 import os
 import logging
 import getpass
+import time
 
 
 LOG = logging.getLogger(__name__)
@@ -176,6 +177,11 @@ def dispatch(args):
             res, mes = tnglib.get_request(args.get)
             form_print(mes)
             exit(not res)
+
+        if bool(args.watch):
+            res = watch_request(args.watch)
+            exit(not res)
+
         else:
             res, mes = tnglib.get_requests()
             order = ['request_uuid',
@@ -326,12 +332,18 @@ def dispatch(args):
             else:
                 res, mes = tnglib.service_instantiate(args.instantiate)
 
-            form_print(mes)
+            if args.watch:
+                res = watch_request(mes)
+            else:
+                form_print(mes)
             exit(not res)
 
         if bool(args.terminate):
             res, mes = tnglib.service_terminate(args.terminate)
-            form_print(mes)
+            if args.watch:
+                res = watch_request(mes)
+            else:
+                form_print(mes)
             exit(not res)
 
         if bool(args.scale_out):
@@ -343,7 +355,10 @@ def dispatch(args):
                                                 args.vnfd_uuid,
                                                 args.num_instances,
                                                 args.vim_uuid)
-            form_print(mes)
+            if args.watch:
+                res = watch_request(mes)
+            else:
+                form_print(mes)
             exit(not res)
 
         if bool(args.scale_in):
@@ -357,7 +372,10 @@ def dispatch(args):
                                                args.vnf_uuid,
                                                args.vnfd_uuid,
                                                args.num_instances)
-            form_print(mes)
+            if args.watch:
+                res = watch_request(mes)
+            else:
+                form_print(mes)
             exit(not res)
 
     # functions subcommand
@@ -769,8 +787,8 @@ def parse_args(args):
     """
     parser = argparse.ArgumentParser(description="5GTANGO tng-cli tool")
 
-    parser.add_argument('-u',
-                        '--url',
+    parser.add_argument('-e',
+                        '--env',
                         dest='sp_url',
                         metavar="URL",
                         default=None,
@@ -862,6 +880,13 @@ def parse_args(args):
                             default=False,
                             help='Returns detailed info on specified request')
 
+    parser_req.add_argument('-w',
+                            '--watch',
+                            metavar='UUID',
+                            required=False,
+                            default=False,
+                            help='Watch the request progress')
+
     # services sub arguments
     parser_ser.add_argument('--descriptor',
                             action='store_true',
@@ -947,6 +972,14 @@ def parse_args(args):
                             required=False,
                             default=False,
                             help='Specify VIM uuid, only with --vnfd_uuid')
+
+    help_mes = 'Follow a service request (instantiating, terminating, scaling)'
+    parser_ser.add_argument('-w',
+                            '--watch',
+                            action='store_true',
+                            required=False,
+                            default=False,
+                            help=help_mes)
 
     # functions sub arguments
     parser_fun.add_argument('--descriptor',
@@ -1323,7 +1356,49 @@ def parse_args(args):
     return parser.parse_args(args)
 
 
-def form_print(data, order=None):
+def watch_request(request_uuid):
+    """
+    Follow a request
+    """
+
+    order = ['request_uuid',
+             'request_type',
+             'status',
+             'created_at']
+
+    res, mes = tnglib.get_request(request_uuid)
+
+    if (not res):
+        return res
+
+    output = [{'request_uuid': request_uuid,
+               'request_type': mes['request_type'],
+               'status': mes['status'],
+               'created_at': mes['created_at']}]
+
+    form_print(output, order)
+    status = mes['status']
+
+    while status not in ['READY', 'ERROR']:
+        time.sleep(5)
+        res, mes = tnglib.get_request(request_uuid)
+        if (not res):
+            return res
+
+        output = [{'request_uuid': request_uuid,
+                   'request_type': mes['request_type'],
+                   'status': mes['status'],
+                   'created_at': mes['created_at']}]
+
+        form_print(output, order, update=True)
+        status = mes['status']
+
+    if status == 'ERROR':
+        return False
+
+    return True
+
+def form_print(data, order=None, update=False):
     """
     Formatted printing
     """
@@ -1335,16 +1410,17 @@ def form_print(data, order=None):
                 return
 
         # print header
-        header = ''
-        for key in order:
-            if ('uuid' in key) or ('metric' in key):
-                new_seg = key.replace('_', ' ').upper().ljust(40)
-            # elif key == 'version':
-            #     new_seg = key.upper().ljust(10)
-            else:
-                new_seg = key.replace('_', ' ').upper().ljust(20)
-            header = header + new_seg
-        print(header)
+        if not update:
+            header = ''
+            for key in order:
+                if ('uuid' in key) or ('metric' in key):
+                    new_seg = key.replace('_', ' ').upper().ljust(40)
+                # elif key == 'version':
+                #     new_seg = key.upper().ljust(10)
+                else:
+                    new_seg = key.replace('_', ' ').upper().ljust(20)
+                header = header + new_seg
+            print(header)
 
         # print content
         for data_seg in data:
