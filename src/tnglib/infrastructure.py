@@ -248,6 +248,31 @@ def post_vim(vim_type, payload):
 
     return True, json.loads(resp.text)
 
+def post_wim(wim_type, payload):
+    """Post a wim
+
+    :param wim_type: the type of wim
+    :param json_payload: the payload as json
+
+    :returns: A tuple. [0] is a bool with the result. [1] the uuid of the wim.
+    """
+
+    # get current list of wims
+    url = env.ia_api + '/wims/' + wim_type
+    resp = requests.post(url,
+                         json=payload,
+                         timeout=env.timeout,
+                         headers=env.header)
+
+    env.set_return_header(resp.headers)
+
+    if resp.status_code not in [200, 201]:
+        LOG.debug("Request to post wim returned with " +
+                  (str(resp.status_code)))
+        return False, []
+
+    return True, json.loads(resp.text)
+
 def post_vim_from_file(tag, file=None):
     """Post a vim from file
 
