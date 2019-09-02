@@ -60,6 +60,7 @@ def update_token(username, password, store_token=False):
 
     :param username: A string.
     :param password: A string.
+    :param store_token: A bool. Store the token in local file system.
     :returns: A string containing the token.
 
     """
@@ -120,7 +121,7 @@ def get_token():
 
 
 def is_token_valid():
-    """Check whether the token is still valid.
+    """Check whether the stored token is still valid.
     
     :returns: A bool.
     """
@@ -141,6 +142,12 @@ def is_token_valid():
 
 def register(username, password, name='', email='', role=''):
     """Register a new user.
+
+    :param username: A string containing the username
+    :param password: A string containing the password
+    :param name: Optional. A string containing a name
+    :param email: Optional. A string containing an email adres
+    :param role: Optional. A string containing a role
 
     :returns: A bool.
     """
@@ -211,7 +218,7 @@ def delete_user(username):
 def logout_user(token):
     """Log out the session user.
 
-    :param token:  Token that authorizes the session user
+    :param token: Token that authorizes the session user
 
     :returns: A list. [0] is a bool with the result
     """
@@ -234,7 +241,7 @@ def logout_user(token):
 def user_info(username):
     """Log out the session user.
 
-    :param username:  Logded in username
+    :param username:  Logged in username
 
     :returns: A list. [0] is a bool with the result [1] is a json with the user information
     """

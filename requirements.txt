@@ -1,5 +1,4 @@
 setuptools
 requests
 pyaml
-git+https://github.com/yumimobi/graylog.py.git#egg=graylog
-
+graylog
