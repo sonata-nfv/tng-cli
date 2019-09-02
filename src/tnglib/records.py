@@ -43,7 +43,7 @@ LOG = logging.getLogger(__name__)
 def get_ips_from_vnfr(vnfr):
     """Returns info on the ip addresses in a vnfr, per vdu.
 
-    :returns: A list. [0] is a bool with the result. [1] is a dictionary
+    :returns: A tuple. [0] is a bool with the result. [1] is a dictionary
               with a key for each VDU. The value is a list of dictionaries.
               Each dictionary has a type key, indicating which type of id,
               and an ip field containing the ip.

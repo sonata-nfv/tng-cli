@@ -40,7 +40,7 @@ LOG = logging.getLogger(__name__)
 def get_test_plans():
     """Returns info on all available test plans.
 
-    :returns: A list. [0] is a bool with the result. [1] is a list of
+    :returns: A tuple. [0] is a bool with the result. [1] is a list of
         dictionaries. Each dictionary contains a result.
     """
 
@@ -81,7 +81,7 @@ def get_test_plan(uuid):
 
     :param uuid: uuid of test plan.
 
-    :returns: A list. [0] is a bool with the result. [1] is a dictionary
+    :returns: A tuple. [0] is a bool with the result. [1] is a dictionary
         containing a test plan.
     """
 

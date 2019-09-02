@@ -64,7 +64,7 @@ def create_sla_template(templateName, nsd_uuid, expireDate,
         the license.
     :param service_licence_expiration_date: DD/MM/YYYY license expiration date.
 
-    :returns: A list. [0] is a bool with the result. [1] is a string containing
+    :returns: A tuple. [0] is a bool with the result. [1] is a string containing
         the uuid of the created SLA template.
     """
 
@@ -100,7 +100,7 @@ def create_sla_template(templateName, nsd_uuid, expireDate,
 def get_sla_templates():
     """Returns info on all available SLA templates.
 
-    :returns: A list. [0] is a bool with the result. [1] is a list of 
+    :returns: A tuple. [0] is a bool with the result. [1] is a list of 
         dictionaries. Each dictionary contains an SLA template.
     """
 
@@ -137,7 +137,7 @@ def get_sla_template(sla_uuid):
 
     :param sla_uuid: uuid of an SLA template.
 
-    :returns: A list. [0] is a bool with the result. [1] is a dictionary 
+    :returns: A tuple. [0] is a bool with the result. [1] is a dictionary 
         containg an SLA template.
     """
 
@@ -162,7 +162,7 @@ def delete_sla_template(sla_template_uuid):
 
     :param sla_template_uuid: uuid of an SLA template.
 
-    :returns: A list. [0] is a bool with the result. [1] is a string containing
+    :returns: A tuple. [0] is a bool with the result. [1] is a string containing
         the uuid of the terminated SLA.
     """
 
@@ -183,7 +183,7 @@ def delete_sla_template(sla_template_uuid):
 def get_sla_guarantees():
     """Returns info on all available SLA guarantees.
 
-    :returns: A list. [0] is a bool with the result. [1] is a list of 
+    :returns: A tuple. [0] is a bool with the result. [1] is a list of 
         dictionaries. Each dictionary contains an SLA guarantee.
     """
 
@@ -219,7 +219,7 @@ def get_agreements(nsi_uuid=None):
 
     :param nsi_uuid:  (Default value = None) uuid of a service instance.
 
-    :returns: A list. [0] is a bool with the result. [1] is a list of 
+    :returns: A tuple. [0] is a bool with the result. [1] is a list of 
         dictonaries. Each dictionary contains an SLA agreement.
     """
 
@@ -251,7 +251,7 @@ def get_detailed_agreement(sla_uuid, nsi_uuid):
     :param sla_uuid: uuid of an SLA template.
     :param nsi_uuid: uuid of a service instance.
 
-    :returns: A list. [0] is a bool with the result. [1] is a dictionary
+    :returns: A tuple. [0] is a bool with the result. [1] is a dictionary
         containing details on a single SLA agreement.
     """
     url = env.sl_agreements_api + '/' + sla_uuid + '/' + nsi_uuid
@@ -273,7 +273,7 @@ def get_violations(nsi_uuid=None):
 
     :param nsi_uuid:  (Default value = None) uuid of a service instance.
 
-    :returns: A list. [0] is a bool with the result. [1] is a list of 
+    :returns: A tuple. [0] is a bool with the result. [1] is a list of 
         SLA violations associated to a service instance.
     """
 
@@ -301,7 +301,7 @@ def get_violations_per_nsi_sla(sla_uuid, nsi_uuid):
     :param sla_uuid: uuid of SLA template.
     :param nsi_uuid: uuid of network service instance.
 
-    :returns: A list. [0] is a bool with the result. [1] is a list of 
+    :returns: A tuple. [0] is a bool with the result. [1] is a list of 
         SLA violations associated to a service instance and an SLA 
         template.
     """

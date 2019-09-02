@@ -43,7 +43,7 @@ LOG = logging.getLogger(__name__)
 def clean_infrastructure():
     """Delete all vims and wims
 
-    :returns: A list. [0] is a bool with the result.
+    :returns: A tuple. [0] is a bool with the result.
     """
 
     vims = get_vims()[1]
@@ -66,7 +66,7 @@ def delete_vim(vim_uuid):
 
     :param vim_uuid: uuid of the vim to be deleted.
 
-    :returns: A list. [0] is a bool with the result. [1] is response message.
+    :returns: A tuple. [0] is a bool with the result. [1] is response message.
     """
 
     url = env.ia_api + '/vims/' + vim_uuid 
@@ -89,7 +89,7 @@ def delete_wim(wim_uuid):
 
     :param wim_uuid: uuid of the wim to be deleted.
 
-    :returns: A list. [0] is a bool with the result. [1] is response message.
+    :returns: A tuple. [0] is a bool with the result. [1] is response message.
     """
 
     url = env.ia_api + '/wims/' + wim_uuid 
@@ -112,7 +112,7 @@ def get_vim(vim_uuid):
 
     :param vim_uuid: uuid of the vim.
 
-    :returns: A list. [0] is a bool with the result. [1] is response message.
+    :returns: A tuple. [0] is a bool with the result. [1] is response message.
     """
 
     url = env.ia_api + '/vims/' + vim_uuid 
@@ -135,7 +135,7 @@ def get_wim(wim_uuid):
 
     :param wim_uuid: uuid of the wim.
 
-    :returns: A list. [0] is a bool with the result. [1] is response message.
+    :returns: A tuple. [0] is a bool with the result. [1] is response message.
     """
 
     url = env.ia_api + '/wims/' + wim_uuid 
@@ -158,7 +158,7 @@ def get_vims(vim_type=None):
 
     :param type: optional type of vim
 
-    :returns: A list. [0] is a bool with the result. [1] is a list of 
+    :returns: A tuple. [0] is a bool with the result. [1] is a list of 
         dictionaries. Each dictionary contains a vim.
     """
 
@@ -193,7 +193,7 @@ def get_wims(wim_type=None):
 
     :param type: optional type of wim
 
-    :returns: A list. [0] is a bool with the result. [1] is a list of 
+    :returns: A tuple. [0] is a bool with the result. [1] is a list of 
         dictionaries. Each dictionary contains a wim.
     """
 
@@ -229,7 +229,7 @@ def post_vim(vim_type, payload):
     :param vim_type: the type of vim
     :param json_payload: the payload as json
 
-    :returns: A list. [0] is a bool with the result. [1] the uuid of the vim.
+    :returns: A tuple. [0] is a bool with the result. [1] the uuid of the vim.
     """
 
     # get current list of vims
@@ -254,7 +254,7 @@ def post_vim_from_file(tag, file=None):
     :param file: path to the file
     :param tag: name of vim in file
 
-    :returns: A list. [0] is a bool with the result. [1] the uuid of the vim.
+    :returns: A tuple. [0] is a bool with the result. [1] the uuid of the vim.
     """
 
     if not file:
@@ -272,7 +272,7 @@ def get_available_vim_tags(file=None):
 
     :param file: path to the file
 
-    :returns: A list. [0] is a bool with the result. [1] list of tags.
+    :returns: A tuple. [0] is a bool with the result. [1] list of tags.
     """
 
     if not file:

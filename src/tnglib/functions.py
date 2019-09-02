@@ -44,7 +44,7 @@ LOG = logging.getLogger(__name__)
 def get_function_descriptors():
     """Returns info on all available function descriptors.
 
-    :returns: A list. [0] is a bool with the result. [1] is a list of 
+    :returns: A tuple. [0] is a bool with the result. [1] is a list of 
         dictionaries. Each dictionary contains a descriptor.
     """
 
@@ -81,7 +81,7 @@ def get_function_descriptor(function_descriptor_uuid):
 
     :param function_descriptor_uuid: uuid of the vnfd.
 
-    :returns: A list. [0] is a bool with the result. [1] is a dictionary 
+    :returns: A tuple. [0] is a bool with the result. [1] is a dictionary 
         containing the vnfd.
     """
 
@@ -104,7 +104,7 @@ def get_function_descriptor(function_descriptor_uuid):
 def get_function_instances():
     """Returns info on all available function instances.
 
-    :returns: A list. [0] is a bool with the result. [1] is a list of 
+    :returns: A tuple. [0] is a bool with the result. [1] is a list of 
         dictionaries. Each dictionary contains a vnfr.
     """
 
@@ -139,7 +139,7 @@ def get_function_instance(function_instance_uuid):
 
     :param function_instance_uuid: uuid of the vnfr.
 
-    :returns: A list. [0] is a bool with the result. [1] is a dictionary 
+    :returns: A tuple. [0] is a bool with the result. [1] is a dictionary 
         containing a vnfr.
     """
 

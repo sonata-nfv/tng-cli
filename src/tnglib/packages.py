@@ -45,7 +45,7 @@ LOG = logging.getLogger(__name__)
 def get_packages():
     """Returns info on all available packages.
 
-    :returns: A list. [0] is a bool with the result. [1] is a list of 
+    :returns: A tuple. [0] is a bool with the result. [1] is a list of 
         dictionaries. Each dictionary contains a package descriptor.
     """
 
@@ -77,7 +77,7 @@ def get_packages():
 def remove_all_packages():
     """Removes all packages from the catalogue.
 
-    :returns: A list. [0] is a bool with the result. [1] is a list of
+    :returns: A tuple. [0] is a bool with the result. [1] is a list of
         uuids of packages that were removed.
     """
 
@@ -98,7 +98,7 @@ def remove_package(package_uuid):
 
     :param package_uuid: uuid of the package
 
-    :returns: A list. [0] is a bool with the result. [1] is a string 
+    :returns: A tuple. [0] is a bool with the result. [1] is a string 
         with either the uuid or an error message.
     """
 
@@ -125,7 +125,7 @@ def package_status(pkg_id):
 
     :param pkg_id: uuid of the package uploading process
 
-    :returns: A list. [0] is a bool with the result. [1] is a dictionary
+    :returns: A tuple. [0] is a bool with the result. [1] is a dictionary
         containing metadata of the package.
     """
 
@@ -152,7 +152,7 @@ def upload_package(pkg_path, url=False, return_process_uuid=False):
     :param return_process_uuid: A bool, if you want the package_process_uuid
         returned instead of the package_uuid
 
-    :returns: A list. [0] is a bool with the result. [1] is a string containing
+    :returns: A tuple. [0] is a bool with the result. [1] is a string containing
         either the uuid of the uploaded package, the process uuid of the package
          or an error message.
     """
@@ -210,7 +210,7 @@ def get_package(package_uuid):
 
     :param package_uuid: the uuid of the package
 
-    :returns: A list. [0] is a bool with the result. [1] is a dictionary 
+    :returns: A tuple. [0] is a bool with the result. [1] is a dictionary 
         containing a package descriptor.
     """
 
@@ -233,7 +233,7 @@ def map_package_on_service(package_uuid):
 
     :param package_uuid: the uuid of the package
 
-    :returns: A list. [0] is a bool with the result. [1] is a string 
+    :returns: A tuple. [0] is a bool with the result. [1] is a string 
         containing a nsd uuid.
     """
 

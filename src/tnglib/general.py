@@ -176,7 +176,7 @@ def register(username, password, name='', email='', role=''):
 def delete_users():
     """Clean the DB deleting all users .
 
-    :returns: A list. [0] is a bool with the result
+    :returns: A tuple. [0] is a bool with the result
     """
     resp = requests.delete(env.user_api,
                            timeout=env.timeout)
@@ -197,7 +197,7 @@ def delete_user(username):
 
     :param username:  username of the user
 
-    :returns: A list. [0] is a bool with the result
+    :returns: A tuple. [0] is a bool with the result
     """
     url = env.user_api + '/' + username
 
@@ -220,7 +220,7 @@ def logout_user(token):
 
     :param token: Token that authorizes the session user
 
-    :returns: A list. [0] is a bool with the result
+    :returns: A tuple. [0] is a bool with the result
     """
     url = env.user_api + '/' + 'sessions'
     resp = requests.delete(url,
@@ -243,7 +243,7 @@ def user_info(username):
 
     :param username:  Logged in username
 
-    :returns: A list. [0] is a bool with the result [1] is a json with the user information
+    :returns: A tuple. [0] is a bool with the result [1] is a json with the user information
     """
     url = env.user_api + '/' + username
     resp = requests.get(url, timeout=env.timeout)

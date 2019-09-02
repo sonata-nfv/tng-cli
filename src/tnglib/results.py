@@ -40,7 +40,7 @@ LOG = logging.getLogger(__name__)
 def get_test_results():
     """Returns info on all available tests results.
 
-    :returns: A list. [0] is a bool with the result. [1] is a list of 
+    :returns: A tuple. [0] is a bool with the result. [1] is a list of 
         dictionaries. Each dictionary contains a result.
     """
 
@@ -79,7 +79,7 @@ def get_test_result(uuid):
 
     :param uuid: uuid of test.
 
-    :returns: A list. [0] is a bool with the result. [1] is a dictionary 
+    :returns: A tuple. [0] is a bool with the result. [1] is a dictionary 
         containing a test.
     """
 
@@ -103,7 +103,7 @@ def get_test_uuid_by_instance_uuid(instance_uuid):
 
     :param uuid: instance uuid.
 
-    :returns: A list. [0] is a bool with the result. [1] is a list of
+    :returns: A tuple. [0] is a bool with the result. [1] is a list of
         dictionaries. Each dictionary contains a test_uuid.
     """
 

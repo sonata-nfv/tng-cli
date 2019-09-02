@@ -43,7 +43,7 @@ LOG = logging.getLogger(__name__)
 def get_testing_tags():
     """Returns the currently stored testing tags.
 
-    :returns: A list. [0] is a bool with the result. [1] is a list with
+    :returns: A tuple. [0] is a bool with the result. [1] is a list with
 		the currently stored testing tags.
     """
 
@@ -66,7 +66,7 @@ def get_testing_tags():
 def get_users():
     """Returns the currently stored users.
 
-    :returns: A list. [0] is a bool with the result. [1] is a list with 
+    :returns: A tuple. [0] is a bool with the result. [1] is a list with 
 	the currently stored users.
     """
 
@@ -92,7 +92,7 @@ def delete_rec_user(username):
 
     :param username: username of the user to be deleted
 
-    :returns: A list. [0] is a bool with the result. [1] is the response
+    :returns: A tuple. [0] is a bool with the result. [1] is the response
 	of the request.
     """
 

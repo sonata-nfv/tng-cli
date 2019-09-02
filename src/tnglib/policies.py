@@ -44,7 +44,7 @@ LOG = logging.getLogger(__name__)
 def get_policies():
     """Returns info on all available policiy descriptors.
 
-    :returns: A list. [0] is a bool with the result. [1] is a list of 
+    :returns: A tuple. [0] is a bool with the result. [1] is a list of 
         dictionaries. Each dictionary contains a policy descriptor.
     """
 
@@ -75,7 +75,7 @@ def get_policy(policy_uuid):
 
     :param policy_uuid: uuid of a policy descriptor.
 
-    :returns: A list. [0] is a bool with the result. [1] is a dictionary 
+    :returns: A tuple. [0] is a bool with the result. [1] is a dictionary 
         containg a policy descriptor.
     """
 
@@ -96,7 +96,7 @@ def create_policy(path):
 
     :param path: relative path where policy descriptor is stored.
 
-    :returns: A list. [0] is a bool with the result. [1] is a string containing
+    :returns: A tuple. [0] is a bool with the result. [1] is a string containing
         the uuid of the uploaded policy descriptor.
     """
 
@@ -133,7 +133,7 @@ def delete_policy(policy_uuid):
 
     :param policy_uuid: uuid of a policy descriptor.
 
-    :returns: A list. [0] is a bool with the result. [1] is a string containing
+    :returns: A tuple. [0] is a bool with the result. [1] is a string containing
         the uuid of the terminated policy descriptor.
     """
 
@@ -153,7 +153,7 @@ def define_policy_as_default(policy_uuid,service_uuid):
 
     :param policy_uuid: uuid of a policy descriptor.
 
-    :returns: A list. [0] is a bool with the result. [1] is a string containing
+    :returns: A tuple. [0] is a bool with the result. [1] is a string containing
         the uuid of the terminated policy descriptor.
     """
 
@@ -181,7 +181,7 @@ def attach_policy(policy_uuid, service_uuid, sla_uuid):
     :param service_uuid: uuid of a network service.
     :param sla_uuid: uuid of an SLA.
 
-    :returns: A list. [0] is a bool with the result. [1] is a string indicating
+    :returns: A tuple. [0] is a bool with the result. [1] is a string indicating
         the result.
     """
 
@@ -204,7 +204,7 @@ def deactivate_policy(nsr_id):
 
     :param nsr_id: uuid of a network service record.
 
-    :returns: A list. [0] is a bool with the result. [1] is a string containing
+    :returns: A tuple. [0] is a bool with the result. [1] is a string containing
         a message.
     """
 
@@ -224,7 +224,7 @@ def get_policy_action(nsr_id):
 
     :param nsr_id: uuid of a network service record.
 
-    :returns: A list. [0] is a bool with the result. [1] is a string containing
+    :returns: A tuple. [0] is a bool with the result. [1] is a string containing
         a message.
     """
 

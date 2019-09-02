@@ -43,7 +43,7 @@ def get_analytic_services():
 
     :param uuid: none
 
-    :returns: A list. [0] is a bool with the result. [1] is a dictionary
+    :returns: A tuple. [0] is a bool with the result. [1] is a dictionary
         containing all available analytic services.
     """
 
@@ -87,7 +87,7 @@ def get_analytic_results():
 
     :param uuid: none
 
-    :returns: A list. [0] is a bool with the result. [1] is a dictionary
+    :returns: A tuple. [0] is a bool with the result. [1] is a dictionary
         containing all available analytic service results.
     """
 
