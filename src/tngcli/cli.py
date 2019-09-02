@@ -281,7 +281,8 @@ def dispatch(args):
                     args.instantiate,
                     args.terminate,
                     args.scale_out,
-                    args.scale_in]
+                    args.scale_in,
+                    args.migrate]
         arg_sum = len([x for x in sel_args if x])
         if arg_sum == 0:
             msg = "Missing arguments for subcommand service. " \
@@ -372,6 +373,20 @@ def dispatch(args):
                                                args.vnf_uuid,
                                                args.vnfd_uuid,
                                                args.num_instances)
+            if args.watch:
+                res = watch_request(mes)
+            else:
+                form_print(mes)
+            exit(not res)
+
+        if bool(args.migrate):
+            if not bool(args.vnf_uuid and args.vim_uuid):
+                print(" --vnf_uuid and --vim_uuidis needed with --migrate")
+                exit(1)
+
+            res, mes = tnglib.service_migrate(args.migrate,
+                                               args.vnf_uuid,
+                                               args.vim_uuid)
             if args.watch:
                 res = watch_request(mes)
             else:
@@ -945,6 +960,13 @@ def parse_args(args):
                             default=False,
                             help=help_mes)
 
+    help_mes = 'Migrate a service, requires --vnf_uuid and --vim_uuid'
+    parser_ser.add_argument('--migrate',
+                            metavar='INSTANCE UUID',
+                            required=False,
+                            default=False,
+                            help=help_mes)
+
     help_mes = 'Specify the vnf descriptor uuid, used with --scale_out '\
                ' and --scale_in'
     parser_ser.add_argument('--vnfd_uuid',
@@ -953,7 +975,7 @@ def parse_args(args):
                             default=False,
                             help=help_mes)
 
-    help_mes = 'Specify the vnf instance uuid, used wit --scale_in'
+    help_mes = 'Specify the vnf instance id, with --scale_in or --migrate'
     parser_ser.add_argument('--vnf_uuid',
                             metavar='VNF UUID',
                             required=False,
@@ -967,11 +989,12 @@ def parse_args(args):
                             default=False,
                             help=help_mes)
 
+    help_mes = 'Specify VIM uuid, only with --scale_out or --migrate'
     parser_ser.add_argument('--vim_uuid',
                             metavar='VIM UUID',
                             required=False,
                             default=False,
-                            help='Specify VIM uuid, only with --vnfd_uuid')
+                            help=help_mes)
 
     help_mes = 'Follow a service request (instantiating, terminating, scaling)'
     parser_ser.add_argument('-w',
