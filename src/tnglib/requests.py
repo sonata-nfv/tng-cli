@@ -263,6 +263,27 @@ def service_scale_in(instance_uuid, vnf_uuid=None, vnfd_uuid=None, number_inst=1
 
     return _post_request(data)
 
+def service_migrate(instance_uuid, vnf_uuid, vim_uuid):
+    """
+    Makes a request to migrate a vnf in a service.
+
+    :param instance_uuid: A string. The uuid of the service instance.
+    :param vnf_uuid: A string. the uuid of the vnf that should be migrated.
+    :param vim_uuid: A string. The uuid of the vim that the vnf should be 
+        migrated towards.
+    :returns: A tuple. [0] is a bool with the result. [1] is a string containing
+        the uuid of the request.
+
+    """
+    data = {
+            "instance_uuid": instance_uuid,
+            "request_type": "MIGRATE_FUNCTION",
+            "vnf_uuid": vnf_uuid,
+            "vim_uuid": vim_uuid
+        }
+
+    return _post_request(data)
+
 def _post_request(data):
     """ Generic request maker. """
 
