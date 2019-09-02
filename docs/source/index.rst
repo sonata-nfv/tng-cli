@@ -42,4 +42,4 @@ Usage
   tests
   records
   infrastructure
-  reccomandations
+  reccomendations
