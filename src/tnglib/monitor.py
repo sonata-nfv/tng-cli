@@ -87,6 +87,7 @@ def get_prometheus_targets():
 def get_services(srv_uuid):
     """Returns all the vnfs/vdus per NS.
 
+    :param srv_uuid: uuid of a network service record.
     :returns: A list. [0] is a bool with the result. [1] is a list of 
         dictionaries. Each dictionary contains a vdu per vnf.
     """
@@ -131,7 +132,7 @@ def get_services(srv_uuid):
 
 def get_metrics(vnf_uuid, vdu_uuid):
     """Returns all metrics per vnf and vdu.
-
+    :param vnf_uuid: uuid of a vnf record.
     :returns: A list. [0] is a bool with the result. [1] is a list of 
         dictionaries. Each dictionary contains a metric per vdu/vnf.
 
@@ -165,10 +166,33 @@ def get_metrics(vnf_uuid, vdu_uuid):
         LOG.debug("Request returned with " + (json.dumps(templates)))
         error = "VDUs not found"
         return False, error
+    
+def get_policy_rules(nsr_id):
+    """Returns the number of activate policy monitoring rules.
+
+    :param nsr_id: uuid of a network service record.
+
+    :returns: A tuple. [0] is a bool with the result. [1] the number of rules.
+    """
+
+    # get policy monitoring rules
+    url = env.monitoring_manager_api + '/policies/monitoring-rules/service/' + nsr_id
+    
+    resp = requests.get(url, timeout=env.timeout)
+
+    if resp.status_code != 200:
+        LOG.debug("Request for monitoring policy rule returned with " +
+                  (str(resp.status_code)))
+        return False, json.loads(resp.text)
+    
+    num_of_rules = json.loads(resp.text)['count']
+
+    return True, str(num_of_rules)
 
 def get_metric(metric_name):
     """Returns value per metric name.
 
+    :param metric_name: name of the metric.
     :returns: A list. [0] is a bool with the result. [1] is a list of 
         dictionaries. Each dictionary contains a metric.
     """
@@ -203,7 +227,7 @@ def get_metric(metric_name):
 
 def stop_monitoring(service_uuid):
     """Stop collecting data related to specific service.
-
+    :param service_uuid: uuid of a network service record.
     :returns: A list. [0] is a bool with the result.
     """
     url = env.monitor_api+'/services/'+ \
@@ -225,7 +249,7 @@ def stop_monitoring(service_uuid):
 
 def get_vnv_tests(service_uuid):
     """ Returns list of stored tests. 
-    
+    :param service_uuid: uuid of a network service record.
     :returns: A list. [0] is a bool with the result. [1] is a list of 
         dictionaries. Each dictionary contains VnV test.
 
@@ -255,17 +279,20 @@ def get_vnv_tests(service_uuid):
     temp_res = []
 
     if 'results' in templates:
-        if len(templates['results']) > 0:
-            for res in templates['results']:
-                dic = {'test_uuid': res['test_id'], 'srv_uuid': res['service_id'], 
-                       'started': res['created'], 'terminated':res['terminated']}
-                if 'data' in res:
-                    dic['data'] = res['data']
-                LOG.debug(str(dic))
-                if not dic in temp_res:
-                    temp_res.append(dic)
-            return True, temp_res
+        for res in templates['results']:
+            dic = {'test_uuid': res['test_id'], 
+                   'srv_uuid': res['service_id'],
+                   'started': res['created'], 
+                   'terminated':res['terminated']
+                   }
+            if 'data' in res:
+                dic['data'] = res['data']
+            LOG.debug(str(dic))
+            if not dic in temp_res:
+                temp_res.append(dic)
 
-    LOG.debug("Request returned with " + (json.dumps(templates)))
-    error = "Stored test data not found"
-    return False, error
+        return True, temp_res
+    else:
+        LOG.debug("Request returned with " + (json.dumps(templates)))
+        error = "Stored test data not found"
+        return False, error
