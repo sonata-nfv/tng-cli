@@ -41,9 +41,10 @@ import tnglib.env as env
 LOG = logging.getLogger(__name__)
 
 def get_prometheus_targets():
-    """
-    Returns all the monitoring targets from Prometheus server.
+    """Returns all the monitoring targets from Prometheus server.
 
+    :returns: A list. [0] is a bool with the result. [1] is a list of 
+        dictionaries. Each dictionary contains a target.
     """
 
     # get current list of targets
@@ -84,9 +85,11 @@ def get_prometheus_targets():
         return False, error
 
 def get_services(srv_uuid):
-    """
-    Returns all the vnfs/vdus per NS.
+    """Returns all the vnfs/vdus per NS.
 
+    :param srv_uuid: uuid of a network service record.
+    :returns: A list. [0] is a bool with the result. [1] is a list of 
+        dictionaries. Each dictionary contains a vdu per vnf.
     """
     # get current list of targets
     resp = requests.get(env.monitor_api+'/services/'+srv_uuid+'/metrics',
@@ -128,8 +131,10 @@ def get_services(srv_uuid):
 
 
 def get_metrics(vnf_uuid, vdu_uuid):
-    """
-    Returns all metrics per vnf and vdu.
+    """Returns all metrics per vnf and vdu.
+    :param vnf_uuid: uuid of a vnf record.
+    :returns: A list. [0] is a bool with the result. [1] is a list of 
+        dictionaries. Each dictionary contains a metric per vdu/vnf.
 
     """
     resp=requests.get(env.monitor_api+'/vnfs/'+vnf_uuid + \
@@ -185,9 +190,11 @@ def get_policy_rules(nsr_id):
     return True, str(num_of_rules)
 
 def get_metric(metric_name):
-    """
-    Returns value per metric name.
+    """Returns value per metric name.
 
+    :param metric_name: name of the metric.
+    :returns: A list. [0] is a bool with the result. [1] is a list of 
+        dictionaries. Each dictionary contains a metric.
     """
     resp=requests.get(env.monitor_api+'/prometheus/metrics/name/'+metric_name,
                         timeout=env.timeout,
@@ -219,9 +226,9 @@ def get_metric(metric_name):
         return False, error
 
 def stop_monitoring(service_uuid):
-    """
-    Stop collecting data related to specific service.
-
+    """Stop collecting data related to specific service.
+    :param service_uuid: uuid of a network service record.
+    :returns: A list. [0] is a bool with the result.
     """
     url = env.monitor_api+'/services/'+ \
                         service_uuid
@@ -241,8 +248,10 @@ def stop_monitoring(service_uuid):
 
 
 def get_vnv_tests(service_uuid):
-    """
-        Returns list of stored tests. 
+    """ Returns list of stored tests. 
+    :param service_uuid: uuid of a network service record.
+    :returns: A list. [0] is a bool with the result. [1] is a list of 
+        dictionaries. Each dictionary contains VnV test.
 
     """
 
