@@ -35,6 +35,7 @@ import argparse
 import tnglib
 import yaml
 import os
+import json
 import logging
 import getpass
 import time
@@ -327,11 +328,35 @@ def dispatch(args):
             exit(not res)
 
         if bool(args.instantiate):
+            if args.params:
+                try:
+                    params = json.loads(args.params)
+                    if not isinstance(params, dict):
+                        print(args.params + " does not resemble a dictionary")
+                        exit(1)
+                except:
+                    print("\"" + args.params + "\" is not correctly formatted")
+                    exit(1)
+            elif args.params_file:
+                try:
+                    params = yaml.load(open(args.params_file, 'r'))
+                    if not isinstance(params, dict):
+                        print("File does not contain a dictionary")
+                        exit(1)
+                except:
+                    print("File cannot be parsed as yaml")
+                    exit(1)
+
+            else:
+                params = {}
+
             if bool(args.sla):
                 res, mes = tnglib.service_instantiate(args.instantiate,
-                                                      args.sla)
+                                                      args.sla,
+                                                      params=params)
             else:
-                res, mes = tnglib.service_instantiate(args.instantiate)
+                res, mes = tnglib.service_instantiate(args.instantiate,
+                                                      params=params)
 
             if args.watch:
                 res = watch_request(mes)
@@ -1000,6 +1025,22 @@ def parse_args(args):
     parser_ser.add_argument('-w',
                             '--watch',
                             action='store_true',
+                            required=False,
+                            default=False,
+                            help=help_mes)
+
+    help_mes = 'json string of object with key-value pairs to be added ' \
+               'as envs to CNFs , only with --instantiate'
+    parser_ser.add_argument('--params',
+                            metavar='PARAMS',
+                            required=False,
+                            default=False,
+                            help=help_mes)
+
+    help_mes = 'path to yaml file that contains key value params, ' \
+               'only with --instantiate'
+    parser_ser.add_argument('--params_file',
+                            metavar='PARAMS FILE',
                             required=False,
                             default=False,
                             help=help_mes)
