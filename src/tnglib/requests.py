@@ -107,7 +107,7 @@ def get_request(request_uuid):
     return True, json.loads(resp.text)
 
 
-def service_instantiate(service_uuid, sla_uuid=None, mapping=None):
+def service_instantiate(service_uuid, sla_uuid=None, mapping=None, params=None):
     """Makes a request to instantiate a service.
 
     :param service_uuid: A string. The uuid of the service.
@@ -129,6 +129,7 @@ def service_instantiate(service_uuid, sla_uuid=None, mapping=None):
           - vl_id: <foo2>
             vim_id: <bar2>
             external_net: <foo.bar2>
+    :param params: A dictionary contain key value pairs as params input.
     :returns: A tuple. [0] is a bool with the result. [1] is a string containing
         the uuid of the request.
 
@@ -142,6 +143,9 @@ def service_instantiate(service_uuid, sla_uuid=None, mapping=None):
 
     if mapping:
         data['mapping'] = mapping
+
+    if params:
+        data['params'] = params
 
     return _post_request(data)
 

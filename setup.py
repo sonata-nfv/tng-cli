@@ -65,7 +65,7 @@ pkgs, new_links = install_deps()
 
 setup(name='tngcli',
       license='Apache License, Version 2.0',
-      version='1.0.2',
+      version='5.0.0',
       url='https://github.com/sonata-nfv/tng-cli',
       author='Thomas Soenen',
       author_email='thomas.soenen@ugent.be',
