@@ -350,13 +350,10 @@ def dispatch(args):
             else:
                 params = {}
 
-            if bool(args.sla):
-                res, mes = tnglib.service_instantiate(args.instantiate,
-                                                      args.sla,
-                                                      params=params)
-            else:
-                res, mes = tnglib.service_instantiate(args.instantiate,
-                                                      params=params)
+            res, mes = tnglib.service_instantiate(args.instantiate,
+                                                  sla_uuid=args.sla,
+                                                  params=params,
+                                                  name=args.name)
 
             if args.watch:
                 res = watch_request(mes)
@@ -968,7 +965,15 @@ def parse_args(args):
                             '--sla',
                             metavar='SLA UUID',
                             required=False,
-                            default=False,
+                            default=None,
+                            help=help_mes)
+
+    help_mes = 'Only with --instantiate. Attach a name to the service instance'
+    parser_ser.add_argument('-n',
+                            '--name',
+                            metavar='NAME',
+                            required=False,
+                            default=None,
                             help=help_mes)
 
     help_mes = 'Scale in a service, requires either --vnf_uuid or --vnfd_uuid'
