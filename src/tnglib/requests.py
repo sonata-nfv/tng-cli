@@ -107,7 +107,7 @@ def get_request(request_uuid):
     return True, json.loads(resp.text)
 
 
-def service_instantiate(service_uuid, sla_uuid=None, mapping=None, params=None):
+def service_instantiate(service_uuid, sla_uuid=None, mapping=None, params=None, name=None):
     """Makes a request to instantiate a service.
 
     :param service_uuid: A string. The uuid of the service.
@@ -146,6 +146,9 @@ def service_instantiate(service_uuid, sla_uuid=None, mapping=None, params=None):
 
     if params:
         data['params'] = params
+
+    if name:
+        data['name'] = name
 
     return _post_request(data)
 
