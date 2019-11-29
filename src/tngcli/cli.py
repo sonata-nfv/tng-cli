@@ -195,9 +195,12 @@ def dispatch(args):
     
     #monitor subcommand
     elif args.subparser_name == 'monitor':
-        sel_args = [args.target_list, args.service_list, args.metric_list, 
-                    args.vnf_uuid, args.vdu_uuid, args.metric_name,
-                    args.vnv_tests, args.service_uuid, args.remove_service]
+        sel_args = [args.target_add, args.target_list, args.service_list, 
+                    args.metric_list, args.vnf_uuid, args.vdu_uuid, 
+                    args.metric_name, args.vnv_tests, args.service_uuid, 
+                    args.remove_service, args.target_name,args.target_endpoint, 
+                    args.target_type, args.target_path]
+
         arg_sum = len([x for x in sel_args if x])
         if arg_sum == 0:
             msg = "Missing arguments for tng-cli monitor. " \
@@ -205,7 +208,7 @@ def dispatch(args):
             print(msg)
             exit(1)
 
-        if arg_sum > 3:
+        if arg_sum > 5:
             msg = "Too many arguments for subcommand monitor. " \
                   "Type tng-cli monitor -h"
             print(msg)
@@ -241,6 +244,20 @@ def dispatch(args):
 
         if args.target_list:
             res, mes = tnglib.get_prometheus_targets()
+            order = ['target', 'endpoint']
+            form_print(mes, order)
+            exit(not res)
+
+        if args.target_add:
+            if (not args.target_name) or (not args.target_path) or (not args.target_endpoint) or (not args.target_path):
+                msg = "arguments missing " \
+                      "Type tng-cli monitor -tga -h"
+                print(msg)
+                exit(1)
+            res, mes = tnglib.add_prometheus_targets(args.target_name,
+                                                     args.target_endpoint,
+                                                     args.target_type,
+                                                     args.target_path)
             order = ['target', 'endpoint']
             form_print(mes, order)
             exit(not res)
@@ -1327,7 +1344,48 @@ def parse_args(args):
                             required=False,
                             default=False,
                             help='Only with --attach. Attach policy to an sla')
+    
     # monitoring sub arguments
+    help_mes = 'Add monitoring endpoint. Only with --target-name --target-type --target-endpoint, --target-path'
+    parser_mon.add_argument('-tra',
+                            '--target-add',
+                            action='store_true',
+                            required=False,
+                            default=False,
+                            help=help_mes)
+
+    help_mes = 'Only with --target-add'
+    parser_mon.add_argument('-url',
+                            '--target-endpoint',
+                            metavar='TARGET ENDPOINT',
+                            required=False,
+                            default=False,
+                            help=help_mes)
+
+    help_mes = 'Only with --target-add'
+    parser_mon.add_argument('-nm',
+                            '--target-name',
+                            metavar='TARGET NAME',
+                            required=False,
+                            default=False,
+                            help=help_mes)
+
+    help_mes = 'Only with --target-add'
+    parser_mon.add_argument('-tp',
+                            '--target-type',
+                            metavar='TARGET TYPE',
+                            required=False,
+                            default=False,
+                            help=help_mes)
+
+    help_mes = 'Only with --target-add'
+    parser_mon.add_argument('-pth',
+                            '--target-path',
+                            metavar='TARGET PATH',
+                            required=False,
+                            default=False,
+                            help=help_mes)
+
     help_mes = 'Get list of monitoring endpoints'
     parser_mon.add_argument('-trl',
                             '--target-list',
