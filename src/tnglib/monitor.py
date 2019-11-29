@@ -146,6 +146,8 @@ def get_prometheus_targets():
                         for e in trg['targets']:
                             if not first_trg:
                                 trg_name = ' '
+                            if ':' in trg_name:
+                                trg_name = trg_name.split(':')[0]
                             dic = {'target': trg_name, 'endpoint': e}
                             first_trg = True
                             LOG.debug(str(dic))
