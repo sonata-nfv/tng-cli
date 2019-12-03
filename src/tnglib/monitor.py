@@ -65,7 +65,7 @@ def add_prometheus_targets(name, endpoint, type, path):
     templates = json.loads(resp.text)
 
     if type == 'k8s':
-        trg = {'honor_labels':True,'job_name':name,'metrics_path':path,
+        trg = {'honor_labels':true,'job_name':name,'metrics_path':path,
                'params':{'match':["{job='kubernetes-cadvisor'}",
                                   "{job='kubernetes-apiservers'}",
                                   "{job='kubernetes-nodes'}",
