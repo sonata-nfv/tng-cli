@@ -67,8 +67,10 @@ def add_prometheus_targets(name, endpoint, type, path):
     if type == 'k8s':
         trg = {'honor_labels':True,'job_name':name,'metrics_path':path,
                'params':{'match':["{job='kubernetes-cadvisor'}",
+                                  "{job='kubernetes-apiservers'}",
                                   "{job='kubernetes-nodes'}",
                                   "{job='kubernetes-pods'}",
+                                  "{job='kubernetes-service-endpoints'}"
                                   "{job='pushgateway'}"]},
                'scrape_interval':'10s','scrape_timeout':'10s',
                'static_configs':[{'targets':[endpoint]}]}
