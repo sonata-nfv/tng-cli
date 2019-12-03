@@ -70,7 +70,7 @@ def add_prometheus_targets(name, endpoint, type, path):
                                   "{job='kubernetes-apiservers'}",
                                   "{job='kubernetes-nodes'}",
                                   "{job='kubernetes-pods'}",
-                                  "{job='kubernetes-service-endpoints'}"
+                                  "{job='kubernetes-service-endpoints'}",
                                   "{job='pushgateway'}"]},
                'scrape_interval':'10s','scrape_timeout':'10s',
                'static_configs':[{'targets':[endpoint]}]}
