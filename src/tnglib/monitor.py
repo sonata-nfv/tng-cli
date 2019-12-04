@@ -40,6 +40,78 @@ import tnglib.env as env
 
 LOG = logging.getLogger(__name__)
 
+def add_prometheus_targets(name, endpoint, type, path):
+    """Adds a new monitoring endpoint.
+    k8s ex. monitor -tra --target-name test1 --target-type k8s --target-endpoint 10.200.16.2:30090 --target-path /federate
+    Exporter ex. monitor -tra --target-name test1 --target-type exporter --target-endpoint 145.20.146.2:9091 --target-path /metrics
+
+    :param name: name of the monitored VIM.
+    :param endpoint: monitoring endpoint (<IP>:<PORT>).
+    :param type: type of exporter ('k8s' or 'exporter').
+    :param path: url's path ('/federate' or 'metrics').
+    :returns: A list. [0] is a bool with the result. [1] is a list of 
+        dictionaries. Each dictionary contains a target.
+    """
+    # get current list of targets
+    resp = requests.get(env.monitor_api + '/prometheus/targets',
+                        timeout=env.timeout,
+                        headers=env.header)
+
+    if resp.status_code != 200:
+        LOG.debug("Request returned with " + (str(resp.status_code)))
+        error = resp.text
+        return False, error
+
+    templates = json.loads(resp.text)
+
+    if type == 'k8s':
+        trg = {'honor_labels':True,'job_name':name,'metrics_path':path,
+               'params':{'match[]':["{job='kubernetes-cadvisor'}",
+                                  "{job='kubernetes-nodes'}",
+                                  "{job='kubernetes-pods'}",
+                                  "{job='pushgateway'}"]},
+               'scrape_interval':'10s','scrape_timeout':'10s',
+               'static_configs':[{'targets':[endpoint]}]}
+    elif type == 'exporter':
+        trg = {'job_name': name, 'metrics_path':path,
+               'scrape_interval':"5s",
+               'scrape_timeout': "5s",
+               'static_configs': [{'targets': [endpoint]}]}
+    else:
+        LOG.debug("Provide exporter type (k8s/exporter)")
+        error = "Unsupported exporter type (k8s/exporter)"
+        return False, error
+
+    found = False
+    if 'targets' in templates:
+        i = 0
+        for t in templates['targets']:
+            if 'job_name' in t:
+                if ':' in t['job_name']:
+                    trg_name = t['job_name'].split(':')[0]
+                else:
+                    trg_name = t['job_name']
+                if trg_name == name:
+                    templates['targets'][i] = trg
+                    found = True
+                    break
+            i =i + 1
+
+        if not found:
+            templates['targets'].append(trg)
+
+    resp = requests.post(env.monitor_api + '/prometheus/targets',
+                         json=templates,
+                         timeout=env.timeout,
+                         headers=env.header)
+
+    if resp.status_code != 200:
+        LOG.debug("Request returned with " + (str(resp.status_code)))
+        error = resp.text
+        return False, error
+
+    return True, get_prometheus_targets()[1]
+
 def get_prometheus_targets():
     """Returns all the monitoring targets from Prometheus server.
 
@@ -74,6 +146,8 @@ def get_prometheus_targets():
                         for e in trg['targets']:
                             if not first_trg:
                                 trg_name = ' '
+                            if ':' in trg_name:
+                                trg_name = trg_name.split(':')[0]
                             dic = {'target': trg_name, 'endpoint': e}
                             first_trg = True
                             LOG.debug(str(dic))
